@@ -1,24 +1,22 @@
-# README
+# schizoid-note
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+> My superior Nuxt.js project
 
-Things you may want to cover:
+## Build Setup
 
-* Ruby version
+```bash
+# install dependencies
+$ npm install
 
-* System dependencies
+# serve with hot reload at localhost:3000
+$ npm run dev
 
-* Configuration
+# build for production and launch server
+$ npm run build
+$ npm run start
 
-* Database creation
+# generate static project
+$ npm run generate
+```
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
