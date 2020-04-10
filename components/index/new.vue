@@ -3,7 +3,7 @@
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
-    <div v-if="contents.size != 0">
+    <div v-if="contents.length != 0">
       <b-card
         v-for="(content, index) in contents"
         :key="index"
