@@ -5,6 +5,9 @@
         <div class="text-center" style="margin:7vh 0 10vh 0">
           <h2>ログイン</h2>
         </div>
+        <div v-if="user.valid" style="color: #FF6565" class="mb-3">
+          メールアドレスかパスワードが間違っています。
+        </div>
         <b-form @submit.prevent="login()">
           <b-form-group class="mb-5">
             <label for="email">メールアドレス</label>
@@ -26,7 +29,7 @@
             ></b-form-input>
           </b-form-group>
           <div class="text-center mb-3">
-            <b-button variant="primary" style="" @click="login()"
+            <b-button variant="primary" style="" type="submit" @click="login()"
               >ログイン</b-button
             >
           </div>
@@ -50,18 +53,32 @@
 </template>
 
 <script>
+import firebase from '~/plugins/firebase'
 export default {
   layout: 'prelogin',
   data() {
     return {
       user: {
-        email: 'huuto@com',
-        password: ''
-      }
+        email: '',
+        password: '',
+        valid: false
+      },
+      message: ''
     }
   },
   methods: {
-    login() {},
+    login() {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.user.email, this.user.password)
+        .then((user) => {
+          this.$store.commit('login', user)
+          this.$router.push('/')
+        })
+        .catch(() => {
+          this.user.valid = true
+        })
+    },
     twitterLogin() {}
   }
 }

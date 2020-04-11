@@ -35,7 +35,8 @@ const config = {
    */
   plugins: [
     { src: '~plugins/quill.js', ssr: false },
-    { src: '~plugins/sanitize-html.js' }
+    '~plugins/sanitize-html.js',
+    '~plugins/firebase.js'
   ],
   /*
    ** Nuxt.js dev-modules
@@ -58,27 +59,27 @@ const config = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
-  auth: {
-    strategies: {
-      local: {
-        endpoints: {
-          login: {
-            url: 'api/v1/user_token',
-            method: 'post',
-            propertyName: 'jwt'
-          },
-          user: { url: 'api/v1/users', method: 'get', propertyName: 'user' },
-          logout: false
-        }
-      }
-    },
-    redirect: {
-      login: '/login',
-      logout: '/login',
-      callback: false,
-      home: '/'
-    }
-  },
+  // auth: {
+  //   strategies: {
+  //     local: {
+  //       endpoints: {
+  //         login: {
+  //           url: 'api/v1/user_token',
+  //           method: 'post',
+  //           propertyName: 'jwt'
+  //         },
+  //         user: { url: 'api/v1/users', method: 'get', propertyName: 'user' },
+  //         logout: false
+  //       }
+  //     }
+  //   },
+  //   redirect: {
+  //     login: '/login',
+  //     logout: '/login',
+  //     callback: false,
+  //     home: '/'
+  //   }
+  // },
   /*
    ** Build configuration
    */
@@ -87,9 +88,6 @@ const config = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
-  },
-  generate: {
-    dir: '../public'
   }
 }
 
