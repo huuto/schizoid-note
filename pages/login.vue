@@ -17,6 +17,7 @@
               type="email"
               required
               class="mb-3"
+              name="email"
             >
             </b-form-input>
             <label for="password">パスワード</label>
@@ -24,6 +25,7 @@
               id="password"
               v-model="user.password"
               type="password"
+              name="password"
               required
               class="mb-3"
             ></b-form-input>
@@ -55,6 +57,7 @@
 <script>
 import firebase from '~/plugins/firebase'
 export default {
+  // middleware: 'auth',
   layout: 'prelogin',
   data() {
     return {
@@ -66,20 +69,37 @@ export default {
       message: ''
     }
   },
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('authStateChanged')
+        this.$router.push('/')
+      } else {
+        this.user.valid = false
+      }
+    })
+    // firebase
+    //   .auth()
+    //   .getRedirectResult()
+    //   .then((result) => {
+    //     this.$store.state.user = result.user
+    //   })
+  },
   methods: {
     login() {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.user.email, this.user.password)
-        .then((user) => {
-          this.$store.commit('login', user)
+        .then((result) => {
+          this.$store.dispatch('authStateChanged')
           this.$router.push('/')
         })
-        .catch(() => {
-          this.user.valid = true
-        })
     },
-    twitterLogin() {}
+    async twitterLogin() {
+      await firebase
+        .auth()
+        .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
+    }
   }
 }
 </script>

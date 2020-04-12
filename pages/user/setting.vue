@@ -49,14 +49,18 @@
           <div class="text-center mb-3">
             <b-button variant="primary" style="" @click="edit()">変更</b-button>
           </div>
-          <div class="text-center mb-5">
-            <b-button variant="link" style="color:#FF6565;" to=""
-              >アカウント削除</b-button
+          <div class="text-center">
+            <b-button
+              variant="link"
+              style="color:#707070;"
+              to="posts"
+              class="mb-5"
+              >戻る</b-button
             >
           </div>
-          <div class="text-center mb-5">
-            <b-button variant="link" style="color:#707070;" to="posts"
-              >戻る</b-button
+          <div class="text-center">
+            <b-button variant="link" style="color:#FF6565;" to=""
+              >アカウント削除</b-button
             >
           </div>
         </b-form>
@@ -72,12 +76,15 @@ export default {
     return {
       user: {
         name: '',
-        email: 'huuto@com',
+        email: '',
         password: '',
         password_confimation: '',
         profile: ''
       }
     }
+  },
+  created() {
+    this.user = this.$store.state.user
   },
   methods: {
     edit() {}

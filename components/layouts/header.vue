@@ -12,7 +12,7 @@
               <b-btn
                 variant="outline-primary my-3"
                 class="px-4 mr-3"
-                to="/edit"
+                to="/user/edit"
                 size="sm"
                 >投稿</b-btn
               >
@@ -32,9 +32,9 @@
               <!-- <b-dd-item>いいね</b-dd-item> -->
               <!-- <b-dd-item>フォロー</b-dd-item> -->
               <!-- <b-dd-divider></b-dd-divider> -->
-              <b-dd-item to="/user/user">アカウント設定</b-dd-item>
+              <b-dd-item to="/user/setting">アカウント設定</b-dd-item>
               <b-dd-divider></b-dd-divider>
-              <b-dd-item @click="logiout()">ログアウト</b-dd-item>
+              <b-dd-item @click="logout()">ログアウト</b-dd-item>
             </b-nav-item-dropdown>
           </div>
           <div v-else>

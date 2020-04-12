@@ -1,3 +1,4 @@
+import firebase from '~/plugins/firebase'
 export const strict = false
 
 export const state = () => ({
@@ -19,10 +20,27 @@ export const mutations = {
     state.user.id = user.uid
     state.user.isLogin = true
   },
+  twitterLogin(state, user) {
+    state.user.email = user.email
+    state.user.name = user.displayName
+    state.user.photoURL = user.photoURL
+    state.user.id = user.uid
+    state.user.isLogin = true
+  },
   logout(state) {
-    state.user = null
+    firebase.auth().signOut()
     state.user.isLogin = false
   }
 }
 
-export const actions = {}
+export const actions = {
+  authStateChanged({ commit }) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        commit('login', user)
+      } else {
+        commit('logout')
+      }
+    })
+  }
+}
