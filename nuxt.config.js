@@ -22,6 +22,10 @@ const config = {
       }
     ]
   },
+
+  router: {
+    // middleware: 'auth'
+  },
   /*
    ** Customize the progress-bar color
    */
@@ -36,7 +40,8 @@ const config = {
   plugins: [
     { src: '~plugins/quill.js', ssr: false },
     '~plugins/sanitize-html.js',
-    '~plugins/firebase.js'
+    '~plugins/firebase.js',
+    '~plugins/common.js'
   ],
   /*
    ** Nuxt.js dev-modules

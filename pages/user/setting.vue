@@ -71,7 +71,7 @@
 
 <script>
 export default {
-  middleware: 'auth',
+  // middleware: 'authRedirect',
   data() {
     return {
       user: {
@@ -85,6 +85,9 @@ export default {
   },
   created() {
     this.user = this.$store.state.user
+  },
+  mounted() {
+    this.$store.dispatch('authRedirect')
   },
   methods: {
     edit() {}

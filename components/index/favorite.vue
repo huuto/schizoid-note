@@ -65,4 +65,7 @@ export default {
 h2 {
   font-size: 1.2rem;
 }
+img {
+  object-fit: cover;
+}
 </style>

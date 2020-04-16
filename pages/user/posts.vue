@@ -40,7 +40,7 @@
 
 <script>
 export default {
-  middleware: 'auth',
+  // middleware: 'authRedirect',
   data() {
     return {
       contents: [
@@ -62,6 +62,9 @@ export default {
         }
       ]
     }
+  },
+  mounted() {
+    this.$store.dispatch('authRedirect')
   }
 }
 </script>

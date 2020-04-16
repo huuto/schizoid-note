@@ -20,13 +20,6 @@ export const mutations = {
     state.user.id = user.uid
     state.user.isLogin = true
   },
-  twitterLogin(state, user) {
-    state.user.email = user.email
-    state.user.name = user.displayName
-    state.user.photoURL = user.photoURL
-    state.user.id = user.uid
-    state.user.isLogin = true
-  },
   logout(state) {
     firebase.auth().signOut()
     state.user.isLogin = false
@@ -40,6 +33,14 @@ export const actions = {
         commit('login', user)
       } else {
         commit('logout')
+      }
+    })
+  },
+  authRedirect({ commit }) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        commit('logout')
+        this.$router.push('/')
       }
     })
   }

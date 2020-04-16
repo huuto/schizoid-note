@@ -16,9 +16,10 @@ export default {
     Footer
   },
   data() {
-    return {
-      user_menu: false
-    }
+    return {}
+  },
+  mounted() {
+    this.$store.dispatch('authStateChanged')
   }
 }
 </script>

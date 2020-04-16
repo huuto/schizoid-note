@@ -2,7 +2,7 @@
   <div>
     <Header />
     <ContentsHeader class="mb-5" />
-    <nuxt />
+    <nuxt style="min-height:90vh" />
     <Footer />
   </div>
 </template>
@@ -20,6 +20,9 @@ export default {
   },
   data() {
     return {}
+  },
+  mounted() {
+    this.$store.dispatch('authStateChanged')
   }
 }
 </script>

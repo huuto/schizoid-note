@@ -5,6 +5,7 @@
         <div class="text-center" style="margin:7vh 0 10vh 0">
           <h2>新規登録</h2>
         </div>
+        <div class="text-danger mb-3">{{ message }}</div>
         <b-form @submit.prevent="signup()">
           <b-form-group>
             <label for="name">ユーザー名</label>
@@ -42,13 +43,13 @@
             ></b-form-input>
           </b-form-group>
           <div class="text-center mb-5">
-            <b-button variant="primary" style="" @click="login()"
+            <b-button variant="primary" style="" @click="signup()"
               >登録</b-button
             >
           </div>
           <div class="text-center mb-5">
             <b-button variant="link" style="color:#707070;" to="login"
-              >ログイン画面に戻る</b-button
+              >ログイン画面に戻る / Twitterでログイン</b-button
             >
           </div>
         </b-form>
@@ -58,20 +59,51 @@
 </template>
 
 <script>
+import firebase from '@/plugins/firebase'
 export default {
   layout: 'prelogin',
   data() {
     return {
       user: {
         name: '',
-        email: 'huuto@com',
+        email: '',
         password: '',
         password_confimation: ''
-      }
+      },
+      message: ''
     }
   },
   methods: {
-    signup() {}
+    signup() {
+      if (
+        this.user.name !== '' &&
+        this.user.email !== '' &&
+        this.user.password !== ''
+      ) {
+        if (this.user.password === this.user.password_confimation) {
+          firebase
+            .auth()
+            .createUserWithEmailAndPassword(this.user.email, this.user.password)
+            .then(() => {
+              firebase.auth().currentUser.updateProfile({
+                displayName: this.user.name
+              })
+              this.$router.push('/')
+            })
+            .catch((error) => {
+              this.message =
+                'エラーが発生してユーザーが登録できませんでした\n' +
+                error.code +
+                ' ' +
+                error.message
+            })
+        } else {
+          this.message = 'パスワードと確認用パスワードが一致しません'
+        }
+      } else {
+        this.message = '必要な項目を入力してください'
+      }
+    }
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <b-container>
+    <b-container style="max-width:940px" class="mx-auto">
       <b-row>
         <b-col cols="12" md="8">
           <New />

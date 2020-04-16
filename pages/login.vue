@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import firebase from '~/plugins/firebase'
+import firebase from '@/plugins/firebase'
 export default {
   // middleware: 'auth',
   layout: 'prelogin',
@@ -70,6 +70,7 @@ export default {
     }
   },
   mounted() {
+    // twitterのリダイレクト認証で戻ってきた場合、認証情報をユーザーに反映しホームに遷移
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.dispatch('authStateChanged')

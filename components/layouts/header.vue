@@ -23,7 +23,7 @@
               style="align-items: center"
             >
               <template v-slot:button-content>
-                <b-avatar class=""></b-avatar>
+                <b-avatar class="" :src="user.photoURL"></b-avatar>
               </template>
               <b-dd-header>{{ user.name }}</b-dd-header>
               <b-dd-item to="/user/edit">投稿する</b-dd-item>
@@ -62,10 +62,11 @@
 <script>
 export default {
   data() {
-    return {
-      user() {
-        return this.$store.state.user
-      }
+    return {}
+  },
+  computed: {
+    user() {
+      return this.$store.state.user
     }
   },
   methods: {
