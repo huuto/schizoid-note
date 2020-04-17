@@ -33,7 +33,7 @@
       </b-card>
     </div>
     <div v-else>
-      投稿が読み込めません。
+      投稿を読み込み中です。
     </div>
   </div>
 </template>

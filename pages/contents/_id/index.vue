@@ -45,10 +45,6 @@
 <script>
 import firebase from '~/plugins/firebase'
 export default {
-  validate({ params }) {
-    // 数値でなければならない
-    return /^\d+$/.test(params.id)
-  },
   data() {
     return {
       content: {},
@@ -60,13 +56,14 @@ export default {
   },
   methods: {
     async getContent() {
-      const docRef = await firebase
+      await firebase
         .firestore()
         .collection('posts')
         .doc(this.$route.params.id)
-      docRef.get().then((doc) => {
-        this.content = doc.data()
-      })
+        .get()
+        .then((doc) => {
+          this.content = doc.data()
+        })
     }
   }
 }
