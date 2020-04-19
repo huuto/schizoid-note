@@ -41,7 +41,8 @@ const config = {
     { src: '~plugins/quill.js', ssr: false },
     '~plugins/sanitize-html.js',
     '~plugins/firebase.js',
-    '~plugins/common.js'
+    '~plugins/common/resizeImg.js',
+    '~plugins/common/timestampToDate.js'
   ],
   /*
    ** Nuxt.js dev-modules

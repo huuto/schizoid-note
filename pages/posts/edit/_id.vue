@@ -2,6 +2,18 @@
   <div>
     <b-container class="pt-3" style="max-width:640px">
       <div>{{ message }}</div>
+      <div>
+        <b-alert id="msg-popup" dismissible variant="info" :show="msg_popup">
+          <b-spinner
+            variant="primary"
+            label="Spinning"
+            small
+            class="mr-3"
+          ></b-spinner>
+          {{ msg_popup }}</b-alert
+        >
+      </div>
+
       <div class="mb-3">
         <b-row class="mb-1">
           <b-col cols="auto">投稿日</b-col
@@ -67,7 +79,7 @@ export default {
     return {
       content: {},
       message: '',
-
+      msg_popup: null,
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
         { value: 'public', text: '公開', btn: '保存して公開' },
@@ -132,22 +144,32 @@ export default {
     // 画像のアップロード
     async handleImageAdded(file, Editor, cursorLocation, resetUploader) {
       if (!file.type.match(/^image\//g)) {
-        this.message = '拡張子が違うため、画像をアップロードできません。'
+        this.message = '画像以外はアップロードできません。'
         return null
       }
       const fileName = Date.now() + '_' + file.name
-      const ref = firebase
-        .storage()
-        .ref()
-        .child('posts/' + fileName)
-      await ref.put(file)
-      let url = ''
-      await ref.getDownloadURL().then((getUrl) => {
-        url = getUrl
-      })
-
-      Editor.insertEmbed(cursorLocation, 'image', url)
-      resetUploader()
+      const ref = firebase.storage().ref()
+      await ref.child('posts/' + fileName).put(file)
+      // let resizeRef = null
+      // let url = ''
+      this.msg_popup = '画像を保存中です。'
+      await setTimeout(() => {
+        firebase
+          .storage()
+          .refFromURL(
+            'gs://schizoid-note.appspot.com/posts/' + this.$resizeImg(fileName)
+          )
+          .getDownloadURL()
+          .catch(() => {
+            this.message =
+              '画像をアップロードできませんでした。\nもう一度お試しください。'
+          })
+          .then((getUrl) => {
+            Editor.insertEmbed(cursorLocation, 'image', getUrl)
+            resetUploader()
+          })
+        this.msg_popup = null
+      }, 3000)
     }
   }
 }
@@ -155,15 +177,26 @@ export default {
 <style lang="scss" scoped>
 h2 {
   font-size: 1.1rem;
+  font-weight: bold;
 }
 
 img#topImg {
   width: 36rem;
   height: 18rem;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: cover;
 }
 
 #saveBtn {
   width: 10rem;
+}
+
+#msg-popup {
+  position: fixed;
+  z-index: 100;
+  top: 0px;
+  width: 38rem;
+  max-width: 100%;
 }
 </style>
