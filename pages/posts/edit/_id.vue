@@ -35,7 +35,7 @@
             ><b-form-select
               v-model="content.status"
               :options="status_options"
-              @change="setSaveBtn()"
+              @change="setStatus()"
             ></b-form-select
           ></b-col>
         </b-row>
@@ -53,7 +53,10 @@
       <div class="mb-5">
         <div class="mb-3"><h2>タイトル</h2></div>
         <div>
-          <b-form-input v-model="content.title"></b-form-input>
+          <b-form-input
+            v-model="content.title"
+            @change="text_change = true"
+          ></b-form-input>
         </div>
       </div>
       <div class="mb-5">
@@ -94,32 +97,47 @@ export default {
       disp_updated_at: null,
       disp_created_at: null,
       disp_published_at: null,
-      message: '',
       msg_popup: { message: null, isSpinner: false, variant: '' },
-      status_options: [
-        { value: 'draft', text: '下書き', btn: '下書き保存' },
-        { value: 'public', text: '公開', btn: '保存して公開' },
-        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
-        { value: 'private', text: '非公開', btn: '保存して非公開' }
-      ],
-      save_btn_options: [
-        { value: 'draft', btn: '下書き保存' },
-        { value: 'public', btn: '保存して公開' },
-        { value: 'anonym', btn: '保存して匿名公開' },
-        { value: 'private', btn: '保存して非公開' }
-      ],
+      status_options: [],
       save_btn: '',
       text_change: false,
       // 変更前のステータス
-      preStatus: ''
+      preStatus: '',
+      photo_url: { added: [], deleted: [] }
     }
   },
   computed: {},
+  created() {
+    if (process.client) {
+      // eslint-disable-next-line nuxt/no-globals-in-created
+      window.addEventListener('beforeunload', this.checkWindow)
+    }
+  },
+  destroyed() {
+    window.removeEventListener('beforeunload', this.checkWindow)
+    if (this.text_change) {
+      // 追加した画像の削除
+      this.photo_url.added.forEach((url) => {
+        this.imageRemove(url)
+      })
+      // 削除した画像は削除しない
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.text_change) {
+      const ans = window.confirm(
+        '変更が保存されていません。本当に移動しますか？'
+      )
+      next(ans)
+    } else {
+      next()
+    }
+  },
   async mounted() {
     this.$store.dispatch('authRedirect')
     await this.getContent()
     this.setStatus()
-    this.setSaveBtn()
+    this.text_change = false
   },
   methods: {
     async getContent() {
@@ -151,21 +169,26 @@ export default {
     setStatus() {
       switch (this.content.status) {
         case 'draft':
-          // 非公開を削除
-          this.status_options.splice(3, 1)
+          this.status_options = [
+            { value: 'draft', text: '下書き', btn: '下書き保存' },
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
+          ]
           break
         case 'public':
         case 'anonym':
         case 'private':
-          // 下書きを削除
-          this.status_options.splice(0, 1)
+          this.status_options = [
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
+            { value: 'private', text: '非公開', btn: '保存して非公開' }
+          ]
           break
       }
-    },
-    setSaveBtn() {
-      this.save_btn_options.forEach((el) => {
-        if (el.value === this.content.status) this.save_btn = el.btn
-      })
+      this.save_btn = this.status_options.find(
+        (el) => el.value === this.content.status
+      ).btn
+      this.text_change = true
     },
     // ポップアップメッセージのリセット
     resetMsg() {
@@ -205,14 +228,21 @@ export default {
             }
           })
           .then((getUrl) => {
-            Editor.insertEmbed(cursorLocation, 'image', getUrl)
-            resetUploader()
+            setTimeout(() => {
+              Editor.insertEmbed(cursorLocation, 'image', getUrl)
+              resetUploader()
+              this.photo_url.added.push(getUrl)
+            }, 500)
           })
         this.resetMsg()
-      }, 3000)
+      }, 4000)
     },
-    // 画像の削除
+    // テキスト上からの画像削除
     handleImageRemoved(imageURL) {
+      this.photo_url.deleted.push(imageURL)
+    },
+    // 画像削除（本当）
+    imageRemove(imageURL) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -260,6 +290,12 @@ export default {
           }
 
           this.text_change = false
+          // テキストから削除した画像を本当に削除
+          this.photo_url.deleted.forEach((url) => {
+            this.imageRemove(url)
+          })
+          this.photo_url.added = []
+          this.photo_url.deleted = []
         })
         .catch(() => {
           this.msg_popup = {
@@ -268,6 +304,12 @@ export default {
             isSpinner: false
           }
         })
+    },
+    checkWindow(event) {
+      if (this.text_change) {
+        event.preventDefault()
+        event.returnValue = '変更が保存されていません。本当に移動しますか？'
+      }
     }
   }
 }
