@@ -18,13 +18,26 @@
           {{ msg_popup.message }}</b-alert
         >
       </div>
+      <div>
+        <b-modal
+          id="public-modal"
+          v-model="showModal"
+          hide-header
+          ok-title="公開"
+          cancel-title="キャンセル"
+          @ok="save()"
+        >
+          <h2>公開します。よろしいですか？</h2>
+        </b-modal>
+      </div>
 
       <div class="mb-3">
         <b-row class="mb-1">
           <b-col cols="auto">作成日</b-col><b-col>{{ disp_created_at }}</b-col>
         </b-row>
-        <b-row class="mb-1">
-          <b-col cols="auto">投稿日</b-col><b-col>{{ disp_updated_at }}</b-col>
+        <b-row v-show="disp_published_at" class="mb-1">
+          <b-col cols="auto">投稿日</b-col
+          ><b-col>{{ disp_published_at }}</b-col>
         </b-row>
         <b-row class="mb-3">
           <b-col cols="auto">更新日</b-col><b-col>{{ disp_updated_at }}</b-col>
@@ -46,7 +59,7 @@
           variant="outline-success"
           class=""
           :disabled="!text_change"
-          @click="save()"
+          @click="preSave()"
           >{{ save_btn }}</b-btn
         >
       </div>
@@ -62,13 +75,19 @@
       <div class="mb-5">
         <div class="mb-3"><h2>トップ画像</h2></div>
         <b-form-file
-          v-model="content.top_img"
+          v-model="top_img"
           placeholder="画像を選択してください"
           drop-placeholder="ここにドロップできます"
           class="mb-3"
+          accept="image/*"
+          @input="setTopImg()"
         ></b-form-file>
         <div class="text-center">
-          <b-img id="topImg" :src="content.top_img"></b-img>
+          <b-img
+            v-show="content.top_img"
+            id="topImg"
+            :src="content.top_img"
+          ></b-img>
         </div>
       </div>
       <div class="mb-5">
@@ -94,16 +113,19 @@ export default {
   data() {
     return {
       content: {},
-      disp_updated_at: null,
       disp_created_at: null,
+      disp_updated_at: null,
       disp_published_at: null,
+      top_img: null,
       msg_popup: { message: null, isSpinner: false, variant: '' },
       status_options: [],
       save_btn: '',
       text_change: false,
       // 変更前のステータス
       preStatus: '',
-      photo_url: { added: [], deleted: [] }
+      // 追加、削除された画像URL
+      photo_url: { added: [], deleted: [] },
+      showModal: false
     }
   },
   computed: {},
@@ -113,15 +135,13 @@ export default {
       window.addEventListener('beforeunload', this.checkWindow)
     }
   },
-  destroyed() {
+  async beforeDestroy() {
     window.removeEventListener('beforeunload', this.checkWindow)
-    if (this.text_change) {
-      // 追加した画像の削除
-      this.photo_url.added.forEach((url) => {
-        this.imageRemove(url)
-      })
-      // 削除した画像は削除しない
-    }
+    // 追加した画像の削除
+    await this.photo_url.added.forEach((url) => {
+      this.imageRemove(url)
+    })
+    // 削除した画像は削除しない
   },
   beforeRouteLeave(to, from, next) {
     if (this.text_change) {
@@ -140,6 +160,9 @@ export default {
     this.text_change = false
   },
   methods: {
+    // setDispDate(timestamp) {
+    //   if (timestamp !== null) return this.$timestampToDate(timestamp)
+    // },
     async getContent() {
       await firebase
         .firestore()
@@ -149,18 +172,19 @@ export default {
         .then((doc) => {
           if (doc.data().user_id === this.$store.state.user.id) {
             this.content = doc.data()
-            this.disp_created_at = this.$timestampToDate(
-              this.content.created_at
-            )
-            this.disp_updated_at = this.$timestampToDate(
-              this.content.updated_at
-            )
-            if (this.content.published_at !== null) {
+            this.preStatus = this.content.status
+            if (this.content.created_at)
+              this.disp_created_at = this.$timestampToDate(
+                this.content.created_at
+              )
+            if (this.content.published_at)
               this.disp_published_at = this.$timestampToDate(
                 this.content.published_at
               )
-            }
-            this.preStatus = this.content.status
+            if (this.content.updated_at)
+              this.disp_updated_at = this.$timestampToDate(
+                this.content.updated_at
+              )
           } else {
             this.$router.push('/')
           }
@@ -237,11 +261,51 @@ export default {
         this.resetMsg()
       }, 4000)
     },
+    // トップ画像のアップロード
+    async setTopImg() {
+      if (this.top_img !== null) {
+        const fileName = Date.now() + '_' + this.top_img.name
+        const ref = firebase.storage().ref()
+        await ref.child('posts/' + fileName).put(this.top_img)
+
+        this.msg_popup = {
+          message: '画像を保存中です。',
+          variant: 'info',
+          isSpinner: true
+        }
+        await setTimeout(() => {
+          firebase
+            .storage()
+            .refFromURL(
+              'gs://schizoid-note.appspot.com/posts/' +
+                this.$resizeImg(fileName)
+            )
+            .getDownloadURL()
+            .catch(() => {
+              this.msg_popup = {
+                message: '画像をアップロードできませんでした。',
+                variant: 'danger',
+                isSpinner: false
+              }
+            })
+            .then((getUrl) => {
+              setTimeout(() => {
+                if (this.content.top_img !== null)
+                  this.photo_url.deleted.push(this.content.top_img)
+                this.content.top_img = getUrl
+                this.photo_url.added.push(getUrl)
+                this.text_change = true
+              }, 500)
+            })
+          this.resetMsg()
+        }, 4000)
+      }
+    },
     // テキスト上からの画像削除
     handleImageRemoved(imageURL) {
       this.photo_url.deleted.push(imageURL)
     },
-    // 画像削除（本当）
+    // 本当に画像削除
     imageRemove(imageURL) {
       firebase
         .storage()
@@ -254,15 +318,20 @@ export default {
           console.log('error: image delete ' + imageURL)
         })
     },
-    // 記事の保存
-    save() {
+    // 記事公開前のチェック
+    preSave() {
       // 下書き、非公開から公開する場合のチェック
       if (
         ['draft', 'private'].includes(this.preStatus) &&
         ['public', 'anonym'].includes(this.content.status)
       ) {
+        this.showModal = true
+      } else {
+        this.save()
       }
-
+    },
+    // 記事の保存
+    save() {
       // 初投稿の場合
       if (
         this.preStatus === 'draft' &&
@@ -276,6 +345,10 @@ export default {
         this.content.user_name = '匿名'
         this.content.user_img = ''
         this.content.profile = ''
+      } else {
+        this.content.user_name = this.$store.state.user.name
+        this.content.user_img = this.$store.state.user.photoURL
+        this.content.profile = this.$store.state.user.profile
       }
       firebase
         .firestore()
@@ -290,6 +363,7 @@ export default {
           }
 
           this.text_change = false
+          this.preStatus = this.content.status
           // テキストから削除した画像を本当に削除
           this.photo_url.deleted.forEach((url) => {
             this.imageRemove(url)

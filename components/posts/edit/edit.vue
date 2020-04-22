@@ -32,6 +32,18 @@
       </div>
 
       <div class="mb-3">
+        <b-row class="mb-1">
+          <b-col cols="auto">作成日</b-col
+          ><b-col>{{ setDispDate(content.created_at) }}</b-col>
+        </b-row>
+        <b-row class="mb-1">
+          <b-col cols="auto">投稿日</b-col
+          ><b-col>{{ setDispDate(content.published_at) }}</b-col>
+        </b-row>
+        <b-row class="mb-3">
+          <b-col cols="auto">更新日</b-col
+          ><b-col>{{ setDispDate(content.updated_at) }}</b-col>
+        </b-row>
         <b-row class="mb-2">
           <b-col cols="auto">状態&nbsp;&nbsp;</b-col
           ><b-col style="max-width:150px"
@@ -73,11 +85,7 @@
           @input="setTopImg()"
         ></b-form-file>
         <div class="text-center">
-          <b-img
-            v-show="content.top_img"
-            id="topImg"
-            :src="content.top_img"
-          ></b-img>
+          <b-img id="topImg" :src="content.top_img"></b-img>
         </div>
       </div>
       <div class="mb-5">
@@ -102,31 +110,17 @@ import firebase from '~/plugins/firebase'
 export default {
   data() {
     return {
-      content: {
-        created_at: null,
-        updated_at: null,
-        published_at: null,
-        title: '',
-        top_img: '',
-        body: '',
-        status: 'draft',
-        user_id: '',
-        user_img: '',
-        user_name: '',
-        profile: ''
-      },
-      disp_created_at: null,
+      content: {},
       disp_updated_at: null,
+      disp_created_at: null,
       disp_published_at: null,
       top_img: null,
       msg_popup: { message: null, isSpinner: false, variant: '' },
-      status_options: [
-        { value: 'draft', text: '下書き', btn: '下書き保存' },
-        { value: 'public', text: '公開', btn: '保存して公開' },
-        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
-      ],
-      save_btn: '下書き保存',
+      status_options: [],
+      save_btn: '',
       text_change: false,
+      // 変更前のステータス
+      preStatus: '',
       // 追加、削除された画像URL
       photo_url: { added: [], deleted: [] },
       showModal: false
@@ -157,12 +151,61 @@ export default {
       next()
     }
   },
-  mounted() {
+  async mounted() {
     this.$store.dispatch('authRedirect')
+    await this.getContent()
+    this.setStatus()
     this.text_change = false
   },
   methods: {
+    setDispDate(timestamp) {
+      return this.$timestampToDate(timestamp)
+    },
+    async getContent() {
+      await firebase
+        .firestore()
+        .collection('posts')
+        .doc(this.$route.params.id)
+        .get()
+        .then((doc) => {
+          if (doc.data().user_id === this.$store.state.user.id) {
+            this.content = doc.data()
+            // this.disp_created_at = this.$timestampToDate(
+            //   this.content.created_at
+            // )
+            // this.disp_updated_at = this.$timestampToDate(
+            //   this.content.updated_at
+            // )
+            if (this.content.published_at !== null) {
+              // this.disp_published_at = this.$timestampToDate(
+              //     this.content.published_at
+              //   )
+            }
+            this.preStatus = this.content.status
+          } else {
+            this.$router.push('/')
+          }
+        })
+    },
     setStatus() {
+      switch (this.content.status) {
+        case 'draft':
+          this.status_options = [
+            { value: 'draft', text: '下書き', btn: '下書き保存' },
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
+          ]
+          break
+        case 'public':
+        case 'anonym':
+        case 'private':
+          this.status_options = [
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
+            { value: 'private', text: '非公開', btn: '保存して非公開' }
+          ]
+          break
+      }
       this.save_btn = this.status_options.find(
         (el) => el.value === this.content.status
       ).btn
@@ -245,10 +288,9 @@ export default {
             .then((getUrl) => {
               setTimeout(() => {
                 if (this.content.top_img !== null)
-                  this.photo_url.deleted.push(this.content.top_img)
+                  this.imageRemove(this.content.top_img)
                 this.content.top_img = getUrl
                 this.photo_url.added.push(getUrl)
-                this.text_change = true
               }, 500)
             })
           this.resetMsg()
@@ -275,7 +317,10 @@ export default {
     // 記事公開前のチェック
     preSave() {
       // 下書き、非公開から公開する場合のチェック
-      if (['public', 'anonym'].includes(this.content.status)) {
+      if (
+        ['draft', 'private'].includes(this.preStatus) &&
+        ['public', 'anonym'].includes(this.content.status)
+      ) {
         this.showModal = true
       } else {
         this.save()
@@ -284,27 +329,25 @@ export default {
     // 記事の保存
     save() {
       // 初投稿の場合
-      if (['public', 'anonym'].includes(this.content.status)) {
+      if (
+        this.preStatus === 'draft' &&
+        ['public', 'anonym'].includes(this.content.status)
+      ) {
         this.content.published_at = firebase.firestore.FieldValue.serverTimestamp()
       }
-      this.content.created_at = firebase.firestore.FieldValue.serverTimestamp()
       this.content.updated_at = firebase.firestore.FieldValue.serverTimestamp()
-      this.content.user_id = this.$store.state.user.id
       // 匿名投稿の場合
       if (this.content.status === 'anonym') {
         this.content.user_name = '匿名'
         this.content.user_img = ''
         this.content.profile = ''
-      } else {
-        this.content.user_name = this.$store.state.user.name
-        this.content.user_img = this.$store.state.user.photoURL
-        this.content.profile = this.$store.state.user.profile
       }
       firebase
         .firestore()
         .collection('posts')
-        .add(this.content)
-        .then((docRef) => {
+        .doc(this.$route.params.id)
+        .set(this.content)
+        .then(() => {
           this.msg_popup = {
             message: '保存しました。',
             variant: 'success',
@@ -319,10 +362,6 @@ export default {
           })
           this.photo_url.added = []
           this.photo_url.deleted = []
-
-          setTimeout(() => {
-            this.$router.push('/posts/edit/' + docRef.id)
-          }, 500)
         })
         .catch(() => {
           this.msg_popup = {

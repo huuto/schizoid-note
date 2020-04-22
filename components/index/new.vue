@@ -43,31 +43,15 @@ import firebase from '~/plugins/firebase'
 export default {
   data() {
     return {
-      contents: [
-        // {
-        //   post_id: 1,
-        //   title: 'タイトルです',
-        //   introduction: 'コンテンツの冒頭です',
-        //   top_img: '/img/cat-2083492_640.jpg',
-        //   user_name: 'huuto',
-        //   user_img: '',
-        //   updated_at: '2020/04/01'
-        // },
-        // {
-        //   post_id: 2,
-        //   title: 'タイトルです2',
-        //   introduction: 'コンテンツの冒頭です2',
-        //   top_img: 'bbb',
-        //   user_name: 'huuto',
-        //   user_img: '',
-        //   updated_at: '2020/04/02'
-        // }
-      ]
+      contents: []
     }
   },
-  mounted() {
-    this.setContents()
+  created() {
+    if (process.client) {
+      this.setContents()
+    }
   },
+  mounted() {},
   methods: {
     firstContent(index) {
       if (index === 0) {
