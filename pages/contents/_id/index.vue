@@ -62,7 +62,12 @@ export default {
         .doc(this.$route.params.id)
         .get()
         .then((doc) => {
+          if (!['public', 'anonym'].includes(doc.data().status))
+            this.$router.push('/')
           this.content = doc.data()
+        })
+        .error(() => {
+          this.$router.push('/')
         })
     }
   }

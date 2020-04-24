@@ -2,29 +2,52 @@
   <b-container class="my-3">
     <b-container class="bg-white p-3" style="max-width:640px">
       <div style="max-width:400px" class="m-auto">
-        <div class="text-center" style="margin:7vh 0 5vh 0">
+        <div>
+          <b-alert
+            id="msg-popup"
+            dismissible
+            :variant="msg_popup.variant"
+            :show="msg_popup.message"
+          >
+            {{ msg_popup.message }}</b-alert
+          >
+        </div>
+        <div class="text-center" style="margin:3vh 0 5vh 0">
           <h2>アカウント設定</h2>
         </div>
-        <b-form @submit.prevent="edit()">
+        <b-form>
           <b-form-group>
-            <label for="name">ユーザー名</label>
-            <b-form-input
-              id="name"
-              v-model="user.name"
-              type="text"
-              required
-              class="mb-3"
-            ></b-form-input>
+            <div class="text-center my-3" style="position:relative">
+              <label for="photoURL" style="cursor:pointer">
+                <b-avatar :src="user.photoURL" size="5rem"></b-avatar>
+                <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
+                <b-form-file
+                  id="photoURL"
+                  v-model="photoURL"
+                  style="display:none"
+                  @change="editPhotoURL()"
+                ></b-form-file>
+              </label>
+            </div>
             <label for="email">メールアドレス</label>
-            <b-form-input
-              id="email"
-              v-model="user.email"
-              type="email"
-              required
-              class="mb-3"
-            >
-            </b-form-input>
-            <label for="password">新しいパスワード</label>
+            <div class="mb-4 d-flex ml-2">
+              <div>
+                {{ user.email }}
+              </div>
+              <b-link class="ml-auto email"
+                ><i class="fas fa-edit fa-lg"></i
+              ></b-link>
+            </div>
+            <label for="password">パスワード</label>
+            <div class="mb-4 d-flex ml-2">
+              <div>
+                **********
+              </div>
+              <b-link class="ml-auto password"
+                ><i class="fas fa-edit fa-lg"></i
+              ></b-link>
+            </div>
+            <!-- 
             <b-form-input
               id="password"
               v-model="user.password"
@@ -36,6 +59,14 @@
               id="password_confimation"
               v-model="user.password_confimation"
               type="password"
+              class="mb-3"
+            ></b-form-input> -->
+            <label for="name">ユーザー名</label>
+            <b-form-input
+              id="name"
+              v-model="user.name"
+              type="text"
+              required
               class="mb-3"
             ></b-form-input>
             <label for="profile">紹介文</label>
@@ -71,16 +102,19 @@
 
 <script>
 export default {
+  layout: 'user',
   // middleware: 'authRedirect',
   data() {
     return {
       user: {
+        photoURL: '',
         name: '',
-        email: '',
-        password: '',
-        password_confimation: '',
         profile: ''
-      }
+      },
+      password: '',
+      password_confimation: '',
+      email: '',
+      msg_popup: { variant: 'danger', message: null }
     }
   },
   created() {
@@ -90,7 +124,10 @@ export default {
     this.$store.dispatch('authRedirect')
   },
   methods: {
-    edit() {}
+    edit() {},
+    editEmail() {},
+    editPassword() {},
+    editPhotoURL() {}
   }
 }
 </script>
@@ -99,5 +136,18 @@ export default {
 button {
   width: 180px;
   height: 40px;
+}
+a.email,
+.password,
+.photoURL {
+  color: #474747;
+  &:hover {
+    color: #747474;
+  }
+}
+#avatar {
+  position: absolute;
+  right: 9rem;
+  top: -0.5rem;
 }
 </style>

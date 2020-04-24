@@ -1,8 +1,5 @@
 const config = {
   mode: 'universal',
-  /*
-   ** Headers of the page
-   */
   head: {
     title: process.env.npm_package_name || '',
     meta: [
@@ -26,17 +23,8 @@ const config = {
   router: {
     // middleware: 'auth'
   },
-  /*
-   ** Customize the progress-bar color
-   */
   loading: { color: '#fff' },
-  /*
-   ** Global CSS
-   */
   css: [],
-  /*
-   ** Plugins to load before mounting the App
-   */
   plugins: [
     { src: '~plugins/quill.js', ssr: false },
     '~plugins/sanitize-html.js',
@@ -44,26 +32,16 @@ const config = {
     '~plugins/common/resizeImg.js',
     '~plugins/common/timestampToDate.js'
   ],
-  /*
-   ** Nuxt.js dev-modules
-   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module'
   ],
-  /*
-   ** Nuxt.js modules
-   */
   modules: [
     // Doc: https://bootstrap-vue.js.org
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios'
   ],
-  /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
   axios: {},
   // auth: {
   //   strategies: {
@@ -86,13 +64,7 @@ const config = {
   //     home: '/'
   //   }
   // },
-  /*
-   ** Build configuration
-   */
   build: {
-    /*
-     ** You can extend webpack config here
-     */
     extend(config, ctx) {}
   }
 }

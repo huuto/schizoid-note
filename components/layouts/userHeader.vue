@@ -1,10 +1,10 @@
 <template>
   <div>
-    <b-container class="mx-auto">
+    <b-container style="max-width:640px" class="mx-auto">
       <b-nav tabs fill class="top-nav">
-        <b-nav-item href="#">ホーム</b-nav-item>
-        <b-nav-item href="#">新着</b-nav-item>
-        <!-- <b-nav-item href="#">カテゴリ</b-nav-item> -->
+        <b-nav-item class="nav-item" to="/posts/edit">投稿</b-nav-item>
+        <b-nav-item class="nav-item" to="/posts">投稿記事</b-nav-item>
+        <b-nav-item class="nav-item" to="/user/setting">アカウント</b-nav-item>
         <!-- <b-nav-item href="#">タグ</b-nav-item> -->
       </b-nav>
       <div class="divider"></div>
@@ -25,12 +25,16 @@ export default {}
 
 <style lang="scss" scoped>
 .top-nav {
+  max-width: 640px;
   margin-right: auto;
   a {
     color: #474747;
     &:hover {
       color: #000000;
     }
+  }
+  .nav-item {
+    text-align: center;
   }
 }
 .divider {

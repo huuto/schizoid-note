@@ -26,8 +26,8 @@
                 <b-avatar class="" :src="user.photoURL"></b-avatar>
               </template>
               <b-dd-header>{{ user.name }}</b-dd-header>
-              <b-dd-item to="/user/edit">投稿する</b-dd-item>
-              <b-dd-item to="/user/posts">投稿記事</b-dd-item>
+              <b-dd-item to="/posts/edit">投稿する</b-dd-item>
+              <b-dd-item to="/posts">投稿記事</b-dd-item>
               <b-dd-divider></b-dd-divider>
               <!-- <b-dd-item>いいね</b-dd-item> -->
               <!-- <b-dd-item>フォロー</b-dd-item> -->

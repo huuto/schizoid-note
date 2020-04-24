@@ -100,6 +100,7 @@
 import firebase from '~/plugins/firebase'
 
 export default {
+  layout: 'user',
   data() {
     return {
       content: {

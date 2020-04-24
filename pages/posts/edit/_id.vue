@@ -102,6 +102,7 @@
             @text-change="text_change = true"
           />
         </no-ssr>
+        <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
       </div>
     </b-container>
   </div>
@@ -110,6 +111,7 @@
 import firebase from '~/plugins/firebase'
 
 export default {
+  layout: 'user',
   data() {
     return {
       content: {},
@@ -128,7 +130,13 @@ export default {
       showModal: false
     }
   },
-  computed: {},
+  computed: {
+    setCount() {
+      if (!this.content.body) return 0
+      return this.content.body.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
+        .length
+    }
+  },
   created() {
     if (process.client) {
       // eslint-disable-next-line nuxt/no-globals-in-created
