@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import New from '~/components/index/new.vue'
-import Favorite from '~/components/index/favorite.vue'
+import New from '~/components/pages/index/new.vue'
+import Favorite from '~/components/pages/index/favorite.vue'
 export default {
   layout: 'contents',
   components: {

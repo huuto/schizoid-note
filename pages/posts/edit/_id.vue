@@ -1,23 +1,7 @@
 <template>
   <div>
     <b-container class="pt-3" style="max-width:640px">
-      <div>
-        <b-alert
-          id="msg-popup"
-          dismissible
-          :variant="msg_popup.variant"
-          :show="msg_popup.message"
-        >
-          <b-spinner
-            v-if="msg_popup.isSpinner"
-            variant="primary"
-            label="Spinning"
-            small
-            class="mr-3"
-          ></b-spinner>
-          {{ msg_popup.message }}</b-alert
-        >
-      </div>
+      <MsgPopup :msg-popup="msg_popup" />
       <div>
         <b-modal
           id="public-modal"
@@ -109,9 +93,13 @@
 </template>
 <script>
 import firebase from '~/plugins/firebase'
+import MsgPopup from '~/components/common/msgPopup'
 
 export default {
   layout: 'user',
+  components: {
+    MsgPopup
+  },
   data() {
     return {
       content: {},
@@ -412,13 +400,5 @@ img#topImg {
 
 #saveBtn {
   width: 10rem;
-}
-
-#msg-popup {
-  position: fixed;
-  z-index: 100;
-  top: 0px;
-  width: 38rem;
-  max-width: 100%;
 }
 </style>
