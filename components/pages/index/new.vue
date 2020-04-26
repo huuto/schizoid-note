@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mx-auto" style="max-width:640px">
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
@@ -73,18 +73,6 @@ export default {
           })
         })
     }
-    // async setContentsUser() {
-    //   const db = firebase.firestore()
-    //   await this.contents.forEach((content) => {
-    //     db.collection('users')
-    //       .doc(content.user_id)
-    //       .get()
-    //       .then((doc) => {
-    //         content.user_name = doc.data().name
-    //         content.user_img = doc.data().photoURL
-    //       })
-    //   })
-    // }
   }
 }
 </script>

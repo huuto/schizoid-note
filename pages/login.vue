@@ -1,12 +1,12 @@
 <template>
   <b-container class="my-5">
+    <div style="max-width:640px" class="mx-auto">
+      <MsgPopup :msg-popup="msg_popup" />
+    </div>
     <b-container class="bg-white p-5" style="max-width:640px">
       <div style="max-width:400px" class="m-auto">
         <div class="text-center" style="margin:7vh 0 10vh 0">
           <h2>ログイン</h2>
-        </div>
-        <div v-if="user.valid" style="color: #FF6565" class="mb-3">
-          メールアドレスかパスワードが間違っています。
         </div>
         <b-form @submit.prevent="login()">
           <b-form-group class="mb-5">
@@ -56,9 +56,12 @@
 
 <script>
 import firebase from '@/plugins/firebase'
+import MsgPopup from '~/components/common/msgPopup'
 export default {
-  // middleware: 'auth',
   layout: 'prelogin',
+  components: {
+    MsgPopup
+  },
   data() {
     return {
       user: {
@@ -66,7 +69,7 @@ export default {
         password: '',
         valid: false
       },
-      message: ''
+      msg_popup: { message: null, variant: null, isSpinner: false }
     }
   },
   mounted() {
@@ -94,6 +97,17 @@ export default {
         .then((result) => {
           this.$store.dispatch('authStateChanged')
           this.$router.push('/')
+        })
+        .catch((error) => {
+          if (
+            ['auth/wrong-password', 'auth/user-not-found'].includes(error.code)
+          ) {
+            this.msg_popup = {
+              message: 'メールアドレスかパスワードが違います。',
+              variant: 'danger'
+            }
+          }
+          console.log(error)
         })
     },
     async twitterLogin() {

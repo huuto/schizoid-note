@@ -23,7 +23,15 @@
               style="align-items: center"
             >
               <template v-slot:button-content>
-                <b-avatar class="" :src="user.photoURL"></b-avatar>
+                <b-avatar
+                  class=""
+                  :src="user.photoURL"
+                  variant="light"
+                ></b-avatar>
+                <!-- <b-avatar
+                  class=""
+                  src="~/static/img/schizoid-chan.png"
+                ></b-avatar> -->
               </template>
               <b-dd-header>{{ user.name }}</b-dd-header>
               <b-dd-item to="/posts/edit">投稿する</b-dd-item>
@@ -72,7 +80,7 @@ export default {
   methods: {
     logout() {
       this.$store.commit('logout')
-      this.$router.push('/')
+      this.$router.push('/login')
     }
   }
 }

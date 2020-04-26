@@ -47,6 +47,19 @@
               ></b-form-input>
             </div>
           </b-modal>
+          <b-modal
+            id="public-modal-delete"
+            v-model="showDeleteModal"
+            hide-header
+            ok-title="削除"
+            ok-variant="danger"
+            cancel-title="キャンセル"
+            @ok="deleteUser()"
+          >
+            <div>
+              ユーザーを削除します。よろしいですか？
+            </div>
+          </b-modal>
         </div>
         <div class="text-center" style="margin:3vh 0 5vh 0">
           <h2>アカウント設定</h2>
@@ -55,7 +68,11 @@
           <b-form-group>
             <div class="text-center my-3" style="position:relative">
               <label for="photoURL" style="cursor:pointer">
-                <b-avatar :src="user.photoURL" size="5rem"></b-avatar>
+                <b-avatar
+                  :src="user.photoURL"
+                  size="5rem"
+                  variant="light"
+                ></b-avatar>
                 <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
                 <b-form-file
                   id="photoURL"
@@ -112,7 +129,10 @@
             >
           </div>
           <div class="text-center">
-            <b-button variant="link" style="color:#FF6565;" to=""
+            <b-button
+              variant="link"
+              style="color:#FF6565;"
+              @click="showDeleteModal = true"
               >アカウント削除</b-button
             >
           </div>
@@ -142,26 +162,32 @@ export default {
         email: ''
       },
       photoFile: null,
-      msg_popup: { variant: 'danger', message: null, isSpinner: false },
+      msg_popup: { variant: null, message: null, isSpinner: false },
       showEmailModal: false,
       showPasswordModal: false,
+      showDeleteModal: false,
       preEmail: ''
     }
   },
   created() {
-    this.user = this.$store.state.user
+    if (process.client) {
+      this.$store.dispatch('authRedirect')
+    }
   },
   mounted() {
-    this.$store.dispatch('authRedirect')
-    this.preEmail = this.$store.state.user.email
-    this.getProfile()
+    this.user = this.$store.state.user
+    // TODO 強引すぎるので要修正
+    setTimeout(() => {
+      this.getProfile()
+      this.preEmail = this.user.email
+    }, 500)
   },
   methods: {
-    async getProfile() {
-      await firebase
+    getProfile() {
+      firebase
         .firestore()
         .collection('users')
-        .doc(this.$store.state.user.id)
+        .doc(this.user.id)
         .get()
         .then((doc) => {
           this.user.profile = doc.data().profile
@@ -175,13 +201,13 @@ export default {
         })
         .then(() => {
           this.msg_popup = {
-            message: 'ユーザー名と紹介文を変更しました。',
+            message: 'ユーザー名を変更しました。',
             variant: 'success'
           }
         })
         .catch((error) => {
           this.msg_popup = {
-            message: 'ユーザー名と紹介文を変更できませんでした。',
+            message: 'ユーザー名を変更できませんでした。',
             variant: 'danger'
           }
           console.log(error)
@@ -213,7 +239,7 @@ export default {
         .catch((error) => {
           if (error.code === 'auth/requires-recent-login') {
             this.msg_popup = {
-              message: `直近のログインが無かったため、メールアドレスを変更できませんでした。
+              message: `直近のログインが無かったため、メールアドレスを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
               variant: 'danger'
             }
@@ -247,7 +273,7 @@ export default {
           .catch((error) => {
             if (error.code === 'auth/requires-recent-login') {
               this.msg_popup = {
-                message: `直近のログインが無かったため、パスワードを変更できませんでした。
+                message: `直近のログインが無かったため、パスワードを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
                 variant: 'danger'
               }
@@ -329,6 +355,31 @@ export default {
     // ポップアップメッセージのリセット
     resetMsg() {
       this.msg_popup = { message: null, variant: '', isSpinner: false }
+    },
+    deleteUser() {
+      firebase
+        .auth()
+        .currentUser.delete()
+        .then(() => {
+          this.msg_popup = {
+            message: 'ユーザーを削除しました。',
+            variant: 'success'
+          }
+        })
+        .catch((error) => {
+          if (error.code === 'auth/requires-recent-login') {
+            this.msg_popup = {
+              message: `直近のログインが無かったため、ユーザーを削除できませんでした。
+                ログアウト後、再度ログインしてください。`,
+              variant: 'danger'
+            }
+          } else {
+            this.msg_popup = {
+              message: 'ユーザーを削除できませんでした。',
+              variant: 'danger'
+            }
+          }
+        })
     }
   }
 }

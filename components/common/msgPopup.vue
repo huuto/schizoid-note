@@ -13,8 +13,8 @@
         small
         class="mr-3"
       ></b-spinner>
-      {{ msgPopup.message }}</b-alert
-    >
+      <span v-html="msgPopup.message"></span
+    ></b-alert>
   </div>
 </template>
 
