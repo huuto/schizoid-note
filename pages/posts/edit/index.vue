@@ -111,6 +111,7 @@ export default {
         top_img: '',
         body: '',
         status: 'draft',
+        public: false,
         user_id: '',
         user_img: '',
         user_name: '',
@@ -167,6 +168,11 @@ export default {
       this.save_btn = this.status_options.find(
         (el) => el.value === this.content.status
       ).btn
+      if (['public', 'anonym'].includes(this.content.status)) {
+        this.content.public = true
+      } else {
+        this.content.public = false
+      }
       this.text_change = true
     },
     // ポップアップメッセージのリセット
@@ -236,21 +242,21 @@ export default {
                 this.$resizeImg(fileName)
             )
             .getDownloadURL()
+            .then((getUrl) => {
+              setTimeout(() => {
+                if (this.content.top_img)
+                  this.photo_url.deleted.push(this.content.top_img)
+                this.content.top_img = getUrl
+                this.photo_url.added.push(getUrl)
+                this.text_change = true
+              }, 500)
+            })
             .catch(() => {
               this.msg_popup = {
                 message: '画像をアップロードできませんでした。',
                 variant: 'danger',
                 isSpinner: false
               }
-            })
-            .then((getUrl) => {
-              setTimeout(() => {
-                if (this.content.top_img !== null)
-                  this.photo_url.deleted.push(this.content.top_img)
-                this.content.top_img = getUrl
-                this.photo_url.added.push(getUrl)
-                this.text_change = true
-              }, 500)
             })
           this.resetMsg()
         }, 4000)
@@ -293,8 +299,8 @@ export default {
       this.content.user_id = this.$store.state.user.id
       // 匿名投稿の場合
       if (this.content.status === 'anonym') {
-        this.content.user_name = '匿名'
-        this.content.user_img = ''
+        this.content.user_name = '匿名さん'
+        this.content.user_img = '~/static/img/schizoid-chan.png'
         this.content.profile = ''
       } else {
         this.content.user_name = this.$store.state.user.name
@@ -323,14 +329,15 @@ export default {
 
           setTimeout(() => {
             this.$router.push('/posts/edit/' + docRef.id)
-          }, 500)
+          }, 1000)
         })
-        .catch(() => {
+        .catch((error) => {
           this.msg_popup = {
             message: 'エラーが発生しました。',
             variant: 'danger',
             isSpinner: false
           }
+          console.log(error)
         })
     },
     checkWindow(event) {
@@ -349,10 +356,10 @@ h2 {
 }
 
 img#topImg {
-  width: 36rem;
-  height: 18rem;
-  max-width: 100%;
-  max-height: 100%;
+  width: 90vw;
+  height: 66.7vw;
+  max-width: 500px;
+  max-height: 380px;
   object-fit: cover;
 }
 

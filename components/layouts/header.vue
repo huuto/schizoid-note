@@ -12,7 +12,7 @@
               <b-btn
                 variant="outline-primary my-3"
                 class="px-4 mr-3"
-                to="/user/edit"
+                to="/posts/edit"
                 size="sm"
                 >投稿</b-btn
               >

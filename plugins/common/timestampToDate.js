@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 // タイムスタンプを表示用年月日に変換
 Vue.prototype.$timestampToDate = (timestamp) => {
+  if (!timestamp) return null
   const date = timestamp.toDate()
   const y = date.getFullYear()
   const m = ('00' + (date.getMonth() + 1)).slice(-2)

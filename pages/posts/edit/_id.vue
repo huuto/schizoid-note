@@ -156,9 +156,6 @@ export default {
     this.text_change = false
   },
   methods: {
-    // setDispDate(timestamp) {
-    //   if (timestamp !== null) return this.$timestampToDate(timestamp)
-    // },
     async getContent() {
       await firebase
         .firestore()
@@ -208,6 +205,11 @@ export default {
       this.save_btn = this.status_options.find(
         (el) => el.value === this.content.status
       ).btn
+      if (['public', 'anonym'].includes(this.content.status)) {
+        this.content.public = true
+      } else {
+        this.content.public = false
+      }
       this.text_change = true
     },
     // ポップアップメッセージのリセット
@@ -335,17 +337,18 @@ export default {
       ) {
         this.content.published_at = firebase.firestore.FieldValue.serverTimestamp()
       }
-      this.content.updated_at = firebase.firestore.FieldValue.serverTimestamp()
       // 匿名投稿の場合
       if (this.content.status === 'anonym') {
-        this.content.user_name = '匿名'
-        this.content.user_img = ''
+        this.content.user_name = '匿名さん'
+        this.content.user_img = '~/static/img/schizoid-chan.png'
         this.content.profile = ''
       } else {
         this.content.user_name = this.$store.state.user.name
         this.content.user_img = this.$store.state.user.photoURL
         this.content.profile = this.$store.state.user.profile
       }
+      // 更新日
+      this.content.updated_at = firebase.firestore.FieldValue.serverTimestamp()
       firebase
         .firestore()
         .collection('posts')
@@ -391,10 +394,10 @@ h2 {
 }
 
 img#topImg {
-  width: 36rem;
-  height: 18rem;
-  max-width: 100%;
-  max-height: 100%;
+  width: 90vw;
+  height: 66.7vw;
+  max-width: 500px;
+  max-height: 380px;
   object-fit: cover;
 }
 
