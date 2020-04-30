@@ -16,7 +16,8 @@ const config = {
       {
         src: 'https://kit.fontawesome.com/fda42037e8.js',
         crossorigin: 'anonymous'
-      }
+      },
+      'https://cdn.quilljs.com/1.3.5/quill.bubble.css'
     ]
   },
 
@@ -26,9 +27,10 @@ const config = {
   loading: { color: '#fff' },
   css: [],
   plugins: [
-    { src: '~plugins/quill.js', ssr: false },
+    { src: '~plugins/quill.js', mode: 'client' },
     '~plugins/sanitize-html.js',
     '~plugins/firebase.js',
+    { src: '~plugins/browser-image-compression.js', mode: 'client' },
     '~plugins/common/resizeImg.js',
     '~plugins/common/timestampToDate.js'
   ],

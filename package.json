@@ -21,7 +21,8 @@
     "nuxt": "^2.0.0",
     "sanitize-html": "^1.22.1",
     "sass-loader": "^8.0.0",
-    "vue2-editor": "^2.10.2"
+    "vue2-editor": "^2.10.2",
+    "browser-image-compression": "1.0.9"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",

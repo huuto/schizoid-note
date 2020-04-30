@@ -1,23 +1,7 @@
 <template>
   <div>
     <b-container class="pt-3" style="max-width:640px">
-      <div>
-        <b-alert
-          id="msg-popup"
-          dismissible
-          :variant="msg_popup.variant"
-          :show="msg_popup.message"
-        >
-          <b-spinner
-            v-if="msg_popup.isSpinner"
-            variant="primary"
-            label="Spinning"
-            small
-            class="mr-3"
-          ></b-spinner>
-          {{ msg_popup.message }}</b-alert
-        >
-      </div>
+      <MsgPopup :msg-popup="msg_popup" />
       <div>
         <b-modal
           id="public-modal"
@@ -65,7 +49,7 @@
       <div class="mb-5">
         <div class="mb-3"><h2>トップ画像</h2></div>
         <b-form-file
-          v-model="top_img"
+          v-model="uploadFiles.top_img"
           placeholder="画像を選択してください"
           drop-placeholder="ここにドロップできます"
           class="mb-3"
@@ -83,24 +67,36 @@
       <div class="mb-5">
         <div class="mb-3"><h2>本文</h2></div>
         <no-ssr>
-          <vue-editor
-            id="editor"
-            v-model="content.body"
-            use-custom-image-handler
-            @image-added="handleImageAdded"
-            @image-removed="handleImageRemoved"
-            @text-change="text_change = true"
-          />
+          <div id="editorWrap">
+            <vue-editor
+              id="editor"
+              v-model="content.body"
+              use-custom-image-handler
+              :editor-toolbar="customToolbar"
+              :editor-options="editorOptions"
+              @image-added="handleImageAdded"
+              @image-removed="handleImageRemoved"
+              @text-change="text_change = true"
+            />
+            <!-- <Editor :body="content.body" :text-change="text_change" /> -->
+          </div>
         </no-ssr>
       </div>
     </b-container>
   </div>
 </template>
 <script>
+import imageCompression from 'browser-image-compression'
 import firebase from '~/plugins/firebase'
+import MsgPopup from '~/components/common/msgPopup'
+import 'quill/dist/quill.bubble.css'
 
 export default {
   layout: 'user',
+  components: {
+    MsgPopup
+    // Editor
+  },
   data() {
     return {
       content: {
@@ -117,10 +113,26 @@ export default {
         user_name: '',
         profile: ''
       },
+      customToolbar: [
+        ['bold', 'italic', 'underline'], // toggled buttons
+        ['blockquote'],
+
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+
+        [{ size: ['small', false, 'large', 'huge'] }], // custom dropdown
+        [{ header: [3, 4, 5, 6, false] }],
+
+        [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+        [{ align: [] }],
+
+        ['link', 'image']
+      ],
+      editorOptions: {},
       disp_created_at: null,
       disp_updated_at: null,
       disp_published_at: null,
-      top_img: null,
+      // top_img: null,
       msg_popup: { message: null, isSpinner: false, variant: '' },
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
@@ -129,9 +141,11 @@ export default {
       ],
       save_btn: '下書き保存',
       text_change: false,
-      // 追加、削除された画像URL
-      photo_url: { added: [], deleted: [] },
-      showModal: false
+      showModal: false,
+      // body[{file: null, url: ""}]
+      uploadFiles: { top_img: null, body: [] },
+      // storageから削除予定の画像URL
+      deleteFiles: []
     }
   },
   computed: {},
@@ -141,13 +155,8 @@ export default {
       window.addEventListener('beforeunload', this.checkWindow)
     }
   },
-  async beforeDestroy() {
+  beforeDestroy() {
     window.removeEventListener('beforeunload', this.checkWindow)
-    // 追加した画像の削除
-    await this.photo_url.added.forEach((url) => {
-      this.imageRemove(url)
-    })
-    // 削除した画像は削除しない
   },
   beforeRouteLeave(to, from, next) {
     if (this.text_change) {
@@ -161,7 +170,12 @@ export default {
   },
   mounted() {
     this.$store.dispatch('authRedirect')
-    this.text_change = false
+    // スマホの場合は文字選択でツールバーが出る
+    if (window.innerWidth <= 480) {
+      this.editorOptions = {
+        theme: 'bubble'
+      }
+    }
   },
   methods: {
     setStatus() {
@@ -189,84 +203,53 @@ export default {
         }
         return null
       }
-      const fileName = Date.now() + '_' + file.name
-      const ref = firebase.storage().ref()
-      await ref.child('posts/' + fileName).put(file)
-
-      this.msg_popup = {
-        message: '画像を保存中です。',
-        variant: 'info',
-        isSpinner: true
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 500
       }
-      await setTimeout(() => {
-        firebase
-          .storage()
-          .refFromURL(
-            'gs://schizoid-note.appspot.com/posts/' + this.$resizeImg(fileName)
-          )
-          .getDownloadURL()
-          .catch(() => {
-            this.msg_popup = {
-              message: '画像をアップロードできませんでした。',
-              variant: 'danger',
-              isSpinner: false
-            }
-          })
-          .then((getUrl) => {
-            setTimeout(() => {
-              Editor.insertEmbed(cursorLocation, 'image', getUrl)
-              resetUploader()
-              this.photo_url.added.push(getUrl)
-            }, 500)
-          })
-        this.resetMsg()
-      }, 4000)
+      const resizeImg = await imageCompression(file, options)
+      const url = await imageCompression.getDataUrlFromFile(resizeImg)
+      this.uploadFiles.body.push({ file: resizeImg, url })
+      Editor.insertEmbed(cursorLocation, 'image', url)
+      resetUploader()
     },
+
     // トップ画像のアップロード
     async setTopImg() {
-      if (this.top_img !== null) {
-        const fileName = Date.now() + '_' + this.top_img.name
-        const ref = firebase.storage().ref()
-        await ref.child('posts/' + fileName).put(this.top_img)
-
-        this.msg_popup = {
-          message: '画像を保存中です。',
-          variant: 'info',
-          isSpinner: true
+      if (this.uploadFiles.top_img) {
+        // ストレージに保存されていれば削除の準備
+        if (this.content.top_img.startsWith('https')) {
+          this.deleteFiles.push(this.content.top_img)
         }
-        await setTimeout(() => {
-          firebase
-            .storage()
-            .refFromURL(
-              'gs://schizoid-note.appspot.com/posts/' +
-                this.$resizeImg(fileName)
-            )
-            .getDownloadURL()
-            .then((getUrl) => {
-              setTimeout(() => {
-                if (this.content.top_img)
-                  this.photo_url.deleted.push(this.content.top_img)
-                this.content.top_img = getUrl
-                this.photo_url.added.push(getUrl)
-                this.text_change = true
-              }, 500)
-            })
-            .catch(() => {
-              this.msg_popup = {
-                message: '画像をアップロードできませんでした。',
-                variant: 'danger',
-                isSpinner: false
-              }
-            })
-          this.resetMsg()
-        }, 4000)
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 500
+        }
+        const resizeImg = await imageCompression(
+          this.uploadFiles.top_img,
+          options
+        )
+        this.content.top_img = await imageCompression.getDataUrlFromFile(
+          resizeImg
+        )
+        this.uploadFiles.top_img = resizeImg
+        this.text_change = true
       }
     },
-    // テキスト上からの画像削除
+
+    // ストレージにある場合画像削除の準備
     handleImageRemoved(imageURL) {
-      this.photo_url.deleted.push(imageURL)
+      if (imageURL.startsWith('https')) {
+        this.deleteFiles.push(imageURL)
+      } else {
+        // アップロード準備の画像URLを削除
+        this.uploadFiles.body.filter((file) => file.url !== imageURL)
+      }
     },
-    // 本当に画像削除
+    /**
+     * 本当に画像削除
+     * @param {String} imageURL
+     */
     imageRemove(imageURL) {
       firebase
         .storage()
@@ -289,7 +272,12 @@ export default {
       }
     },
     // 記事の保存
-    save() {
+    async save() {
+      this.msg_popup = {
+        message: '保存中です。',
+        variant: 'info',
+        isSpinner: true
+      }
       // 初投稿の場合
       if (['public', 'anonym'].includes(this.content.status)) {
         this.content.published_at = firebase.firestore.FieldValue.serverTimestamp()
@@ -307,10 +295,36 @@ export default {
         this.content.user_img = this.$store.state.user.photoURL
         this.content.profile = this.$store.state.user.profile
       }
+
+      // 画像のアップロード
+      // トップ画像
+      if (this.uploadFiles.top_img) {
+        this.content.top_img = await this.uploadFile(this.uploadFiles.top_img)
+      }
+      // 本文画像
+      this.uploadFiles.body.forEach(async (img) => {
+        const url = await this.uploadFile(img.file)
+        this.content.body.replace(img.url, url)
+      })
+      // 削除画像の削除
+      this.deleteFiles.forEach((url) => {
+        this.imageRemove(url)
+      })
+
+      // 日付を使ったユニークID
+      const postId =
+        Math.random()
+          .toString(16)
+          .slice(-2) +
+        new Date()
+          .getTime()
+          .toString(16)
+          .substring(2)
       firebase
         .firestore()
         .collection('posts')
-        .add(this.content)
+        .doc(postId)
+        .set(this.content)
         .then((docRef) => {
           this.msg_popup = {
             message: '保存しました。',
@@ -320,15 +334,9 @@ export default {
 
           this.text_change = false
           this.preStatus = this.content.status
-          // テキストから削除した画像を本当に削除
-          this.photo_url.deleted.forEach((url) => {
-            this.imageRemove(url)
-          })
-          this.photo_url.added = []
-          this.photo_url.deleted = []
 
           setTimeout(() => {
-            this.$router.push('/posts/edit/' + docRef.id)
+            this.$router.push('/posts/edit/' + postId)
           }, 1000)
         })
         .catch((error) => {
@@ -340,11 +348,27 @@ export default {
           console.log(error)
         })
     },
+    /**
+     * windowの遷移時の確認
+     */
     checkWindow(event) {
       if (this.text_change) {
         event.preventDefault()
         event.returnValue = '変更が保存されていません。本当に移動しますか？'
       }
+    },
+    /**
+     * ファイルのアップロード
+     * @param {File} file
+     * @returns ダウンロードURL
+     */
+    async uploadFile(file) {
+      const fileName = Date.now() + '_' + this.uploadFiles.top_img.name
+      const ref = firebase.storage().ref()
+      await ref.child('posts/' + fileName).put(file)
+      console.log(`uploadfies ${fileName}`)
+      const url = await ref.child('posts/' + fileName).getDownloadURL()
+      return url
     }
   }
 }
@@ -367,11 +391,8 @@ img#topImg {
   width: 10rem;
 }
 
-#msg-popup {
-  position: fixed;
-  z-index: 100;
-  top: 0px;
-  width: 38rem;
-  max-width: 100%;
+#editorWrap {
+  border-top: solid 1px #5d627b;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
 }
 </style>
