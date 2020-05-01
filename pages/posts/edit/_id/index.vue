@@ -16,14 +16,14 @@
       </div>
 
       <div class="mb-3">
-        <b-row class="mb-1">
+        <b-row v-show="disp_created_at" class="mb-1">
           <b-col cols="auto">作成日</b-col><b-col>{{ disp_created_at }}</b-col>
         </b-row>
         <b-row v-show="disp_published_at" class="mb-1">
           <b-col cols="auto">投稿日</b-col
           ><b-col>{{ disp_published_at }}</b-col>
         </b-row>
-        <b-row class="mb-3">
+        <b-row v-show="disp_updated_at" class="mb-3">
           <b-col cols="auto">更新日</b-col><b-col>{{ disp_updated_at }}</b-col>
         </b-row>
         <b-row class="mb-2">
@@ -66,12 +66,16 @@
           accept="image/*"
           @input="setTopImg()"
         ></b-form-file>
-        <div class="text-center">
-          <b-img
-            v-show="content.top_img"
-            id="topImg"
-            :src="content.top_img"
-          ></b-img>
+        <div
+          v-show="content.top_img"
+          class="text-center"
+          style="position:relative;"
+        >
+          <i
+            class="fas fa-times-circle fa-2x delete-top-img"
+            @click="deleteTopImg()"
+          ></i>
+          <b-img id="topImg" :src="content.top_img"></b-img>
         </div>
       </div>
       <div class="mb-5">
@@ -131,7 +135,7 @@ export default {
         [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
 
         [{ size: ['small', false, 'large', 'huge'] }], // custom dropdown
-        [{ header: [3, 4, 5, 6, false] }],
+        [{ header: [3, 4, 5, false] }],
 
         [{ color: [] }, { background: [] }], // dropdown with defaults from theme
         [{ align: [] }],
@@ -151,7 +155,7 @@ export default {
       save_btn: '',
       text_change: false,
       // 変更前のステータス
-      preStatus: '',
+      preStatus: 'draft',
       showModal: false,
       // body[{file: null, url: ""}]
       uploadFiles: { top_img: null, body: [] },
@@ -195,6 +199,8 @@ export default {
         theme: 'bubble'
       }
     }
+    // setStatusでtureになってしまう対策
+    this.text_change = false
   },
   methods: {
     async getContent() {
@@ -302,6 +308,19 @@ export default {
         this.text_change = true
       }
     },
+    /**
+     * トップ画像の削除
+     */
+    deleteTopImg() {
+      // ストレージに保存されていれば削除の準備
+      if (this.content.top_img.startsWith('https')) {
+        this.deleteFiles.push(this.content.top_img)
+      } else {
+        // アップロード準備の画像URLを削除
+        this.uploadFiles.top_img = null
+      }
+      this.content.top_img = ''
+    },
     // ストレージにある場合画像削除の準備
     handleImageRemoved(imageURL) {
       if (imageURL.startsWith('https')) {
@@ -351,7 +370,10 @@ export default {
       const timespamp = firebase.firestore.FieldValue.serverTimestamp()
       this.content.updated_at = timespamp
       // 初公開の場合
-      if (['public', 'anonym'].includes(this.content.status)) {
+      if (
+        this.preStatus === 'draft' &&
+        ['public', 'anonym'].includes(this.content.status)
+      ) {
         this.content.published_at = timespamp
       }
       // 新規の場合
@@ -362,7 +384,7 @@ export default {
       // 匿名投稿の場合
       if (this.content.status === 'anonym') {
         this.content.user_name = '匿名さん'
-        this.content.user_img = '~/static/img/schizoid-chan.png'
+        this.content.user_img = '/img/schizoid-chan.png'
         this.content.profile = ''
       } else {
         this.content.user_name = this.$store.state.user.name
@@ -471,12 +493,31 @@ h2 {
   font-weight: bold;
 }
 
+// .ql-snow .ql-editor h3 {
+//   font-size: 18px !important;
+// }
+// h4 {
+//   font-size: 1.5rem !important;
+// }
+// h5 {
+//   font-size: 1.25rem !important;
+// }
+
 img#topImg {
   width: 90vw;
   height: 66.7vw;
   max-width: 500px;
   max-height: 380px;
   object-fit: cover;
+}
+
+.delete-top-img {
+  position: absolute;
+  right: 10px;
+  color: #747474;
+  &:hover {
+    color: #474747;
+  }
 }
 
 #saveBtn {

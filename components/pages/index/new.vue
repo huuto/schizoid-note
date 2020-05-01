@@ -21,6 +21,7 @@
                   size="2rem"
                   class="mr-3 my-auto"
                   :src="content.user_img"
+                  variant="light"
                 ></b-avatar>
                 <div class="content-footer-text">
                   <div>{{ content.user_name }}</div>
@@ -38,19 +39,29 @@
           </b-card>
         </b-link>
       </div>
+      <infinite-loading
+        v-if="contents.length >= 10 && loading"
+        @infinite="infiniteHandler()"
+      ></infinite-loading>
+      <div v-show="!loading" class="my-5 ml-3">これ以上記事はありません。</div>
     </div>
     <div v-else>
-      投稿を読み込み中です。
+      読み込み中
     </div>
   </div>
 </template>
 
 <script>
+import InfiniteLoading from 'vue-infinite-loading'
 import firebase from '~/plugins/firebase'
 export default {
+  components: {
+    InfiniteLoading
+  },
   data() {
     return {
-      contents: []
+      contents: [],
+      loading: true
     }
   },
   created() {
@@ -68,12 +79,12 @@ export default {
     },
     // 新着10件取得
     async setContents() {
-      console.log('setCOnsole')
+      console.log('get first contents')
       await firebase
         .firestore()
         .collection('posts')
         .where('public', '==', true)
-        .orderBy('created_at', 'desc')
+        .orderBy('published_at', 'desc')
         .limit(10)
         .get()
         .then((querySnapshot) => {
@@ -82,6 +93,36 @@ export default {
             content.id = doc.id
             this.contents.push(content)
           })
+        })
+    },
+    async infiniteHandler() {
+      console.log('add contents')
+      await firebase
+        .firestore()
+        .collection('posts')
+        .where('public', '==', true)
+        .where(
+          'published_at',
+          '<=',
+          this.contents[this.contents.length - 1].published_at
+        )
+        .orderBy('published_at', 'desc')
+        .limit(10)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            const content = doc.data()
+            content.id = doc.id
+            this.contents.push(content)
+          })
+          console.log(querySnapshot.size)
+          if (querySnapshot.size < 10) {
+            // 無限ローディング終了
+            this.loading = false
+          }
+        })
+        .catch((error) => {
+          console.log(error)
         })
     }
   }

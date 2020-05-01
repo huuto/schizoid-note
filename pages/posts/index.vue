@@ -6,36 +6,37 @@
       </div>
       <div v-if="contents.length != 0" class="mx-auto" style="max-width:540px">
         <div v-for="(content, index) in contents" :key="index">
-          <!-- <b-link :to="'/posts/edit/' + content.id"> -->
-          <b-card style="max-width:40rem;" class="mb-3 mx-auto content-card">
-            <b-card-body class="d-flex pb-2">
-              <div class="">
-                <div class="mb-2">{{ content.updated_at }}</div>
-                <b-card-title :title="content.title"> </b-card-title>
-                <!-- <b-card-text>
+          <b-link :to="`/posts/edit/${content.id}`">
+            <b-card style="max-width:640px;" class="mb-3 content-card">
+              <b-card-body class="d-flex pb-2">
+                <div class="">
+                  <div class="mb-1">{{ setStatus(content.status) }}</div>
+                  <div class="mb-2">{{ content.updated_at }}</div>
+                  <b-card-title :title="content.title"> </b-card-title>
+                  <!-- <b-card-text>
                 {{ content.introduction }}
               </b-card-text> -->
+                </div>
+                <b-card-img
+                  v-show="content.top_img"
+                  class="ml-auto"
+                  :src="content.top_img"
+                  right
+                  height="100px"
+                  width="100px"
+                ></b-card-img>
+              </b-card-body>
+              <div class="text-center">
+                <b-button
+                  :id="content.id"
+                  variant="link"
+                  :to="'/posts/edit/' + content.id"
+                  block
+                  >編集</b-button
+                >
               </div>
-              <b-card-img
-                v-show="content.top_img"
-                class="ml-auto"
-                :src="content.top_img"
-                right
-                height="100px"
-                width="100px"
-              ></b-card-img>
-            </b-card-body>
-            <div class="text-center">
-              <b-button
-                :id="content.id"
-                variant="link"
-                :to="'/posts/edit/' + content.id"
-                block
-                >編集</b-button
-              >
-            </div>
-          </b-card>
-          <!-- </b-link> -->
+            </b-card>
+          </b-link>
         </div>
       </div>
       <div v-else>
@@ -88,6 +89,15 @@ export default {
         .catch(() => {
           this.message = '投稿記事が取得できませんでした。'
         })
+    },
+    setStatus(status) {
+      if (status) {
+        return [
+          { value: 'draft', text: '下書き' },
+          { value: 'public', text: '公開' },
+          { value: 'anonym', text: '匿名公開' }
+        ].find((el) => el.value === status).text
+      }
     }
   }
 }
@@ -102,10 +112,28 @@ h4 {
   font-size: 1.2rem;
 }
 
-// a {
-//   text-decoration: none;
-//   color: #474747;
-// }
+label {
+  cursor: pointer;
+  display: inline;
+  .card {
+    &:hover {
+      background-color: rgb(245, 245, 245);
+    }
+  }
+}
+
+a {
+  color: #474747;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.content-card {
+  &:hover {
+    background-color: rgb(245, 245, 245);
+  }
+}
 
 // .content-card {
 //   transition: background-color 0.3s;

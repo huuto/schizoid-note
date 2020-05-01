@@ -143,6 +143,7 @@
 </template>
 
 <script>
+import imageCompression from 'browser-image-compression'
 import firebase from '~/plugins/firebase'
 import MsgPopup from '~/components/common/msgPopup'
 
@@ -299,44 +300,49 @@ export default {
     },
     // トップ画像のアップロード
     async setPhotoURL() {
+      this.msg_popup = {
+        message: '画像を保存中です。',
+        variant: 'info',
+        isSpinner: true
+      }
       if (this.photoFile) {
         const fileName = Date.now() + '_' + this.photoFile.name
-        const ref = firebase.storage().ref()
-        await ref.child('users/' + fileName).put(this.photoFile)
-
-        this.msg_popup = {
-          message: '画像を保存中です。',
-          variant: 'info',
-          isSpinner: true
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 200
         }
-        await setTimeout(() => {
-          firebase
-            .storage()
-            .refFromURL(
-              'gs://schizoid-note.appspot.com/users/' +
-                this.$resizeImg(fileName)
-            )
-            .getDownloadURL()
-            .then((getUrl) => {
-              setTimeout(() => {
-                // 以前の画像を削除
-                if (this.user.photoURL) this.imageRemove(this.user.photoURL)
-                firebase.auth().currentUser.updateProfile({ photoURL: getUrl })
-                this.user.photoURL = getUrl
-                this.msg_popup = {
-                  message: '画像を変更しました。',
-                  variant: 'success'
-                }
-              }, 500)
-            })
-            .catch(() => {
-              this.msg_popup = {
-                message: '画像をアップロードできませんでした。',
-                variant: 'danger'
-              }
-            })
-          this.resetMsg()
-        }, 4000)
+
+        const resizeImg = await imageCompression(this.photoFile, options)
+        const ref = firebase.storage().ref()
+        await ref
+          .child('users/' + fileName)
+          .put(resizeImg)
+          .catch((error) => {
+            this.msg_popup = {
+              message: '画像を変更できませんでした。',
+              variant: 'danger'
+            }
+            console.log(error)
+          })
+        const url = await ref
+          .child('users/' + fileName)
+          .getDownloadURL()
+          .catch((error) => {
+            this.msg_popup = {
+              message: '画像を変更できませんでした。',
+              variant: 'danger'
+            }
+            console.log(error)
+          })
+
+        // 以前の画像を削除
+        if (this.user.photoURL) this.imageRemove(this.user.photoURL)
+        firebase.auth().currentUser.updateProfile({ photoURL: url })
+        this.user.photoURL = url
+        this.msg_popup = {
+          message: '画像を変更しました。',
+          variant: 'success'
+        }
       }
     },
     // 画像削除
