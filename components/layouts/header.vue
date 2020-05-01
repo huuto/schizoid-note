@@ -12,7 +12,7 @@
               <b-btn
                 variant="outline-primary my-3"
                 class="px-4 mr-3"
-                to="/posts/edit"
+                to="/posts/edit/new"
                 size="sm"
                 >投稿</b-btn
               >
@@ -34,7 +34,7 @@
                 ></b-avatar> -->
               </template>
               <b-dd-header>{{ user.name }}</b-dd-header>
-              <b-dd-item to="/posts/edit">投稿する</b-dd-item>
+              <b-dd-item to="/posts/edit/new">投稿する</b-dd-item>
               <b-dd-item to="/posts">投稿記事</b-dd-item>
               <b-dd-divider></b-dd-divider>
               <!-- <b-dd-item>いいね</b-dd-item> -->

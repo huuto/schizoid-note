@@ -16,6 +16,16 @@
       </div>
 
       <div class="mb-3">
+        <b-row class="mb-1">
+          <b-col cols="auto">作成日</b-col><b-col>{{ disp_created_at }}</b-col>
+        </b-row>
+        <b-row v-show="disp_published_at" class="mb-1">
+          <b-col cols="auto">投稿日</b-col
+          ><b-col>{{ disp_published_at }}</b-col>
+        </b-row>
+        <b-row class="mb-3">
+          <b-col cols="auto">更新日</b-col><b-col>{{ disp_updated_at }}</b-col>
+        </b-row>
         <b-row class="mb-2">
           <b-col cols="auto">状態&nbsp;&nbsp;</b-col
           ><b-col style="max-width:150px"
@@ -81,6 +91,7 @@
             <!-- <Editor :body="content.body" :text-change="text_change" /> -->
           </div>
         </no-ssr>
+        <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
       </div>
     </b-container>
   </div>
@@ -95,7 +106,6 @@ export default {
   layout: 'user',
   components: {
     MsgPopup
-    // Editor
   },
   data() {
     return {
@@ -128,19 +138,20 @@ export default {
 
         ['link', 'image']
       ],
-      editorOptions: {},
       disp_created_at: null,
       disp_updated_at: null,
       disp_published_at: null,
-      // top_img: null,
       msg_popup: { message: null, isSpinner: false, variant: '' },
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
         { value: 'public', text: '公開', btn: '保存して公開' },
         { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
       ],
-      save_btn: '下書き保存',
+      editorOptions: {},
+      save_btn: '',
       text_change: false,
+      // 変更前のステータス
+      preStatus: '',
       showModal: false,
       // body[{file: null, url: ""}]
       uploadFiles: { top_img: null, body: [] },
@@ -148,7 +159,13 @@ export default {
       deleteFiles: []
     }
   },
-  computed: {},
+  computed: {
+    setCount() {
+      if (!this.content.body) return 0
+      return this.content.body.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
+        .length
+    }
+  },
   created() {
     if (process.client) {
       // eslint-disable-next-line nuxt/no-globals-in-created
@@ -168,8 +185,10 @@ export default {
       next()
     }
   },
-  mounted() {
+  async mounted() {
     this.$store.dispatch('authRedirect')
+    await this.getContent()
+    this.setStatus()
     // スマホの場合は文字選択でツールバーが出る
     if (window.innerWidth <= 480) {
       this.editorOptions = {
@@ -178,7 +197,55 @@ export default {
     }
   },
   methods: {
+    async getContent() {
+      // 新規でない場合
+      if (this.$route.params.id !== 'new') {
+        await firebase
+          .firestore()
+          .collection('posts')
+          .doc(this.$route.params.id)
+          .get()
+          .then((doc) => {
+            if (doc.data().user_id === this.$store.state.user.id) {
+              this.content = doc.data()
+              this.preStatus = this.content.status
+              if (this.content.created_at)
+                this.disp_created_at = this.$timestampToDate(
+                  this.content.created_at
+                )
+              if (this.content.published_at)
+                this.disp_published_at = this.$timestampToDate(
+                  this.content.published_at
+                )
+              if (this.content.updated_at)
+                this.disp_updated_at = this.$timestampToDate(
+                  this.content.updated_at
+                )
+            } else {
+              this.$router.push('/')
+            }
+          })
+      }
+    },
     setStatus() {
+      switch (this.content.status) {
+        case 'draft':
+          this.status_options = [
+            { value: 'draft', text: '下書き', btn: '下書き保存' },
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
+          ]
+          break
+        case 'public':
+        case 'anonym':
+        case 'private':
+          this.status_options = [
+            { value: 'public', text: '公開', btn: '保存して公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
+            { value: 'private', text: '非公開', btn: '保存して非公開' }
+          ]
+          break
+      }
       this.save_btn = this.status_options.find(
         (el) => el.value === this.content.status
       ).btn
@@ -213,7 +280,6 @@ export default {
       Editor.insertEmbed(cursorLocation, 'image', url)
       resetUploader()
     },
-
     // トップ画像のアップロード
     async setTopImg() {
       if (this.uploadFiles.top_img) {
@@ -236,14 +302,15 @@ export default {
         this.text_change = true
       }
     },
-
     // ストレージにある場合画像削除の準備
     handleImageRemoved(imageURL) {
       if (imageURL.startsWith('https')) {
         this.deleteFiles.push(imageURL)
       } else {
         // アップロード準備の画像URLを削除
-        this.uploadFiles.body.filter((file) => file.url !== imageURL)
+        this.uploadFiles.body = this.uploadFiles.body.filter(
+          (file) => file.url !== imageURL
+        )
       }
     },
     /**
@@ -265,7 +332,10 @@ export default {
     // 記事公開前のチェック
     preSave() {
       // 下書き、非公開から公開する場合のチェック
-      if (['public', 'anonym'].includes(this.content.status)) {
+      if (
+        ['draft', 'private'].includes(this.preStatus) &&
+        ['public', 'anonym'].includes(this.content.status)
+      ) {
         this.showModal = true
       } else {
         this.save()
@@ -278,13 +348,17 @@ export default {
         variant: 'info',
         isSpinner: true
       }
-      // 初投稿の場合
+      const timespamp = firebase.firestore.FieldValue.serverTimestamp()
+      this.content.updated_at = timespamp
+      // 初公開の場合
       if (['public', 'anonym'].includes(this.content.status)) {
-        this.content.published_at = firebase.firestore.FieldValue.serverTimestamp()
+        this.content.published_at = timespamp
       }
-      this.content.created_at = firebase.firestore.FieldValue.serverTimestamp()
-      this.content.updated_at = firebase.firestore.FieldValue.serverTimestamp()
-      this.content.user_id = this.$store.state.user.id
+      // 新規の場合
+      if (this.$route.params.id === 'new') {
+        this.content.created_at = timespamp
+        this.content.user_id = this.$store.state.user.id
+      }
       // 匿名投稿の場合
       if (this.content.status === 'anonym') {
         this.content.user_name = '匿名さん'
@@ -304,53 +378,71 @@ export default {
       // 本文画像
       this.uploadFiles.body.forEach(async (img) => {
         const url = await this.uploadFile(img.file)
-        this.content.body.replace(img.url, url)
+        this.content.body = this.content.body.replace(img.url, url)
       })
       // 削除画像の削除
       this.deleteFiles.forEach((url) => {
         this.imageRemove(url)
       })
+      this.uploadFiles = { top_img: null, body: [] }
+      this.deleteFiles = []
+      if (this.$route.params.id === 'new') {
+        // 日付を使ったユニークID
+        const postId =
+          Math.random()
+            .toString(32)
+            .slice(-2) +
+          Date.now()
+            .toString(32)
+            .substring(1)
+        firebase
+          .firestore()
+          .collection('posts')
+          .doc(postId)
+          .set(this.content)
+          .then((docRef) => {
+            this.msg_popup = this.msgPopupSuccess()
+            this.text_change = false
+            this.preStatus = this.content.status
 
-      // 日付を使ったユニークID
-      const postId =
-        Math.random()
-          .toString(16)
-          .slice(-2) +
-        new Date()
-          .getTime()
-          .toString(16)
-          .substring(2)
-      firebase
-        .firestore()
-        .collection('posts')
-        .doc(postId)
-        .set(this.content)
-        .then((docRef) => {
-          this.msg_popup = {
-            message: '保存しました。',
-            variant: 'success',
-            isSpinner: false
-          }
-
-          this.text_change = false
-          this.preStatus = this.content.status
-
-          setTimeout(() => {
-            this.$router.push('/posts/edit/' + postId)
-          }, 1000)
-        })
-        .catch((error) => {
-          this.msg_popup = {
-            message: 'エラーが発生しました。',
-            variant: 'danger',
-            isSpinner: false
-          }
-          console.log(error)
-        })
+            setTimeout(() => {
+              this.$router.push('/posts/edit/' + postId)
+            }, 1000)
+          })
+          .catch((error) => {
+            this.msg_popup = this.msgPopupError()
+            console.log(error)
+          })
+      } else {
+        firebase
+          .firestore()
+          .collection('posts')
+          .doc(this.$route.params.id)
+          .set(this.content)
+          .then(() => {
+            this.msg_popup = this.msgPopupSuccess()
+            this.text_change = false
+            this.preStatus = this.content.status
+          })
+          .catch(() => {
+            this.msg_popup = this.msgPopupError()
+          })
+      }
     },
-    /**
-     * windowの遷移時の確認
-     */
+    msgPopupSuccess() {
+      return {
+        message: '保存しました。',
+        variant: 'success',
+        isSpinner: false
+      }
+    },
+    msgPopupError() {
+      return {
+        message: 'エラーが発生しました。',
+        variant: 'danger',
+        isSpinner: false
+      }
+    },
     checkWindow(event) {
       if (this.text_change) {
         event.preventDefault()
@@ -363,7 +455,7 @@ export default {
      * @returns ダウンロードURL
      */
     async uploadFile(file) {
-      const fileName = Date.now() + '_' + this.uploadFiles.top_img.name
+      const fileName = Date.now() + '_' + file.name
       const ref = firebase.storage().ref()
       await ref.child('posts/' + fileName).put(file)
       console.log(`uploadfies ${fileName}`)
