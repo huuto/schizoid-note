@@ -46,7 +46,6 @@ const config = {
   ],
   axios: {},
   build: {
-    extend(config, ctx) {},
     babel: {
       presets({ isServer }) {
         return [
@@ -60,6 +59,16 @@ const config = {
           ],
         ]
       },
+    },
+    extend(config, { isDev, isClient, isServer }) {
+      if (isServer) {
+        config.externals = {
+          '@firebase/app': 'commonjs @firebase/app',
+          '@firebase/auth': 'commonjs @firebase/auth',
+          '@firebase/firestore': 'commonjs @firebase/firestore',
+          '@firebase/storage': 'commonjs @firebase/storage',
+        }
+      }
     },
   },
 }
