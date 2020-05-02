@@ -23,9 +23,9 @@ export default {
   props: {
     msgPopup: {
       type: Object,
-      default: null
-    }
-  }
+      default: null,
+    },
+  },
 }
 </script>
 

@@ -1,8 +1,8 @@
 <template>
   <b-container class="my-3">
-    <b-container class="bg-white p-3" style="max-width:640px">
+    <b-container class="bg-white p-3" style="max-width: 640px;">
       <MsgPopup :msg-popup="msg_popup" />
-      <div style="max-width:400px" class="m-auto">
+      <div style="max-width: 400px;" class="m-auto">
         <div>
           <b-modal
             id="public-modal"
@@ -61,13 +61,13 @@
             </div>
           </b-modal>
         </div>
-        <div class="text-center" style="margin:3vh 0 5vh 0">
+        <div class="text-center" style="margin: 3vh 0 5vh 0;">
           <h2>アカウント設定</h2>
         </div>
         <b-form>
           <b-form-group>
-            <div class="text-center my-3" style="position:relative">
-              <label for="photoURL" style="cursor:pointer">
+            <div class="text-center my-3" style="position: relative;">
+              <label for="photoURL" style="cursor: pointer;">
                 <b-avatar
                   :src="user.photoURL"
                   size="5rem"
@@ -77,7 +77,7 @@
                 <b-form-file
                   id="photoURL"
                   v-model="photoFile"
-                  style="display:none"
+                  style="display: none;"
                   @input="editPhotoURL()"
                 ></b-form-file>
               </label>
@@ -122,7 +122,7 @@
           <div class="text-center">
             <b-button
               variant="link"
-              style="color:#707070;"
+              style="color: #707070;"
               to="posts"
               class="mb-5"
               >戻る</b-button
@@ -131,7 +131,7 @@
           <div class="text-center">
             <b-button
               variant="link"
-              style="color:#FF6565;"
+              style="color: #ff6565;"
               @click="showDeleteModal = true"
               >アカウント削除</b-button
             >
@@ -150,7 +150,7 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'user',
   components: {
-    MsgPopup
+    MsgPopup,
   },
   data() {
     return {
@@ -160,14 +160,14 @@ export default {
         profile: '',
         password: '',
         password_confimation: '',
-        email: ''
+        email: '',
       },
       photoFile: null,
       msg_popup: { variant: null, message: null, isSpinner: false },
       showEmailModal: false,
       showPasswordModal: false,
       showDeleteModal: false,
-      preEmail: ''
+      preEmail: '',
     }
   },
   created() {
@@ -198,20 +198,20 @@ export default {
       firebase
         .auth()
         .currentUser.updateProfile({
-          displayName: this.user.name
+          displayName: this.user.name,
         })
         .then(() => {
           this.msg_popup = {
             message: 'ユーザー名を変更しました。',
-            variant: 'success'
+            variant: 'success',
           }
         })
         .catch((error) => {
           this.msg_popup = {
             message: 'ユーザー名を変更できませんでした。',
-            variant: 'danger'
+            variant: 'danger',
           }
-          console.log(error)
+          console.error(error)
         })
       firebase
         .firestore()
@@ -222,9 +222,9 @@ export default {
         .catch((error) => {
           this.msg_popup = {
             message: 'ユーザー名と紹介文を変更できませんでした。',
-            variant: 'danger'
+            variant: 'danger',
           }
-          console.log(error)
+          console.error(error)
         })
     },
     editEmail() {
@@ -234,7 +234,7 @@ export default {
         .then(() => {
           this.msg_popup = {
             message: 'メールアドレスを変更しました。',
-            variant: 'success'
+            variant: 'success',
           }
         })
         .catch((error) => {
@@ -242,16 +242,16 @@ export default {
             this.msg_popup = {
               message: `直近のログインが無かったため、メールアドレスを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger'
+              variant: 'danger',
             }
           } else {
             this.msg_popup = {
               message: 'メールアドレスを変更できませんでした。',
-              variant: 'danger'
+              variant: 'danger',
             }
           }
           this.user.email = this.preEmail
-          console.log(error)
+          console.error(error)
         })
     },
     editPassword() {
@@ -259,7 +259,7 @@ export default {
         this.msg_popup = {
           message:
             '新規パスワードと確認用パスワードが一致しません。もう一度お試しください。',
-          variant: 'danger'
+          variant: 'danger',
         }
       } else {
         firebase
@@ -268,7 +268,7 @@ export default {
           .then(() => {
             this.msg_popup = {
               message: 'パスワードを変更しました。',
-              variant: 'success'
+              variant: 'success',
             }
           })
           .catch((error) => {
@@ -276,20 +276,20 @@ export default {
               this.msg_popup = {
                 message: `直近のログインが無かったため、パスワードを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-                variant: 'danger'
+                variant: 'danger',
               }
             } else if (error.code === 'auth/weak-password') {
               this.msg_popup = {
                 message: `パスワードは6文字以上にしてください。`,
-                variant: 'danger'
+                variant: 'danger',
               }
             } else {
               this.msg_popup = {
                 message: 'パスワードを変更できませんでした。',
-                variant: 'danger'
+                variant: 'danger',
               }
             }
-            console.log(error)
+            console.error(error)
           })
       }
       this.user.password = ''
@@ -303,13 +303,13 @@ export default {
       this.msg_popup = {
         message: '画像を保存中です。',
         variant: 'info',
-        isSpinner: true
+        isSpinner: true,
       }
       if (this.photoFile) {
         const fileName = Date.now() + '_' + this.photoFile.name
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 200
+          maxWidthOrHeight: 200,
         }
 
         const resizeImg = await imageCompression(this.photoFile, options)
@@ -320,9 +320,9 @@ export default {
           .catch((error) => {
             this.msg_popup = {
               message: '画像を変更できませんでした。',
-              variant: 'danger'
+              variant: 'danger',
             }
-            console.log(error)
+            console.error(error)
           })
         const url = await ref
           .child('users/' + fileName)
@@ -330,9 +330,9 @@ export default {
           .catch((error) => {
             this.msg_popup = {
               message: '画像を変更できませんでした。',
-              variant: 'danger'
+              variant: 'danger',
             }
-            console.log(error)
+            console.error(error)
           })
 
         // 以前の画像を削除
@@ -341,7 +341,7 @@ export default {
         this.user.photoURL = url
         this.msg_popup = {
           message: '画像を変更しました。',
-          variant: 'success'
+          variant: 'success',
         }
       }
     },
@@ -355,7 +355,7 @@ export default {
           console.log('image delete ' + imageURL)
         })
         .catch(() => {
-          console.log('error: image delete ' + imageURL)
+          console.error('error: image delete ' + imageURL)
         })
     },
     // ポップアップメッセージのリセット
@@ -369,7 +369,7 @@ export default {
         .then(() => {
           this.msg_popup = {
             message: 'ユーザーを削除しました。',
-            variant: 'success'
+            variant: 'success',
           }
         })
         .catch((error) => {
@@ -377,17 +377,17 @@ export default {
             this.msg_popup = {
               message: `直近のログインが無かったため、ユーザーを削除できませんでした。
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger'
+              variant: 'danger',
             }
           } else {
             this.msg_popup = {
               message: 'ユーザーを削除できませんでした。',
-              variant: 'danger'
+              variant: 'danger',
             }
           }
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

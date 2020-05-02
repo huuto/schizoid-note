@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <b-container style="max-width:940px" class="mx-auto">
+    <b-container style="max-width: 940px;" class="mx-auto">
       <b-row class="">
         <b-col cols="12">
           <New />
@@ -22,9 +22,9 @@ import New from '~/components/pages/index/new.vue'
 export default {
   layout: 'contents',
   components: {
-    New
+    New,
     // Favorite
-  }
+  },
 }
 </script>
 

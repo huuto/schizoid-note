@@ -24,12 +24,12 @@ export default {
   props: {
     body: {
       type: String,
-      default: ''
+      default: '',
     },
     textChange: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -47,16 +47,16 @@ export default {
         [{ font: [] }],
         [{ align: [] }],
 
-        ['clean']
+        ['clean'],
       ],
-      editorOptions: {}
+      editorOptions: {},
     }
   },
   mounted() {
     // スマホの場合は文字選択でツールバーが出る
     if (window.innerWidth <= 480) {
       this.editorOptions = {
-        theme: 'bubble'
+        theme: 'bubble',
       }
     }
   },
@@ -67,7 +67,7 @@ export default {
         this.msg_popup = {
           message: '画像以外はアップロードできません。',
           variant: 'danger',
-          isSpinner: false
+          isSpinner: false,
         }
         return null
       }
@@ -78,7 +78,7 @@ export default {
       this.msg_popup = {
         message: '画像を保存中です。',
         variant: 'info',
-        isSpinner: true
+        isSpinner: true,
       }
       await setTimeout(() => {
         firebase
@@ -91,7 +91,7 @@ export default {
             this.msg_popup = {
               message: '画像をアップロードできませんでした。',
               variant: 'danger',
-              isSpinner: false
+              isSpinner: false,
             }
           })
           .then((getUrl) => {
@@ -116,8 +116,8 @@ export default {
         .catch(() => {
           console.log('error: image delete ' + imageURL)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

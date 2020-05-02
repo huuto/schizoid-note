@@ -2,7 +2,7 @@
   <div>
     <Header />
     <UserHeader class="mb-5" />
-    <nuxt style="min-height:90vh" />
+    <nuxt style="min-height: 90vh;" />
     <Footer />
   </div>
 </template>
@@ -16,14 +16,14 @@ export default {
   components: {
     Header,
     Footer,
-    UserHeader
+    UserHeader,
   },
   data() {
     return {}
   },
   mounted() {
     this.$store.dispatch('authStateChanged')
-  }
+  },
 }
 </script>
 

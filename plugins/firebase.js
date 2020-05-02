@@ -19,7 +19,7 @@ const config = {
   storageBucket: 'schizoid-note.appspot.com',
   messagingSenderId: '366526397368',
   appId: '1:366526397368:web:cecde824119ad1bcb6ed4d',
-  measurementId: 'G-VYD0ZHF4T8'
+  measurementId: 'G-VYD0ZHF4T8',
 }
 
 if (!firebase.apps.length) {

@@ -1,11 +1,11 @@
 <template>
   <b-container class="my-5">
-    <div style="max-width:640px" class="mx-auto">
+    <div style="max-width: 640px;" class="mx-auto">
       <MsgPopup :msg-popup="msg_popup" />
     </div>
-    <b-container class="bg-white p-5" style="max-width:640px">
-      <div style="max-width:400px" class="m-auto">
-        <div class="text-center" style="margin:7vh 0 10vh 0">
+    <b-container class="bg-white p-5" style="max-width: 640px;">
+      <div style="max-width: 400px;" class="m-auto">
+        <div class="text-center" style="margin: 7vh 0 10vh 0;">
           <h2>新規登録</h2>
         </div>
         <b-form @submit.prevent="signup()">
@@ -50,7 +50,7 @@
             >
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color:#707070;" to="login"
+            <b-button variant="link" style="color: #707070;" to="login"
               >ログイン画面に戻る / Twitterでログイン</b-button
             >
           </div>
@@ -66,7 +66,7 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'prelogin',
   components: {
-    MsgPopup
+    MsgPopup,
   },
   data() {
     return {
@@ -74,9 +74,9 @@ export default {
         name: '',
         email: '',
         password: '',
-        password_confimation: ''
+        password_confimation: '',
       },
-      msg_popup: { message: null, variant: null, isSpinner: false }
+      msg_popup: { message: null, variant: null, isSpinner: false },
     }
   },
   methods: {
@@ -94,7 +94,7 @@ export default {
               firebase
                 .auth()
                 .currentUser.updateProfile({
-                  displayName: this.user.name
+                  displayName: this.user.name,
                 })
                 .then(() => {
                   this.$router.push('/')
@@ -104,40 +104,40 @@ export default {
               if (
                 [
                   'auth/credential-already-in-use',
-                  'auth/email-already-in-use'
+                  'auth/email-already-in-use',
                 ].includes(error.code)
               ) {
                 this.msg_popup = {
                   message: `そのメールアドレスはすでに登録されています。`,
-                  variant: 'danger'
+                  variant: 'danger',
                 }
               } else if (error.code === 'auth/weak-password') {
                 this.msg_popup = {
                   message: `パスワードは6文字以上にしてください。`,
-                  variant: 'danger'
+                  variant: 'danger',
                 }
               } else {
                 this.msg_popup = {
                   message: `エラーが発生してユーザーが登録できませんでした。`,
-                  variant: 'danger'
+                  variant: 'danger',
                 }
               }
-              console.log(error)
+              console.error(error)
             })
         } else {
           this.msg_popup = {
             message: 'パスワードと確認用パスワードが一致しません',
-            variant: 'danger'
+            variant: 'danger',
           }
         }
       } else {
         this.msg_popup = {
           message: '必要な項目を入力してください',
-          variant: 'danger'
+          variant: 'danger',
         }
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

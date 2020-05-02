@@ -20,7 +20,7 @@
             <b-nav-item-dropdown
               no-caret
               class="d-flex"
-              style="align-items: center"
+              style="align-items: center;"
             >
               <template v-slot:button-content>
                 <b-avatar
@@ -75,14 +75,14 @@ export default {
   computed: {
     user() {
       return this.$store.state.user
-    }
+    },
   },
   methods: {
     logout() {
       this.$store.commit('logout')
       this.$router.push('/login')
-    }
-  }
+    },
+  },
 }
 </script>
 

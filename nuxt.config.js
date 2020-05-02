@@ -8,17 +8,17 @@ const config = {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || ''
-      }
+        content: process.env.npm_package_description || '',
+      },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
       {
         src: 'https://kit.fontawesome.com/fda42037e8.js',
-        crossorigin: 'anonymous'
+        crossorigin: 'anonymous',
       },
-      'https://cdn.quilljs.com/1.3.5/quill.bubble.css'
-    ]
+      'https://cdn.quilljs.com/1.3.5/quill.bubble.css',
+    ],
   },
 
   router: {
@@ -32,17 +32,17 @@ const config = {
     '~plugins/firebase.js',
     { src: '~plugins/browser-image-compression.js', mode: 'client' },
     '~plugins/common/resizeImg.js',
-    '~plugins/common/timestampToDate.js'
+    '~plugins/common/timestampToDate.js',
   ],
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/eslint-module',
   ],
   modules: [
     // Doc: https://bootstrap-vue.js.org
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
   ],
   axios: {},
   build: {
@@ -55,13 +55,13 @@ const config = {
             // require.resolve('@nuxt/babel-preset-app-edge'), // For nuxt-edge users
             {
               buildTarget: isServer ? 'server' : 'client',
-              corejs: { version: 3 }
-            }
-          ]
+              corejs: { version: 3 },
+            },
+          ],
         ]
-      }
-    }
-  }
+      },
+    },
+  },
 }
 
 if (process.env.NODE_ENV === 'development') {

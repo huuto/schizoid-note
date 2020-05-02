@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto" style="max-width:640px">
+  <div class="mx-auto" style="max-width: 640px;">
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
@@ -10,7 +10,7 @@
             class="content-card mb-3"
             :title="content.title"
             :img-src="firstContent(index)"
-            style="max-width:40rem"
+            style="max-width: 40rem;"
           >
             <b-card-body>
               <b-card-text>
@@ -56,12 +56,12 @@ import InfiniteLoading from 'vue-infinite-loading'
 import firebase from '~/plugins/firebase'
 export default {
   components: {
-    InfiniteLoading
+    InfiniteLoading,
   },
   data() {
     return {
       contents: [],
-      loading: true
+      loading: true,
     }
   },
   created() {
@@ -115,17 +115,16 @@ export default {
             content.id = doc.id
             this.contents.push(content)
           })
-          console.log(querySnapshot.size)
           if (querySnapshot.size < 10) {
             // 無限ローディング終了
             this.loading = false
           }
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container style="max-width:620px" class="pt-5">
+    <b-container style="max-width: 620px;" class="pt-5">
       <div class="mb-5 text-center">
         <b-img class="top-img" :src="content.top_img"></b-img>
       </div>
@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       content: {},
-      authorPosts: []
+      authorPosts: [],
     }
   },
   mounted() {
@@ -78,10 +78,10 @@ export default {
         })
         .catch((error) => {
           this.$router.push('/')
-          console.log(error)
+          console.error(error)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

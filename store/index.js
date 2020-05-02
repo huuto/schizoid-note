@@ -8,8 +8,8 @@ export const state = () => ({
     name: '',
     profile: '',
     photoURL: '',
-    isLogin: false
-  }
+    isLogin: false,
+  },
 })
 
 export const mutations = {
@@ -23,7 +23,7 @@ export const mutations = {
   logout(state) {
     firebase.auth().signOut()
     state.user.isLogin = false
-  }
+  },
 }
 
 export const actions = {
@@ -43,5 +43,5 @@ export const actions = {
         this.$router.push('/')
       }
     })
-  }
+  },
 }

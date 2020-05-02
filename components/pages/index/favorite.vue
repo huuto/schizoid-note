@@ -10,7 +10,7 @@
         :title="content.title"
         :img-src="content.img_src"
         img-height="100"
-        style="max-width:18rem;"
+        style="max-width: 18rem;"
         class="mb-2"
       >
         <b-card-body class="p-2">
@@ -45,7 +45,7 @@ export default {
           img_src: '/img/cat-2083492_640.jpg',
           user_name: 'huuto',
           user_img: '',
-          updateAt: '2020/04/01'
+          updateAt: '2020/04/01',
         },
         {
           title: 'タイトルです2',
@@ -53,11 +53,11 @@ export default {
           img_src: '',
           user_name: 'huuto',
           user_img: '',
-          updateAt: '2020/04/02'
-        }
-      ]
+          updateAt: '2020/04/02',
+        },
+      ],
     }
-  }
+  },
 }
 </script>
 

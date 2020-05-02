@@ -1,11 +1,11 @@
 <template>
   <b-container class="my-5">
-    <div style="max-width:640px" class="mx-auto">
+    <div style="max-width: 640px;" class="mx-auto">
       <MsgPopup :msg-popup="msg_popup" />
     </div>
-    <b-container class="bg-white p-5" style="max-width:640px">
-      <div style="max-width:400px" class="m-auto">
-        <div class="text-center" style="margin:7vh 0 10vh 0">
+    <b-container class="bg-white p-5" style="max-width: 640px;">
+      <div style="max-width: 400px;" class="m-auto">
+        <div class="text-center" style="margin: 7vh 0 10vh 0;">
           <h2>ログイン</h2>
         </div>
         <b-form @submit.prevent="login()">
@@ -37,14 +37,14 @@
           </div>
           <div class="text-center mb-5">
             <b-button
-              style="background-color:#1DA1F2; border-color:#1DA1F2;"
+              style="background-color: #1da1f2; border-color: #1da1f2;"
               @click="twitterLogin()"
               ><i class="fab fa-twitter mr-2" color="white"></i
               >Twitterログイン</b-button
             >
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color:#707070;" to="signup"
+            <b-button variant="link" style="color: #707070;" to="signup"
               >アカウント作成</b-button
             >
           </div>
@@ -60,16 +60,16 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'prelogin',
   components: {
-    MsgPopup
+    MsgPopup,
   },
   data() {
     return {
       user: {
         email: '',
         password: '',
-        valid: false
+        valid: false,
       },
-      msg_popup: { message: null, variant: null, isSpinner: false }
+      msg_popup: { message: null, variant: null, isSpinner: false },
     }
   },
   mounted() {
@@ -104,18 +104,18 @@ export default {
           ) {
             this.msg_popup = {
               message: 'メールアドレスかパスワードが違います。',
-              variant: 'danger'
+              variant: 'danger',
             }
           }
-          console.log(error)
+          console.error(error)
         })
     },
     async twitterLogin() {
       await firebase
         .auth()
         .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
-    }
-  }
+    },
+  },
 }
 </script>
 

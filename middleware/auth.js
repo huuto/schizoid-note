@@ -1,6 +1,6 @@
 // import firebase from '~/plugins/firebase'
 
-export default function({ store }) {
+export default function ({ store }) {
   store.dispatch('authStateChanged')
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {

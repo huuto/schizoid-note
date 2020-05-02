@@ -1,13 +1,17 @@
 <template>
   <div>
-    <b-container class="mb-5" style="max-width:640px">
+    <b-container class="mb-5" style="max-width: 640px;">
       <div class="my-5">
         <div>投稿記事 {{ contents.length }}件</div>
       </div>
-      <div v-if="contents.length != 0" class="mx-auto" style="max-width:540px">
+      <div
+        v-if="contents.length != 0"
+        class="mx-auto"
+        style="max-width: 540px;"
+      >
         <div v-for="(content, index) in contents" :key="index">
           <b-link :to="`/posts/edit/${content.id}`">
-            <b-card style="max-width:640px;" class="mb-3 content-card">
+            <b-card style="max-width: 640px;" class="mb-3 content-card">
               <b-card-body class="d-flex pb-2">
                 <div class="">
                   <div class="mb-1">{{ setStatus(content.status) }}</div>
@@ -55,7 +59,7 @@ export default {
     return {
       contents: [],
       message: '',
-      loadMsg: '読み込み中'
+      loadMsg: '読み込み中',
     }
   },
   created() {
@@ -95,11 +99,11 @@ export default {
         return [
           { value: 'draft', text: '下書き' },
           { value: 'public', text: '公開' },
-          { value: 'anonym', text: '匿名公開' }
+          { value: 'anonym', text: '匿名公開' },
         ].find((el) => el.value === status).text
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

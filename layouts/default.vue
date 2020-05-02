@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header />
-    <nuxt style="min-height:90vh" />
+    <nuxt style="min-height: 90vh;" />
     <Footer />
   </div>
 </template>
@@ -13,14 +13,14 @@ import Footer from '~/components/layouts/footer.vue'
 export default {
   components: {
     Header,
-    Footer
+    Footer,
   },
   data() {
     return {}
   },
   mounted() {
     this.$store.dispatch('authStateChanged')
-  }
+  },
 }
 </script>
 

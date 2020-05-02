@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="pt-3" style="max-width:640px">
+    <b-container class="pt-3" style="max-width: 640px;">
       <MsgPopup :msg-popup="msg_popup" />
       <div>
         <b-modal
@@ -28,7 +28,7 @@
         </b-row>
         <b-row class="mb-2">
           <b-col cols="auto">状態&nbsp;&nbsp;</b-col
-          ><b-col style="max-width:150px"
+          ><b-col style="max-width: 150px;"
             ><b-form-select
               v-model="content.status"
               :options="status_options"
@@ -69,7 +69,7 @@
         <div
           v-show="content.top_img"
           class="text-center"
-          style="position:relative;"
+          style="position: relative;"
         >
           <i
             class="fas fa-times-circle fa-2x delete-top-img"
@@ -109,7 +109,7 @@ import 'quill/dist/quill.bubble.css'
 export default {
   layout: 'user',
   components: {
-    MsgPopup
+    MsgPopup,
   },
   data() {
     return {
@@ -125,7 +125,7 @@ export default {
         user_id: '',
         user_img: '',
         user_name: '',
-        profile: ''
+        profile: '',
       },
       customToolbar: [
         ['bold', 'italic', 'underline'], // toggled buttons
@@ -140,7 +140,7 @@ export default {
         [{ color: [] }, { background: [] }], // dropdown with defaults from theme
         [{ align: [] }],
 
-        ['link', 'image']
+        ['link', 'image'],
       ],
       disp_created_at: null,
       disp_updated_at: null,
@@ -149,7 +149,7 @@ export default {
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
         { value: 'public', text: '公開', btn: '保存して公開' },
-        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
+        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
       ],
       editorOptions: {},
       save_btn: '',
@@ -160,7 +160,7 @@ export default {
       // body[{file: null, url: ""}]
       uploadFiles: { top_img: null, body: [] },
       // storageから削除予定の画像URL
-      deleteFiles: []
+      deleteFiles: [],
     }
   },
   computed: {
@@ -168,7 +168,7 @@ export default {
       if (!this.content.body) return 0
       return this.content.body.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
         .length
-    }
+    },
   },
   created() {
     if (process.client) {
@@ -196,7 +196,7 @@ export default {
     // スマホの場合は文字選択でツールバーが出る
     if (window.innerWidth <= 480) {
       this.editorOptions = {
-        theme: 'bubble'
+        theme: 'bubble',
       }
     }
     // setStatusでtureになってしまう対策
@@ -239,7 +239,7 @@ export default {
           this.status_options = [
             { value: 'draft', text: '下書き', btn: '下書き保存' },
             { value: 'public', text: '公開', btn: '保存して公開' },
-            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
           ]
           break
         case 'public':
@@ -248,7 +248,7 @@ export default {
           this.status_options = [
             { value: 'public', text: '公開', btn: '保存して公開' },
             { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
-            { value: 'private', text: '非公開', btn: '保存して非公開' }
+            { value: 'private', text: '非公開', btn: '保存して非公開' },
           ]
           break
       }
@@ -272,13 +272,13 @@ export default {
         this.msg_popup = {
           message: '画像以外はアップロードできません。',
           variant: 'danger',
-          isSpinner: false
+          isSpinner: false,
         }
         return null
       }
       const options = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 500
+        maxWidthOrHeight: 500,
       }
       const resizeImg = await imageCompression(file, options)
       const url = await imageCompression.getDataUrlFromFile(resizeImg)
@@ -295,7 +295,7 @@ export default {
         }
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 500
+          maxWidthOrHeight: 500,
         }
         const resizeImg = await imageCompression(
           this.uploadFiles.top_img,
@@ -365,7 +365,7 @@ export default {
       this.msg_popup = {
         message: '保存中です。',
         variant: 'info',
-        isSpinner: true
+        isSpinner: true,
       }
       const timespamp = firebase.firestore.FieldValue.serverTimestamp()
       this.content.updated_at = timespamp
@@ -411,12 +411,8 @@ export default {
       if (this.$route.params.id === 'new') {
         // 日付を使ったユニークID
         const postId =
-          Math.random()
-            .toString(32)
-            .slice(-2) +
-          Date.now()
-            .toString(32)
-            .substring(1)
+          Math.random().toString(32).slice(-2) +
+          Date.now().toString(32).substring(1)
         firebase
           .firestore()
           .collection('posts')
@@ -433,7 +429,7 @@ export default {
           })
           .catch((error) => {
             this.msg_popup = this.msgPopupError()
-            console.log(error)
+            console.error(error)
           })
       } else {
         firebase
@@ -455,14 +451,14 @@ export default {
       return {
         message: '保存しました。',
         variant: 'success',
-        isSpinner: false
+        isSpinner: false,
       }
     },
     msgPopupError() {
       return {
         message: 'エラーが発生しました。',
         variant: 'danger',
-        isSpinner: false
+        isSpinner: false,
       }
     },
     checkWindow(event) {
@@ -483,8 +479,8 @@ export default {
       console.log(`uploadfies ${fileName}`)
       const url = await ref.child('posts/' + fileName).getDownloadURL()
       return url
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>
