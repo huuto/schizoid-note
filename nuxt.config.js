@@ -45,29 +45,22 @@ const config = {
     '@nuxtjs/axios'
   ],
   axios: {},
-  // auth: {
-  //   strategies: {
-  //     local: {
-  //       endpoints: {
-  //         login: {
-  //           url: 'api/v1/user_token',
-  //           method: 'post',
-  //           propertyName: 'jwt'
-  //         },
-  //         user: { url: 'api/v1/users', method: 'get', propertyName: 'user' },
-  //         logout: false
-  //       }
-  //     }
-  //   },
-  //   redirect: {
-  //     login: '/login',
-  //     logout: '/login',
-  //     callback: false,
-  //     home: '/'
-  //   }
-  // },
   build: {
-    extend(config, ctx) {}
+    extend(config, ctx) {},
+    babel: {
+      presets({ isServer }) {
+        return [
+          [
+            require.resolve('@nuxt/babel-preset-app'),
+            // require.resolve('@nuxt/babel-preset-app-edge'), // For nuxt-edge users
+            {
+              buildTarget: isServer ? 'server' : 'client',
+              corejs: { version: 3 }
+            }
+          ]
+        ]
+      }
+    }
   }
 }
 
