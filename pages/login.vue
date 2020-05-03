@@ -116,6 +116,11 @@ export default {
         .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
     },
   },
+  head() {
+    return {
+      title: 'ログイン',
+    }
+  },
 }
 </script>
 

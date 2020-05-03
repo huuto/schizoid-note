@@ -203,6 +203,23 @@ export default {
     this.text_change = false
   },
   methods: {
+    /**
+     * タイトルを設定
+     */
+    setTitle() {
+      if (this.$route.params.id === 'new') {
+        return '新規記事'
+      }
+      if (this.content.title === '') {
+        return '記事編集'
+      }
+      return (
+        '記事編集 ' +
+        (this.content.title.length <= 15
+          ? this.content.title
+          : this.content.title.substr(0, 15))
+      )
+    },
     async getContent() {
       // 新規でない場合
       if (this.$route.params.id !== 'new') {
@@ -480,6 +497,11 @@ export default {
       const url = await ref.child('posts/' + fileName).getDownloadURL()
       return url
     },
+  },
+  head() {
+    return {
+      title: this.setTitle(),
+    }
   },
 }
 </script>

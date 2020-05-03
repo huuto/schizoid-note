@@ -138,6 +138,11 @@ export default {
       }
     },
   },
+  head() {
+    return {
+      title: '新規登録',
+    }
+  },
 }
 </script>
 

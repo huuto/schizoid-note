@@ -57,7 +57,9 @@ import firebase from '~/plugins/firebase'
 export default {
   data() {
     return {
-      content: {},
+      content: {
+        title: '',
+      },
       authorPosts: [],
     }
   },
@@ -65,6 +67,14 @@ export default {
     this.getContent()
   },
   methods: {
+    /**
+     * タイトルを設定
+     */
+    setTitle() {
+      return this.content.title.length <= 15
+        ? this.content.title
+        : this.content.title.substr(0, 15)
+    },
     async getContent() {
       await firebase
         .firestore()
@@ -81,6 +91,11 @@ export default {
           console.error(error)
         })
     },
+  },
+  head() {
+    return {
+      title: this.setTitle(),
+    }
   },
 }
 </script>

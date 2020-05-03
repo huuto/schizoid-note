@@ -417,6 +417,11 @@ export default {
         })
     },
   },
+  head() {
+    return {
+      title: 'アカウント設定',
+    }
+  },
 }
 </script>
 

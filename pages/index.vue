@@ -25,6 +25,11 @@ export default {
     New,
     // Favorite
   },
+  head() {
+    return {
+      title: 'ホーム',
+    }
+  },
 }
 </script>
 
