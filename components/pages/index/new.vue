@@ -30,11 +30,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <b-button
-                :id="content.id"
-                :to="`/contents/${content.id}`"
-                style="display:none"
-              ></b-button> -->
             </b-card-body>
           </b-card>
         </b-link>
