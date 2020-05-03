@@ -4,7 +4,7 @@
       id="msg-popup"
       dismissible
       :variant="msgPopup.variant"
-      :show="msgPopup.message"
+      :show="msgPopup.message !== null && msgPopup.message !== ''"
     >
       <b-spinner
         v-if="msgPopup.isSpinner"
@@ -13,8 +13,8 @@
         small
         class="mr-3"
       ></b-spinner>
-      <span v-html="msgPopup.message"></span
-    ></b-alert>
+      <span v-html="msgPopup.message">aaa</span></b-alert
+    >
   </div>
 </template>
 

@@ -37,6 +37,12 @@ const config = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: 'UA-100824002-2',
+      },
+    ],
   ],
   modules: [
     // Doc: https://bootstrap-vue.js.org

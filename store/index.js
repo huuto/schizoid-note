@@ -40,7 +40,7 @@ export const actions = {
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         commit('logout')
-        this.$router.push('/')
+        this.$router.push('/login')
       }
     })
   },

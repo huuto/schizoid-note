@@ -45,21 +45,17 @@
               <b-dd-item @click="logout()">ログアウト</b-dd-item>
             </b-nav-item-dropdown>
           </div>
-          <div v-else>
-            <b-btn
-              variant="outline-secondary"
-              size="sm"
-              class="px-3 my-3 mr-3"
-              to="/login"
-              >ログイン</b-btn
-            >
-            <b-btn
-              variant="outline-primary"
-              class="px-3 my-3 mr-3"
-              to="/signup"
-              size="sm"
-              >新規登録</b-btn
-            >
+          <div v-else class="d-flex prelogin">
+            <div>
+              <b-btn variant="outline-secondary" size="sm" class="" to="/login"
+                >ログイン</b-btn
+              >
+            </div>
+            <div>
+              <b-btn variant="outline-primary" class="" to="/signup" size="sm"
+                >新規登録</b-btn
+              >
+            </div>
           </div>
         </b-navbar-nav>
       </b-container>
@@ -86,4 +82,15 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.prelogin .btn {
+  padding: 4px 16px;
+  margin: 16px 16px 16px 0;
+}
+@media screen and (max-width: 480px) {
+  .prelogin .btn {
+    padding: 4px;
+    margin: 16px 4px 16px 0;
+  }
+}
+</style>
