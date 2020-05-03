@@ -67,38 +67,51 @@
         <b-form>
           <b-form-group>
             <div class="text-center my-3" style="position: relative;">
-              <label for="photoURL" style="cursor: pointer;">
+              <div v-if="!twitterLogin">
+                <label for="photoURL" style="cursor: pointer;">
+                  <b-avatar
+                    :src="user.photoURL"
+                    size="5rem"
+                    variant="light"
+                  ></b-avatar>
+                  <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
+                  <b-form-file
+                    id="photoURL"
+                    v-model="photoFile"
+                    style="display: none;"
+                    @input="editPhotoURL()"
+                  ></b-form-file>
+                </label>
+              </div>
+              <div v-else>
                 <b-avatar
                   :src="user.photoURL"
                   size="5rem"
                   variant="light"
                 ></b-avatar>
-                <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
-                <b-form-file
-                  id="photoURL"
-                  v-model="photoFile"
-                  style="display: none;"
-                  @input="editPhotoURL()"
-                ></b-form-file>
-              </label>
-            </div>
-            <label for="email">メールアドレス</label>
-            <div class="mb-4 d-flex ml-2">
-              <div>
-                {{ user.email }}
               </div>
-              <b-link class="ml-auto email" @click="showEmailModal = true"
-                ><i class="fas fa-edit fa-lg"></i
-              ></b-link>
             </div>
-            <label for="password">パスワード</label>
-            <div class="mb-4 d-flex ml-2">
-              <div>
-                **********
+            <div v-show="!twitterLogin">
+              <label for="email">メールアドレス</label>
+              <div class="mb-4 d-flex ml-2">
+                <div>
+                  {{ user.email }}
+                </div>
+                <b-link class="ml-auto email" @click="showEmailModal = true"
+                  ><i class="fas fa-edit fa-lg"></i
+                ></b-link>
               </div>
-              <b-link class="ml-auto password" @click="showPasswordModal = true"
-                ><i class="fas fa-edit fa-lg"></i
-              ></b-link>
+              <label for="password">パスワード</label>
+              <div class="mb-4 d-flex ml-2">
+                <div>
+                  **********
+                </div>
+                <b-link
+                  class="ml-auto password"
+                  @click="showPasswordModal = true"
+                  ><i class="fas fa-edit fa-lg"></i
+                ></b-link>
+              </div>
             </div>
             <label for="name">ユーザー名</label>
             <b-form-input
@@ -155,6 +168,7 @@ export default {
   data() {
     return {
       user: {
+        id: '',
         photoURL: '',
         name: '',
         profile: '',
@@ -162,8 +176,9 @@ export default {
         password_confimation: '',
         email: '',
       },
+      twitterLogin: false,
       photoFile: null,
-      msg_popup: { variant: null, message: null, isSpinner: false },
+      msg_popup: { message: null, isSpinner: false, variant: '' },
       showEmailModal: false,
       showPasswordModal: false,
       showDeleteModal: false,
@@ -176,14 +191,23 @@ export default {
     }
   },
   mounted() {
-    this.user = this.$store.state.user
-    // TODO 強引すぎるので要修正
-    setTimeout(() => {
-      this.getProfile()
-      this.preEmail = this.user.email
-    }, 500)
+    this.getCurrentUser()
   },
   methods: {
+    /**
+     * Twitterログインを区別するためプロバイダー取得
+     */
+    async getCurrentUser() {
+      const user = await firebase.auth().currentUser
+      this.user.id = user.uid
+      this.user.photoURL = user.photoURL
+      this.user.name = user.displayName
+      this.user.email = user.email
+      user.providerData.forEach((profile) => {
+        if (profile.providerId === 'twitter.com') this.twitterLogin = true
+      })
+      this.getProfile()
+    },
     getProfile() {
       firebase
         .firestore()
@@ -202,13 +226,13 @@ export default {
         })
         .then(() => {
           this.msg_popup = {
-            message: 'ユーザー名を変更しました。',
+            message: 'アカウント設定を変更しました。',
             variant: 'success',
           }
         })
         .catch((error) => {
           this.msg_popup = {
-            message: 'ユーザー名を変更できませんでした。',
+            message: 'アカウント設定を変更できませんでした。',
             variant: 'danger',
           }
           console.error(error)
@@ -218,10 +242,15 @@ export default {
         .collection('users')
         .doc(this.$store.state.user.id)
         .set({ profile: this.user.profile }, { merge: true })
-        .then()
+        .then(() => {
+          this.msg_popup = {
+            message: 'アカウント設定を変更しました。',
+            variant: 'success',
+          }
+        })
         .catch((error) => {
           this.msg_popup = {
-            message: 'ユーザー名と紹介文を変更できませんでした。',
+            message: 'アカウント設定を変更できませんでした。',
             variant: 'danger',
           }
           console.error(error)
