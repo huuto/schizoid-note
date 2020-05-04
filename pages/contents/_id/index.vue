@@ -4,10 +4,10 @@
       <div class="mb-5 text-center">
         <b-img class="top-img" :src="content.top_img"></b-img>
       </div>
-      <div class="mb-4">
+      <div class="mb-3">
         <h2>{{ content.title }}</h2>
       </div>
-      <div class="d-flex mb-4">
+      <div class="d-flex mb-5">
         <b-avatar
           size="2rem"
           class="mr-3 my-auto"
@@ -21,7 +21,7 @@
           <div>{{ disp_published_at }}</div>
         </div>
       </div>
-      <div class="content mb-5" v-html="$sanitize(content.body)"></div>
+      <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
       <div class="divider mb-5"></div>
       <div class="author d-flex mb-5">
         <div>
@@ -123,11 +123,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.content {
-  font-size: 1.2rem;
+#body {
+  font-size: 1rem;
+  h3 {
+    font-weight: bold;
+  }
   img {
     width: 90vw;
-    max-width: 500px;
+    max-width: 590px;
   }
 }
 .divider {
@@ -135,9 +138,9 @@ export default {
 }
 img.top-img {
   width: 90vw;
-  height: 66.7vw;
-  max-width: 500px;
-  max-height: 380px;
-  object-fit: cover; //640x480 0.75 4/3
+  height: 51.25vw;
+  max-width: 590px;
+  max-height: 336px;
+  object-fit: cover; //0.57
 }
 </style>

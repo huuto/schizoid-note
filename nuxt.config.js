@@ -48,7 +48,7 @@ const config = {
 
   router: {},
   loading: { color: '#fff' },
-  css: [],
+  css: [{ src: '~/assets/scss/_index.scss', lang: 'scss' }],
   plugins: [
     { src: '~plugins/quill.js', mode: 'client' },
     '~plugins/sanitize-html.js',
@@ -72,6 +72,10 @@ const config = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
   ],
+  bootstrapVue: {
+    bootstrapCSS: false, // Or `css: false`
+    bootstrapVueCSS: false, // Or `bvCSS: false`
+  },
   axios: {},
   build: {
     babel: {

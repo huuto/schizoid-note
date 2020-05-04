@@ -295,7 +295,7 @@ export default {
       }
       const options = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 500,
+        maxWidthOrHeight: 590,
       }
       const resizeImg = await imageCompression(file, options)
       const url = await imageCompression.getDataUrlFromFile(resizeImg)
@@ -312,7 +312,7 @@ export default {
         }
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 500,
+          maxWidthOrHeight: 590,
         }
         const resizeImg = await imageCompression(
           this.uploadFiles.top_img,
@@ -523,9 +523,9 @@ h2 {
 
 img#topImg {
   width: 90vw;
-  height: 66.7vw;
-  max-width: 500px;
-  max-height: 380px;
+  height: 51.25vw;
+  max-width: 590px;
+  max-height: 336px;
   object-fit: cover;
 }
 
