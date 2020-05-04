@@ -203,6 +203,23 @@ export default {
     this.text_change = false
   },
   methods: {
+    /**
+     * タイトルを設定
+     */
+    setTitle() {
+      if (this.$route.params.id === 'new') {
+        return '新規記事'
+      }
+      if (this.content.title === '') {
+        return '記事編集'
+      }
+      return (
+        '記事編集 ' +
+        (this.content.title.length <= 15
+          ? this.content.title
+          : this.content.title.substr(0, 15))
+      )
+    },
     async getContent() {
       // 新規でない場合
       if (this.$route.params.id !== 'new') {
@@ -278,7 +295,7 @@ export default {
       }
       const options = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 500,
+        maxWidthOrHeight: 590,
       }
       const resizeImg = await imageCompression(file, options)
       const url = await imageCompression.getDataUrlFromFile(resizeImg)
@@ -295,7 +312,7 @@ export default {
         }
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 500,
+          maxWidthOrHeight: 590,
         }
         const resizeImg = await imageCompression(
           this.uploadFiles.top_img,
@@ -481,6 +498,11 @@ export default {
       return url
     },
   },
+  head() {
+    return {
+      title: this.setTitle(),
+    }
+  },
 }
 </script>
 <style lang="scss" scoped>
@@ -501,9 +523,9 @@ h2 {
 
 img#topImg {
   width: 90vw;
-  height: 66.7vw;
-  max-width: 500px;
-  max-height: 380px;
+  height: 51.25vw;
+  max-width: 590px;
+  max-height: 336px;
   object-fit: cover;
 }
 

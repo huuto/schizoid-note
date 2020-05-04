@@ -25,6 +25,12 @@ export default {
     New,
     // Favorite
   },
+  head() {
+    return {
+      titleTemplate: null,
+      title: 'サイト名',
+    }
+  },
 }
 </script>
 

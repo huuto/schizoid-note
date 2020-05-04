@@ -104,6 +104,11 @@ export default {
       }
     },
   },
+  head() {
+    return {
+      title: '投稿一覧',
+    }
+  },
 }
 </script>
 
