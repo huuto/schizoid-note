@@ -27,7 +27,8 @@ export default {
   },
   head() {
     return {
-      title: 'ホーム',
+      titleTemplate: null,
+      title: 'サイト名',
     }
   },
 }

@@ -11,6 +11,30 @@ const config = {
         name: 'description',
         content: process.env.npm_package_description || '',
       },
+      // { hid: 'description', name: 'description', content: this.meta.description },
+      // { hid: 'og:description', property: 'og:description', content: this.meta.description },
+
+      {
+        hid: 'og:site_name',
+        property: 'og:site_name',
+        content: 'スキゾイド帳',
+      },
+      { hid: 'og:type', property: 'og:type', content: 'website' },
+      {
+        hid: 'og:url',
+        property: 'og:url',
+        content: 'https://schizoid-note.com',
+      },
+      { hid: 'og:title', property: 'og:title', content: 'スキゾイド帳' },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://schizoid-note.com/img/schizoid-chan.png',
+      },
+      // { property: 'article:publisher', content: 'FacebookURL' },
+      // { property: 'fb:app_id', content: 'FacebookAppID' },
+      { name: 'twitter:card', content: 'summary' },
+      // { name: 'twitter:site', content: '@Twitter' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
@@ -22,9 +46,7 @@ const config = {
     ],
   },
 
-  router: {
-    // middleware: 'auth'
-  },
+  router: {},
   loading: { color: '#fff' },
   css: [],
   plugins: [
@@ -32,7 +54,6 @@ const config = {
     '~plugins/sanitize-html.js',
     '~plugins/firebase.js',
     { src: '~plugins/browser-image-compression.js', mode: 'client' },
-    '~plugins/common/resizeImg.js',
     '~plugins/common/timestampToDate.js',
   ],
   buildModules: [

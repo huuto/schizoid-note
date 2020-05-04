@@ -18,7 +18,7 @@
           <div>
             {{ content.user_name }}
           </div>
-          <div>{{ $timestampToDate(content.published_at) }}</div>
+          <div>{{ disp_published_at }}</div>
         </div>
       </div>
       <div class="content mb-5" v-html="$sanitize(content.body)"></div>
@@ -54,47 +54,69 @@
 
 <script>
 import firebase from '~/plugins/firebase'
+import Meta from '~/assets/mixins/meta'
 export default {
-  data() {
+  mixins: [Meta],
+  async asyncData({ store, route, router }) {
+    let content = null
+    await firebase
+      .firestore()
+      .collection('posts')
+      .doc(route.params.id)
+      .get()
+      .then((doc) => {
+        if (!['public', 'anonym'].includes(doc.data().status)) router.push('/')
+        content = doc.data()
+      })
+      .catch((error) => {
+        router.push('/')
+        console.error(error)
+      })
     return {
-      content: {
-        title: '',
+      content,
+      meta: {
+        title:
+          content.title.length <= 15
+            ? content.title
+            : content.title.substr(0, 15),
+        type: 'article',
+        url: `https://schizoid-note.com/contents/${route.params.id}`,
+        image: content.top_img,
       },
-      authorPosts: [],
     }
   },
+  data() {
+    return {
+      authorPosts: [],
+      disp_published_at: null,
+    }
+  },
+  created() {},
   mounted() {
-    this.getContent()
+    this.disp_published_at = this.$timestampToDate(
+      new firebase.firestore.Timestamp(
+        this.content.published_at.seconds,
+        this.content.published_at.nanoseconds
+      )
+    )
   },
-  methods: {
-    /**
-     * タイトルを設定
-     */
-    setTitle() {
-      return this.content.title.length <= 15
-        ? this.content.title
-        : this.content.title.substr(0, 15)
-    },
-    async getContent() {
-      await firebase
-        .firestore()
-        .collection('posts')
-        .doc(this.$route.params.id)
-        .get()
-        .then((doc) => {
-          if (!['public', 'anonym'].includes(doc.data().status))
-            this.$router.push('/')
-          this.content = doc.data()
-        })
-        .catch((error) => {
-          this.$router.push('/')
-          console.error(error)
-        })
-    },
-  },
+  methods: {},
   head() {
     return {
-      title: this.setTitle(),
+      title: this.meta.title,
+      meta: [
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: this.meta.url,
+        },
+        { hid: 'og:title', property: 'og:title', content: this.meta.title },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: this.meta.image,
+        },
+      ],
     }
   },
 }
