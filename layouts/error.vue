@@ -1,20 +1,22 @@
 <template>
-  <v-app dark>
+  <b-container class="my-5" style="max-width: 640px;">
     <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
+      404 Not Found<br />
+      このページは存在しません。
     </h1>
     <h1 v-else>
-      {{ otherError }}
+      {{ error.statusCode }}<br />
+      エラーが発生しました。
     </h1>
     <NuxtLink to="/">
-      ホーム
+      ホームに戻る
     </NuxtLink>
-  </v-app>
+  </b-container>
 </template>
 
 <script>
 export default {
-  layout: 'empty',
+  layout: 'default',
   props: {
     error: {
       type: Object,
@@ -23,8 +25,8 @@ export default {
   },
   data() {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred',
+      pageNotFound: 'このページは存在しません',
+      otherError: 'エラーが発生しました',
     }
   },
   head() {
@@ -39,6 +41,9 @@ export default {
 
 <style scoped>
 h1 {
-  font-size: 20px;
+  font-size: 1.75rem;
+}
+a {
+  font-size: 1.25rem;
 }
 </style>
