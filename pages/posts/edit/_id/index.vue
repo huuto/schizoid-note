@@ -436,7 +436,7 @@ export default {
           .doc(postId)
           .set(this.content)
           .then((docRef) => {
-            this.msg_popup = this.msgPopupSuccess()
+            this.msgPopupSuccess()
             this.text_change = false
             this.preStatus = this.content.status
 
@@ -445,7 +445,7 @@ export default {
             }, 1000)
           })
           .catch((error) => {
-            this.msg_popup = this.msgPopupError()
+            this.msgPopupError()
             console.error(error)
           })
       } else {
@@ -455,7 +455,7 @@ export default {
           .doc(this.$route.params.id)
           .set(this.content)
           .then(() => {
-            this.msg_popup = this.msgPopupSuccess()
+            this.msgPopupSuccess()
             this.text_change = false
             this.preStatus = this.content.status
           })
@@ -465,14 +465,21 @@ export default {
       }
     },
     msgPopupSuccess() {
-      return {
+      this.msg_popup = {
         message: '保存しました。',
         variant: 'success',
         isSpinner: false,
       }
+      setTimeout(() => {
+        this.msg_popup = {
+          message: '',
+          variant: '',
+          isSpinner: false,
+        }
+      }, 1000)
     },
     msgPopupError() {
-      return {
+      this.msg_popup = {
         message: 'エラーが発生しました。',
         variant: 'danger',
         isSpinner: false,
