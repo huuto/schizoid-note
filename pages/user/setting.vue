@@ -197,16 +197,17 @@ export default {
     /**
      * Twitterログインを区別するためプロバイダー取得
      */
-    async getCurrentUser() {
-      const user = await firebase.auth().currentUser
-      this.user.id = user.uid
-      this.user.photoURL = user.photoURL
-      this.user.name = user.displayName
-      this.user.email = user.email
-      user.providerData.forEach((profile) => {
-        if (profile.providerId === 'twitter.com') this.twitterLogin = true
+    getCurrentUser() {
+      firebase.auth().onAuthStateChanged((user) => {
+        this.user.id = user.uid
+        this.user.photoURL = user.photoURL
+        this.user.name = user.displayName
+        this.user.email = user.email
+        user.providerData.forEach((profile) => {
+          if (profile.providerId === 'twitter.com') this.twitterLogin = true
+        })
+        this.getProfile()
       })
-      this.getProfile()
     },
     getProfile() {
       firebase
@@ -218,8 +219,8 @@ export default {
           this.user.profile = doc.data().profile
         })
     },
-    edit() {
-      firebase
+    async edit() {
+      await firebase
         .auth()
         .currentUser.updateProfile({
           displayName: this.user.name,
@@ -237,23 +238,28 @@ export default {
           }
           console.error(error)
         })
-      firebase
-        .firestore()
-        .collection('users')
-        .doc(this.$store.state.user.id)
-        .set({ profile: this.user.profile }, { merge: true })
-        .then(() => {
-          this.msg_popup = {
-            message: 'アカウント設定を変更しました。',
-            variant: 'success',
-          }
-        })
-        .catch((error) => {
-          this.msg_popup = {
-            message: 'アカウント設定を変更できませんでした。',
-            variant: 'danger',
-          }
-          console.error(error)
+      // firebase
+      //   .firestore()
+      //   .collection('users')
+      //   .doc(this.$store.state.user.id)
+      //   .set({ profile: this.user.profile }, { merge: true })
+      //   .then(() => {
+      //     this.msg_popup = {
+      //       message: 'アカウント設定を変更しました。',
+      //       variant: 'success',
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     this.msg_popup = {
+      //       message: 'アカウント設定を変更できませんでした。',
+      //       variant: 'danger',
+      //     }
+      //     console.error(error)
+      //   })
+      if (this.msg_popup.variant !== 'danger')
+        this.updateStoreUser({
+          user_name: this.user.name,
+          profile: this.user.profile,
         })
     },
     editEmail() {
@@ -363,14 +369,16 @@ export default {
             }
             console.error(error)
           })
-
-        // 以前の画像を削除
-        if (this.user.photoURL) this.imageRemove(this.user.photoURL)
-        firebase.auth().currentUser.updateProfile({ photoURL: url })
-        this.user.photoURL = url
-        this.msg_popup = {
-          message: '画像を変更しました。',
-          variant: 'success',
+        if (this.msg_popup.variant !== 'danger') {
+          // 以前の画像を削除
+          if (this.user.photoURL) this.imageRemove(this.user.photoURL)
+          firebase.auth().currentUser.updateProfile({ photoURL: url })
+          this.user.photoURL = url
+          this.msg_popup = {
+            message: '画像を変更しました。',
+            variant: 'success',
+          }
+          this.updateStoreUser({ user_img: this.user.photoURL })
         }
       }
     },
@@ -386,6 +394,12 @@ export default {
         .catch(() => {
           console.error('error: image delete ' + imageURL)
         })
+    },
+    /**
+     * ユーザー周り更新時はStoreのユーザーにも反映
+     */
+    updateStoreUser(update) {
+      firebase.firestore().collection('users').doc(this.user.id).update(update)
     },
     // ポップアップメッセージのリセット
     resetMsg() {

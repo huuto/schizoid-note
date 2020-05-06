@@ -97,6 +97,12 @@ export default {
                   displayName: this.user.name,
                 })
                 .then(() => {
+                  const user = firebase.auth().currentUser
+                  firebase.firestore().collection('users').doc(user.uid).set({
+                    user_name: user.displayName,
+                    user_img: user.photoURL,
+                    profile: '',
+                  })
                   this.$router.push('/')
                 })
             })

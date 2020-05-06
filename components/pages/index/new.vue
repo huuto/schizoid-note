@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto" style="max-width: 640px;">
+  <div class="mx-auto" style="max-width: 590px;">
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
@@ -7,29 +7,35 @@
       <div v-for="(content, index) in contents" :key="index">
         <b-link :to="`/contents/${content.id}`">
           <b-card
-            class="content-card mb-3"
-            :title="content.title"
+            class="content-card mb-3 mx-auto"
             :img-src="firstContent(index)"
-            style="max-width: 40rem;"
           >
-            <b-card-body>
-              <b-card-text>
-                {{ content.introduction }}
-              </b-card-text>
-              <div class="d-flex content-footer">
-                <b-avatar
-                  size="2rem"
-                  class="mr-3 my-auto"
-                  :src="content.user_img"
-                  variant="light"
-                ></b-avatar>
-                <div class="content-footer-text">
-                  <div>{{ content.user_name }}</div>
-                  <div>
-                    {{ $timestampToDate(content.published_at) }}
+            <b-card-body class="d-flex">
+              <div>
+                <b-card-title :title="content.title"> </b-card-title>
+                <div>
+                  <div class="d-flex content-footer">
+                    <b-avatar
+                      size="2rem"
+                      class="mr-3 my-auto"
+                      :src="content.user_img"
+                      variant="light"
+                    ></b-avatar>
+                    <div class="content-footer-text">
+                      <div>{{ content.user_name }}</div>
+                      <div>
+                        {{ $timestampToDate(content.published_at) }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <b-card-img
+                v-show="index !== 0"
+                class="ml-auto right-img"
+                :src="content.top_img"
+                right
+              ></b-card-img>
             </b-card-body>
           </b-card>
         </b-link>
@@ -127,9 +133,45 @@ export default {
 h2 {
   font-size: 1.2rem;
 }
+h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
 img {
   object-fit: cover;
   max-height: 20rem;
+}
+.card {
+  width: 90vw;
+  max-width: 550px;
+  img {
+    height: 50vw;
+    max-height: 280px;
+  }
+  img.right-img {
+    height: 17vw;
+    width: 17vw;
+    max-width: 80px;
+    max-height: 80px;
+  }
+  .card-body {
+    padding: 1rem;
+    &.d-flex {
+      padding: 0.75rem;
+    }
+  }
+  @media screen and (max-width: 480px) {
+    h4 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .card-body {
+      padding: 0.5rem;
+      &.d-flex {
+        padding: 0.5rem;
+      }
+    }
+  }
 }
 .content-footer {
   &-text {
