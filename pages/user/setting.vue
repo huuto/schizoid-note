@@ -218,8 +218,8 @@ export default {
           this.user.profile = doc.data().profile
         })
     },
-    edit() {
-      firebase
+    async edit() {
+      await firebase
         .auth()
         .currentUser.updateProfile({
           displayName: this.user.name,
@@ -254,6 +254,11 @@ export default {
             variant: 'danger',
           }
           console.error(error)
+        })
+      if (this.msg_popup.variant !== 'danger')
+        this.updateStoreUser({
+          user_name: this.user.name,
+          profile: this.user.profile,
         })
     },
     editEmail() {
@@ -363,14 +368,16 @@ export default {
             }
             console.error(error)
           })
-
-        // 以前の画像を削除
-        if (this.user.photoURL) this.imageRemove(this.user.photoURL)
-        firebase.auth().currentUser.updateProfile({ photoURL: url })
-        this.user.photoURL = url
-        this.msg_popup = {
-          message: '画像を変更しました。',
-          variant: 'success',
+        if (this.msg_popup.variant !== 'danger') {
+          // 以前の画像を削除
+          if (this.user.photoURL) this.imageRemove(this.user.photoURL)
+          firebase.auth().currentUser.updateProfile({ photoURL: url })
+          this.user.photoURL = url
+          this.msg_popup = {
+            message: '画像を変更しました。',
+            variant: 'success',
+          }
+          this.updateStoreUser({ user_img: this.user.photoURL })
         }
       }
     },
@@ -386,6 +393,12 @@ export default {
         .catch(() => {
           console.error('error: image delete ' + imageURL)
         })
+    },
+    /**
+     * ユーザー周り更新時はStoreのユーザーにも反映
+     */
+    updateStoreUser(update) {
+      firebase.firestore().collection('users').doc(this.user.id).update(update)
     },
     // ポップアップメッセージのリセット
     resetMsg() {

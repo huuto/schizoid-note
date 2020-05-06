@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto" style="max-width: 550px;">
+  <div class="mx-auto" style="max-width: 590px;">
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
@@ -135,6 +135,7 @@ h2 {
 }
 h4 {
   font-size: 1.2rem;
+  font-weight: 700;
 }
 img {
   object-fit: cover;
@@ -142,10 +143,10 @@ img {
 }
 .card {
   width: 90vw;
-  max-width: 500px;
+  max-width: 550px;
   img {
     height: 50vw;
-    max-height: 240px;
+    max-height: 280px;
   }
   img.right-img {
     height: 17vw;
@@ -156,12 +157,13 @@ img {
   .card-body {
     padding: 1rem;
     &.d-flex {
-      padding: 0.5rem;
+      padding: 0.75rem;
     }
   }
   @media screen and (max-width: 480px) {
     h4 {
       font-size: 1rem;
+      font-weight: 700;
     }
     .card-body {
       padding: 0.5rem;
