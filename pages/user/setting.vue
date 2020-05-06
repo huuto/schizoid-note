@@ -197,16 +197,17 @@ export default {
     /**
      * Twitterログインを区別するためプロバイダー取得
      */
-    async getCurrentUser() {
-      const user = await firebase.auth().currentUser
-      this.user.id = user.uid
-      this.user.photoURL = user.photoURL
-      this.user.name = user.displayName
-      this.user.email = user.email
-      user.providerData.forEach((profile) => {
-        if (profile.providerId === 'twitter.com') this.twitterLogin = true
+    getCurrentUser() {
+      firebase.auth().onAuthStateChanged((user) => {
+        this.user.id = user.uid
+        this.user.photoURL = user.photoURL
+        this.user.name = user.displayName
+        this.user.email = user.email
+        user.providerData.forEach((profile) => {
+          if (profile.providerId === 'twitter.com') this.twitterLogin = true
+        })
+        this.getProfile()
       })
-      this.getProfile()
     },
     getProfile() {
       firebase
@@ -237,24 +238,24 @@ export default {
           }
           console.error(error)
         })
-      firebase
-        .firestore()
-        .collection('users')
-        .doc(this.$store.state.user.id)
-        .set({ profile: this.user.profile }, { merge: true })
-        .then(() => {
-          this.msg_popup = {
-            message: 'アカウント設定を変更しました。',
-            variant: 'success',
-          }
-        })
-        .catch((error) => {
-          this.msg_popup = {
-            message: 'アカウント設定を変更できませんでした。',
-            variant: 'danger',
-          }
-          console.error(error)
-        })
+      // firebase
+      //   .firestore()
+      //   .collection('users')
+      //   .doc(this.$store.state.user.id)
+      //   .set({ profile: this.user.profile }, { merge: true })
+      //   .then(() => {
+      //     this.msg_popup = {
+      //       message: 'アカウント設定を変更しました。',
+      //       variant: 'success',
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     this.msg_popup = {
+      //       message: 'アカウント設定を変更できませんでした。',
+      //       variant: 'danger',
+      //     }
+      //     console.error(error)
+      //   })
       if (this.msg_popup.variant !== 'danger')
         this.updateStoreUser({
           user_name: this.user.name,

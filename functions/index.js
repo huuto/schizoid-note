@@ -17,14 +17,15 @@ exports.updateUser = functions.firestore
     snap.forEach((doc) => {
       // 匿名投稿でなければ
       if (doc.data().status !== 'anonym') {
-        posts.push(doc.data())
+        posts.push(doc)
       }
     })
     posts.forEach((post) => {
+      const user = change.after.data()
       db.collection('posts').doc(post.id).update({
-        profile: post.profile,
-        user_name: post.user_name,
-        user_img: post.user_img,
+        profile: user.profile,
+        user_name: user.user_name,
+        user_img: user.user_img,
       })
     })
   })

@@ -76,18 +76,25 @@ export default {
     // twitterのリダイレクト認証で戻ってきた場合、認証情報をユーザーに反映しホームに遷移
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        this.msg_popup = {
+          message: 'ホーム画面に移動します。<br />しばらくお待ちください。',
+          variant: 'info',
+          isSpinner: 'true',
+        }
         this.$store.dispatch('authStateChanged')
+        const user = firebase.auth().currentUser
+        firebase.firestore().collection('users').doc(user.uid).set(
+          {
+            user_name: user.displayName,
+            user_img: user.photoURL,
+          },
+          { merge: true }
+        )
         this.$router.push('/')
       } else {
         this.user.valid = false
       }
     })
-    // firebase
-    //   .auth()
-    //   .getRedirectResult()
-    //   .then((result) => {
-    //     this.$store.state.user = result.user
-    //   })
   },
   methods: {
     login() {
