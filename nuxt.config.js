@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const config = {
   mode: 'universal',
   head: {
@@ -71,6 +73,7 @@ const config = {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/dotenv',
   ],
   bootstrapVue: {
     bootstrapCSS: false, // Or `css: false`
@@ -106,8 +109,6 @@ const config = {
 }
 
 if (process.env.NODE_ENV === 'development') {
-  config.buildModules.push('@nuxtjs/eslint-module')
-  config.modules.push('@nuxtjs/dotenv')
   config.modules.push('@nuxtjs/proxy')
   config.axios = { proxy: true }
   config.proxy = { '/api': 'http://localhost:3333' }
