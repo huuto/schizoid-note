@@ -1,5 +1,16 @@
 {
     "version": 2,
+    "build":{
+      "env": {
+        "VUE_APP_apiKey":"@api-key",
+        "VUE_APP_authDomain":"@auth-domain",
+        "VUE_APP_databaseURL":"@database-url",
+        "VUE_APP_projectId":"@project-id",
+        "VUE_APP_storageBucket":"@storage-bucket",
+        "VUE_APP_messagingSenderId":"@messaging-sender-id",
+        "VUE_APP_appId":"@app-id"
+      }
+    },
     "builds": [
       {
         "src": "nuxt.config.js",

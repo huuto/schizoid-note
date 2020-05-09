@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-container style="max-width: 620px;" class="pt-5">
-      <div class="mb-5 text-center">
+      <div v-show="content.top_img" class="mb-5 text-center">
         <b-img class="top-img" :src="content.top_img"></b-img>
       </div>
       <div class="mb-3">
@@ -93,12 +93,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.disp_published_at = this.$timestampToDate(
-      new firebase.firestore.Timestamp(
-        this.content.published_at.seconds,
-        this.content.published_at.nanoseconds
-      )
-    )
+    this.disp_published_at = this.$timestampToDate(this.content.published_at)
   },
   methods: {},
   head() {
@@ -123,16 +118,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#body {
-  font-size: 1rem;
-  h3 {
-    font-weight: bold;
-  }
-  img {
-    width: 90vw;
-    max-width: 590px;
-  }
-}
+// 本文画像、h3~h5のcssは_index.scss
 .divider {
   border-bottom: thin solid #707070;
 }

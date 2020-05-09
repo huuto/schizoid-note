@@ -98,6 +98,51 @@
         <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
       </div>
     </b-container>
+    <b-container fluid style="background-color: #f1f1f3;">
+      <b-row class="justify-content-center">
+        <b-col
+          id="preview"
+          class="my-5"
+          style="max-width: 640px; background-color: white;"
+        >
+          <div class="mt-4 mb-5">
+            <h2 class="pr-2" style="display: inline;">プレビュー</h2>
+            <i
+              id="preview-icon"
+              class="fas fa-exclamation-circle fa-lg"
+              style="color: #747474;"
+            ></i>
+            <b-tooltip target="preview-icon">
+              本文の画像は保存すると表示されます。
+            </b-tooltip>
+          </div>
+          <div class="mx-auto" style="max-width: 590px;">
+            <div v-show="content.top_img" class="mb-5 text-center">
+              <b-img class="top-img" :src="content.top_img"></b-img>
+            </div>
+            <div class="mb-3">
+              <h2 id="title">{{ content.title }}</h2>
+            </div>
+            <div class="d-flex mb-5">
+              <b-avatar
+                size="2rem"
+                class="mr-3 my-auto"
+                :src="content.user_img"
+                variant="light"
+              ></b-avatar>
+              <div class="">
+                <div>
+                  {{ content.user_name }}
+                </div>
+                <div v-if="disp_published_at">{{ disp_published_at }}</div>
+              </div>
+            </div>
+            <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
+            <div class="divider mb-5"></div>
+          </div>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 <script>
@@ -174,6 +219,13 @@ export default {
     if (process.client) {
       // eslint-disable-next-line nuxt/no-globals-in-created
       window.addEventListener('beforeunload', this.checkWindow)
+      // スマホの場合は文字選択でツールバーが出る
+      // eslint-disable-next-line nuxt/no-globals-in-created
+      if (window.innerWidth <= 480) {
+        this.editorOptions = {
+          theme: 'bubble',
+        }
+      }
     }
   },
   beforeDestroy() {
@@ -193,12 +245,6 @@ export default {
     this.$store.dispatch('authRedirect')
     await this.getContent()
     this.setStatus()
-    // スマホの場合は文字選択でツールバーが出る
-    if (window.innerWidth <= 480) {
-      this.editorOptions = {
-        theme: 'bubble',
-      }
-    }
     // setStatusでtureになってしまう対策
     this.text_change = false
   },
@@ -520,16 +566,6 @@ h2 {
   font-weight: bold;
 }
 
-// .ql-snow .ql-editor h3 {
-//   font-size: 18px !important;
-// }
-// h4 {
-//   font-size: 1.5rem !important;
-// }
-// h5 {
-//   font-size: 1.25rem !important;
-// }
-
 img#topImg {
   width: 90vw;
   height: 51.25vw;
@@ -554,5 +590,23 @@ img#topImg {
 #editorWrap {
   border-top: solid 1px #5d627b;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
+}
+
+h2#title {
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+// 本文画像、h3~h5のcssは_index.scss
+
+.divider {
+  border-bottom: thin solid #707070;
+}
+img.top-img {
+  width: 90vw;
+  height: 51.25vw;
+  max-width: 590px;
+  max-height: 336px;
+  object-fit: cover; //0.57
 }
 </style>

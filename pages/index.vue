@@ -28,7 +28,7 @@ export default {
   head() {
     return {
       titleTemplate: null,
-      title: 'サイト名',
+      title: 'スキゾイド帳',
     }
   },
 }
