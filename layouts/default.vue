@@ -20,6 +20,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('authStateChanged')
+    console.log(process.env.VUE_APP_apiKey)
   },
 }
 </script>
