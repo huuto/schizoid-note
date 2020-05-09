@@ -19,6 +19,7 @@
             </div>
             <b-nav-item-dropdown
               no-caret
+              right
               class="d-flex"
               style="align-items: center;"
             >

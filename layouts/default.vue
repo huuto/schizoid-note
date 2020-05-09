@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="min-height: 100vh;">
     <Header />
-    <nuxt style="min-height: 90vh;" />
+    <nuxt />
     <Footer />
   </div>
 </template>
