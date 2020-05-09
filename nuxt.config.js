@@ -47,6 +47,15 @@ const config = {
       'https://cdn.quilljs.com/1.3.5/quill.bubble.css',
     ],
   },
+  env: {
+    VUE_APP_apiKey: process.env.VUE_APP_apiKey,
+    VUE_APP_authDomain: process.env.VUE_APP_authDomain,
+    VUE_APP_databaseURL: process.env.VUE_APP_databaseURL,
+    VUE_APP_projectId: process.env.VUE_APP_projectId,
+    VUE_APP_storageBucket: process.env.VUE_APP_storageBucket,
+    VUE_APP_messagingSenderId: process.env.VUE_APP_messagingSenderId,
+    VUE_APP_appId: process.env.VUE_APP_appId,
+  },
 
   router: {},
   loading: { color: '#fff' },
