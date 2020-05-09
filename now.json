@@ -1,5 +1,14 @@
 {
     "version": 2,
+    "env":{
+      "VUE_APP_apiKey":"AIzaSyDpl8qxqm-h9JPp0_BIN_SgLIUMv1qOmMg",
+      "VUE_APP_authDomain":"schizoid-note.firebaseapp.com",
+      "VUE_APP_databaseURL":"https://schizoid-note.firebaseio.com",
+      "VUE_APP_projectId":"schizoid-note",
+      "VUE_APP_storageBucket":"schizoid-note.appspot.com",
+      "VUE_APP_messagingSenderId":"366526397368",
+      "VUE_APP_appId":"1:366526397368:web:cecde824119ad1bcb6ed4d",
+    },
     "builds": [
       {
         "src": "nuxt.config.js",
