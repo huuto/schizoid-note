@@ -18,10 +18,27 @@
           <div>
             {{ content.user_name }}
           </div>
-          <div>{{ disp_published_at }}</div>
+          <div>{{ $timestampToDate(content.published_at) }}</div>
         </div>
       </div>
       <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
+      <div class="mt-4 mb-3">
+        <span v-if="isLiked" id="liked" class="p-2" @click="likes()">
+          <i class="fas fa-heart fa-lg"></i>
+          {{ content.likes || 0 }}
+        </span>
+        <span v-else id="like" class="p-2" @click="likes()">
+          <i class="far fa-heart fa-lg"></i>
+          {{ content.likes || 0 }}
+        </span>
+      </div>
+      <b-tooltip
+        :disabled="$store.state.user.isLogin"
+        triggers="click"
+        target="like"
+        variant="info"
+        >ログインするといいねできます</b-tooltip
+      >
       <div class="divider mb-5"></div>
       <div class="author d-flex mb-5">
         <div>
@@ -57,7 +74,7 @@ import firebase from '~/plugins/firebase'
 import Meta from '~/assets/mixins/meta'
 export default {
   mixins: [Meta],
-  async asyncData({ store, route, router }) {
+  async asyncData({ store, route, redirect }) {
     let content = null
     await firebase
       .firestore()
@@ -65,20 +82,20 @@ export default {
       .doc(route.params.id)
       .get()
       .then((doc) => {
-        if (!['public', 'anonym'].includes(doc.data().status)) router.push('/')
+        if (!doc.data().public) redirect('/')
         content = doc.data()
       })
       .catch((error) => {
-        router.push('/')
         console.error(error)
+        redirect('/')
       })
     return {
       content,
       meta: {
         title:
-          content.title.length <= 15
+          content.title.length <= 30
             ? content.title
-            : content.title.substr(0, 15),
+            : content.title.substr(0, 30),
         type: 'article',
         url: `https://schizoid-note.com/contents/${route.params.id}`,
         image: content.top_img,
@@ -87,15 +104,57 @@ export default {
   },
   data() {
     return {
+      content: {
+        likes: 0,
+      },
       authorPosts: [],
-      disp_published_at: null,
+      isLiked: false,
     }
   },
-  created() {},
-  mounted() {
-    this.disp_published_at = this.$timestampToDate(this.content.published_at)
+  computed: {
+    user() {
+      console.log(this.$store.state.user)
+      return this.$store.state.user
+    },
   },
-  methods: {},
+  watch: {
+    setLike() {
+      if (this.user.likes.includes(this.$route.params.id)) this.isLiked = true
+      console.log('do')
+    },
+  },
+  created() {},
+  mounted() {},
+  methods: {
+    /**
+     * いいねボタン押下
+     */
+    async likes() {
+      if (!this.$store.state.user.isLogin) return
+      // いいねを解除
+      if (this.isLiked) {
+        const docs = await firebase
+          .firestore()
+          .collection('likes')
+          .where('post_id', '==', this.$route.params.id)
+          .where('user_id', '==', this.$store.state.user.id)
+          .get()
+        docs.forEach((doc) => {
+          firebase.firestore().collection('likes').doc(doc.id).delete()
+        })
+        this.content.likes--
+        // いいねを押す
+      } else {
+        firebase.firestore().collection('likes').add({
+          post_id: this.$route.params.id,
+          user_id: this.$store.state.user.id,
+          created_at: firebase.firestore.Timestamp.now(),
+        })
+        this.content.likes++
+      }
+      this.isLiked = !this.isLiked
+    },
+  },
   head() {
     return {
       title: this.meta.title,
@@ -128,5 +187,18 @@ img.top-img {
   max-width: 590px;
   max-height: 336px;
   object-fit: cover; //0.57
+}
+
+#liked {
+  cursor: pointer;
+  color: $like-color;
+}
+
+#like {
+  cursor: pointer;
+  color: $icon-color;
+  &:hover {
+    color: $like-color;
+  }
 }
 </style>

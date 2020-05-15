@@ -22,7 +22,7 @@ export default {
     return {}
   },
   mounted() {
-    this.$store.dispatch('authStateChanged')
+    this.$store.dispatch('user/authStateChanged')
     console.log(process.env.VUE_APP_apiKey)
   },
 }

@@ -19,7 +19,7 @@ export default {
     return {}
   },
   mounted() {
-    this.$store.dispatch('authStateChanged')
+    this.$store.dispatch('user/authStateChanged')
   },
 }
 </script>

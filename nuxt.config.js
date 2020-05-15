@@ -1,6 +1,7 @@
+import pkg from './package'
 require('dotenv').config()
 
-const config = {
+export default {
   mode: 'universal',
   head: {
     // title: process.env.npm_package_name || '',
@@ -83,10 +84,14 @@ const config = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/dotenv',
+    '@nuxtjs/style-resources',
   ],
   bootstrapVue: {
     bootstrapCSS: false, // Or `css: false`
     bootstrapVueCSS: false, // Or `bvCSS: false`
+  },
+  styleResources: {
+    scss: ['~/assets/scss/_common.scss'],
   },
   axios: {},
   build: {
@@ -116,12 +121,3 @@ const config = {
     },
   },
 }
-
-if (process.env.NODE_ENV === 'development') {
-  config.modules.push('@nuxtjs/proxy')
-  config.axios = { proxy: true }
-  config.proxy = { '/api': 'http://localhost:3333' }
-  config.server = { port: 3333 }
-}
-
-export default config

@@ -20,6 +20,15 @@
                   <!-- <b-card-text>
                 {{ content.introduction }}
               </b-card-text> -->
+                  <div
+                    v-show="
+                      ['public', 'anonym', 'private'].includes(content.status)
+                    "
+                    class="mt-1 like"
+                  >
+                    <i class="far fa-heart"></i>
+                    {{ content.likes || 0 }}
+                  </div>
                 </div>
                 <b-card-img
                   v-show="content.top_img"
@@ -100,6 +109,7 @@ export default {
           { value: 'draft', text: '下書き' },
           { value: 'public', text: '公開' },
           { value: 'anonym', text: '匿名公開' },
+          { value: 'private', text: '非公開' },
         ].find((el) => el.value === status).text
       }
     },
@@ -142,6 +152,10 @@ a {
   &:hover {
     background-color: rgb(245, 245, 245);
   }
+}
+
+.like {
+  color: $like-color;
 }
 
 // .content-card {
