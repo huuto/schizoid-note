@@ -187,7 +187,7 @@ export default {
   },
   created() {
     if (process.client) {
-      this.$store.dispatch('authRedirect')
+      this.$store.dispatch('user/authRedirect')
     }
   },
   mounted() {
@@ -445,11 +445,11 @@ button {
   height: 40px;
 }
 a.email,
-.password,
+a.password,
 .photoURL {
-  color: #747474;
+  color: $icon-color;
   &:hover {
-    color: #474747;
+    color: $icon-color-hover;
   }
 }
 #avatar {

@@ -102,7 +102,7 @@ export default {
         .auth()
         .signInWithEmailAndPassword(this.user.email, this.user.password)
         .then((result) => {
-          this.$store.dispatch('authStateChanged')
+          this.$store.dispatch('user/authStateChanged')
           this.$router.push('/')
         })
         .catch((error) => {

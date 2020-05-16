@@ -16,15 +16,17 @@
       </div>
 
       <div class="mb-3">
-        <b-row v-show="disp_created_at" class="mb-1">
-          <b-col cols="auto">作成日</b-col><b-col>{{ disp_created_at }}</b-col>
+        <b-row v-show="content.created_at" class="mb-1">
+          <b-col cols="auto">作成日</b-col
+          ><b-col>{{ $timestampToDate(content.created_at) }}</b-col>
         </b-row>
-        <b-row v-show="disp_published_at" class="mb-1">
-          <b-col cols="auto">投稿日</b-col
-          ><b-col>{{ disp_published_at }}</b-col>
+        <b-row v-show="content.published_at" class="mb-1">
+          <b-col cols="auto">公開日</b-col
+          ><b-col>{{ $timestampToDate(content.published_at) }}</b-col>
         </b-row>
-        <b-row v-show="disp_updated_at" class="mb-3">
-          <b-col cols="auto">更新日</b-col><b-col>{{ disp_updated_at }}</b-col>
+        <b-row v-show="content.updated_at" class="mb-3">
+          <b-col cols="auto">更新日</b-col
+          ><b-col>{{ $timestampToDate(content.updated_at) }}</b-col>
         </b-row>
         <b-row class="mb-2">
           <b-col cols="auto">状態&nbsp;&nbsp;</b-col
@@ -134,7 +136,9 @@
                 <div>
                   {{ content.user_name }}
                 </div>
-                <div v-if="disp_published_at">{{ disp_published_at }}</div>
+                <div v-if="content.published_at">
+                  {{ $timestampToDate(content.published_at) }}
+                </div>
               </div>
             </div>
             <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
@@ -171,6 +175,7 @@ export default {
         user_img: '',
         user_name: '',
         profile: '',
+        likes: 0,
       },
       customToolbar: [
         ['bold', 'italic', 'underline'], // toggled buttons
@@ -187,9 +192,6 @@ export default {
 
         ['link', 'image'],
       ],
-      disp_created_at: null,
-      disp_updated_at: null,
-      disp_published_at: null,
       msg_popup: { message: null, isSpinner: false, variant: '' },
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
@@ -242,7 +244,7 @@ export default {
     }
   },
   async mounted() {
-    this.$store.dispatch('authRedirect')
+    this.$store.dispatch('user/authRedirect')
     await this.getContent()
     this.setStatus()
     // setStatusでtureになってしまう対策
@@ -278,18 +280,6 @@ export default {
             if (doc.data().user_id === this.$store.state.user.id) {
               this.content = doc.data()
               this.preStatus = this.content.status
-              if (this.content.created_at)
-                this.disp_created_at = this.$timestampToDate(
-                  this.content.created_at
-                )
-              if (this.content.published_at)
-                this.disp_published_at = this.$timestampToDate(
-                  this.content.published_at
-                )
-              if (this.content.updated_at)
-                this.disp_updated_at = this.$timestampToDate(
-                  this.content.updated_at
-                )
             } else {
               this.$router.push('/')
             }
@@ -430,7 +420,7 @@ export default {
         variant: 'info',
         isSpinner: true,
       }
-      const timespamp = firebase.firestore.FieldValue.serverTimestamp()
+      const timespamp = firebase.firestore.Timestamp.now()
       this.content.updated_at = timespamp
       // 初公開の場合
       if (
@@ -461,10 +451,10 @@ export default {
         this.content.top_img = await this.uploadFile(this.uploadFiles.top_img)
       }
       // 本文画像
-      this.uploadFiles.body.forEach(async (img) => {
+      for (const img of this.uploadFiles.body) {
         const url = await this.uploadFile(img.file)
-        this.content.body = this.content.body.replace(img.url, url)
-      })
+        this.content.body = await this.content.body.replace(img.url, url)
+      }
       // 削除画像の削除
       this.deleteFiles.forEach((url) => {
         this.imageRemove(url)

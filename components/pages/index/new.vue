@@ -29,9 +29,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="mt-1" style="color: #e0245e;">
+                  <i class="far fa-heart"></i>
+                  {{ content.likes || 0 }}
+                </div>
               </div>
               <b-card-img
-                v-show="index !== 0"
+                v-show="index !== 0 && content.top_img"
                 class="ml-auto right-img"
                 :src="content.top_img"
                 right
@@ -81,20 +85,18 @@ export default {
     // 新着10件取得
     async setContents() {
       console.log('get first contents')
-      await firebase
+      const querySnapshot = await firebase
         .firestore()
         .collection('posts')
         .where('public', '==', true)
         .orderBy('published_at', 'desc')
         .limit(10)
         .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const content = doc.data()
-            content.id = doc.id
-            this.contents.push(content)
-          })
-        })
+      querySnapshot.forEach((doc) => {
+        const content = doc.data()
+        content.id = doc.id
+        this.contents.push(content)
+      })
     },
     async infiniteHandler() {
       console.log('add contents')
