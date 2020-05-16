@@ -35,7 +35,7 @@
                 </div>
               </div>
               <b-card-img
-                v-show="index !== 0"
+                v-show="index !== 0 && content.top_img"
                 class="ml-auto right-img"
                 :src="content.top_img"
                 right

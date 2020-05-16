@@ -187,7 +187,7 @@ export default {
   },
   created() {
     if (process.client) {
-      this.$store.dispatch('authRedirect')
+      this.$store.dispatch('user/authRedirect')
     }
   },
   mounted() {

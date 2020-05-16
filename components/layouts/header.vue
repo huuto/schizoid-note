@@ -38,10 +38,10 @@
               <b-dd-item to="/posts/edit/new">投稿する</b-dd-item>
               <b-dd-item to="/posts">投稿記事</b-dd-item>
               <b-dd-divider></b-dd-divider>
-              <!-- <b-dd-item>いいね</b-dd-item> -->
+              <b-dd-item to="/user/likes">いいね</b-dd-item>
               <!-- <b-dd-item>フォロー</b-dd-item> -->
               <!-- <b-dd-divider></b-dd-divider> -->
-              <b-dd-item to="/user/setting">アカウント設定</b-dd-item>
+              <b-dd-item to="/user/setting">アカウント</b-dd-item>
               <b-dd-divider></b-dd-divider>
               <b-dd-item @click="logout()">ログアウト</b-dd-item>
             </b-nav-item-dropdown>

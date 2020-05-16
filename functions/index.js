@@ -36,11 +36,6 @@ exports.updateUser = functions.firestore
 exports.setLike = functions.firestore
   .document('likes/{id}')
   .onCreate((snap, context) => {
-    db.collection('users')
-      .doc(snap.data().user_id)
-      .update({
-        likes: admin.firestore.FieldValue.arrayUnion(snap.data().post_id),
-      })
     db.collection('posts')
       .doc(snap.data().post_id)
       .update({ likes: admin.firestore.FieldValue.increment(1) })
@@ -52,11 +47,6 @@ exports.setLike = functions.firestore
 exports.deleteLike = functions.firestore
   .document('likes/{id}')
   .onDelete((snap, context) => {
-    db.collection('users')
-      .doc(snap.data().user_id)
-      .update({
-        likes: admin.firestore.FieldValue.arrayRemove(snap.data().post_id),
-      })
     db.collection('posts')
       .doc(snap.data().post_id)
       .update({ likes: admin.firestore.FieldValue.increment(-1) })

@@ -244,7 +244,7 @@ export default {
     }
   },
   async mounted() {
-    this.$store.dispatch('authRedirect')
+    this.$store.dispatch('user/authRedirect')
     await this.getContent()
     this.setStatus()
     // setStatusでtureになってしまう対策
@@ -451,10 +451,10 @@ export default {
         this.content.top_img = await this.uploadFile(this.uploadFiles.top_img)
       }
       // 本文画像
-      this.uploadFiles.body.forEach(async (img) => {
+      for (const img of this.uploadFiles.body) {
         const url = await this.uploadFile(img.file)
-        this.content.body = this.content.body.replace(img.url, url)
-      })
+        this.content.body = await this.content.body.replace(img.url, url)
+      }
       // 削除画像の削除
       this.deleteFiles.forEach((url) => {
         this.imageRemove(url)

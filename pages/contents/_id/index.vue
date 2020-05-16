@@ -112,20 +112,33 @@ export default {
     }
   },
   computed: {
-    user() {
-      console.log(this.$store.state.user)
-      return this.$store.state.user
+    userId: {
+      get() {
+        return this.$store.state.user.id
+      },
     },
   },
   watch: {
-    setLike() {
-      if (this.user.likes.includes(this.$route.params.id)) this.isLiked = true
-      console.log('do')
+    userId(val) {
+      this.chkLiked(val)
     },
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.chkLiked(this.userId)
+  },
   methods: {
+    chkLiked(userId) {
+      firebase
+        .firestore()
+        .collection('likes')
+        .where('post_id', '==', this.$route.params.id)
+        .where('user_id', '==', userId)
+        .get()
+        .then((docs) => {
+          if (docs.size === 1) this.isLiked = true
+        })
+    },
     /**
      * いいねボタン押下
      */
@@ -143,7 +156,7 @@ export default {
           firebase.firestore().collection('likes').doc(doc.id).delete()
         })
         this.content.likes--
-        // いいねを押す
+        // いいねを追加
       } else {
         firebase.firestore().collection('likes').add({
           post_id: this.$route.params.id,

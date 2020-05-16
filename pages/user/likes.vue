@@ -63,29 +63,35 @@ export default {
   },
   created() {
     if (process.client) {
-      this.getContents()
     }
   },
+  mounted() {
+    this.$store.dispatch('user/authRedirect')
+    this.getLikes()
+  },
   methods: {
-    getLikes() {
-      firebase.firestore().collection('likes')
-    },
     // いいね記事10件取得
-    async getContents() {
-      await firebase
+    async getLikes() {
+      const querySnapshot = await firebase
         .firestore()
-        .collection('posts')
-        .where('public', '==', true)
-        .orderBy('published_at', 'desc')
+        .collection('likes')
+        .where('user_id', '==', this.$store.state.user.id)
+        .orderBy('created_at', 'desc')
         .limit(10)
         .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const content = doc.data()
-            content.id = doc.id
-            this.contents.push(content)
+
+      querySnapshot.forEach(async (doc) => {
+        await firebase
+          .firestore()
+          .collection('posts')
+          .doc(doc.data().post_id)
+          .get()
+          .then((postDoc) => {
+            const data = postDoc.data()
+            data.id = postDoc.id
+            this.contents.push(data)
           })
-        })
+      })
     },
   },
 }

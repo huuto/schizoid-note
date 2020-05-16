@@ -7,7 +7,6 @@ export const state = () => ({
   name: '',
   profile: '',
   photoURL: '',
-  likes: [],
   isLogin: false,
 })
 
@@ -23,9 +22,6 @@ export const mutations = {
     firebase.auth().signOut()
     state.isLogin = false
   },
-  setLikes(state, data) {
-    state.likes = data.likes
-  },
 }
 
 export const actions = {
@@ -33,14 +29,6 @@ export const actions = {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         commit('login', user)
-        firebase
-          .firestore()
-          .collection('users')
-          .doc(user.uid)
-          .get()
-          .then((doc) => {
-            commit('setLikes', doc.data())
-          })
       } else {
         commit('logout')
       }

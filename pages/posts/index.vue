@@ -77,7 +77,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('authRedirect')
+    this.$store.dispatch('user/authRedirect')
   },
   methods: {
     async getContents() {
