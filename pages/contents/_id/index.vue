@@ -18,11 +18,12 @@
           <div>
             {{ content.user_name }}
           </div>
-          <div>{{ $timestampToDate(content.published_at) }}</div>
+          <!-- <div>{{ $timestampToDate(content.published_at) }}</div> -->
         </div>
       </div>
       <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
-      <div class="mt-4 mb-3">
+      <div class="divider mb-5"></div>
+      <div class="mt-3 mb-5">
         <span v-if="isLiked" id="liked" class="p-2" @click="likes()">
           <i class="fas fa-heart fa-lg"></i>
           {{ content.likes || 0 }}
@@ -39,7 +40,6 @@
         variant="info"
         >ログインするといいねできます</b-tooltip
       >
-      <div class="divider mb-5"></div>
       <div class="author d-flex mb-5">
         <div>
           <b-avatar
@@ -54,7 +54,7 @@
           <div>{{ content.profile }}</div>
         </div>
       </div>
-      <b-list-group class="mb-5">
+      <!-- <b-list-group class="mb-5">
         <b-list-group-item
           v-for="(authpost, index) in authorPosts"
           :key="index"
@@ -63,7 +63,7 @@
         >
           {{ authpost.title }}
         </b-list-group-item>
-      </b-list-group>
+      </b-list-group> -->
       <div class="divider mb-5"></div>
     </b-container>
   </div>

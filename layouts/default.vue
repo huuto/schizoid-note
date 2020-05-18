@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Header from '~/components/layouts/header.vue'
-import Footer from '~/components/layouts/footer.vue'
+import Header from '~/components/layouts/defaultHeader.vue'
+import Footer from '~/components/layouts/defaultFooter.vue'
 
 export default {
   components: {
@@ -41,7 +41,7 @@ html {
 *:before,
 *:after {
   box-sizing: border-box;
-  margin: 0;
+  margin: 0px;
 }
 
 .button--green {

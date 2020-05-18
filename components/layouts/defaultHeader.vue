@@ -86,12 +86,12 @@ export default {
 <style lang="scss" scoped>
 .prelogin .btn {
   padding: 4px 16px;
-  margin: 16px 16px 16px 0;
+  margin: 16px 16px 16px 0px;
 }
 @media screen and (max-width: 480px) {
   .prelogin .btn {
     padding: 4px;
-    margin: 16px 4px 16px 0;
+    margin: 16px 4px 16px 0px;
   }
 }
 </style>

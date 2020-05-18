@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import Header from '~/components/layouts/header.vue'
-import Footer from '~/components/layouts/footer.vue'
+import Header from '~/components/layouts/defaultHeader.vue'
+import Footer from '~/components/layouts/defaultFooter.vue'
 import ContentsHeader from '~/components/layouts/contentsHeader.vue'
 
 export default {
