@@ -511,6 +511,8 @@ export default {
             this.msgPopupSuccess()
             this.text_change = false
             this.preStatus = this.content.status
+            // DeepCopyで更新日時を反映
+            this.content = JSON.parse(JSON.stringify(this.content))
           })
           .catch(() => {
             this.msgPopupError()
