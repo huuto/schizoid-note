@@ -13,14 +13,14 @@ import Footer from '~/components/layouts/defaultFooter.vue'
 export default {
   components: {
     Header,
-    Footer,
+    Footer
   },
-  data() {
+  data () {
     return {}
   },
-  mounted() {
+  mounted () {
     this.$store.dispatch('user/authStateChanged')
-  },
+  }
 }
 </script>
 

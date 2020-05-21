@@ -10,8 +10,8 @@ import PreloginHeader from '~/components/layouts/preloginHeader.vue'
 
 export default {
   components: {
-    PreloginHeader,
-  },
+    PreloginHeader
+  }
 }
 </script>
 

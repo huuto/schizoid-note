@@ -16,14 +16,14 @@ export default {
   components: {
     Header,
     Footer,
-    UserHeader,
+    UserHeader
   },
-  data() {
+  data () {
     return {}
   },
-  mounted() {
+  mounted () {
     this.$store.dispatch('user/authStateChanged')
-  },
+  }
 }
 </script>
 

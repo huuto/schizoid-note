@@ -3,7 +3,7 @@ import firebase from '~/plugins/firebase'
 
 // タイムスタンプを表示用年月日に変換
 Vue.prototype.$timestampToDate = (timestamp) => {
-  if (!timestamp) return null
+  if (!timestamp) { return null }
   const convTimestamp = new firebase.firestore.Timestamp(
     timestamp.seconds,
     timestamp.nanoseconds

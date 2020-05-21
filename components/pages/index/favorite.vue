@@ -18,7 +18,7 @@
             {{ content.introduction }}
           </b-card-text>
           <div class="d-flex content-footer">
-            <b-avatar size="1.5rem" class="mr-2 my-auto"></b-avatar>
+            <b-avatar size="1.5rem" class="mr-2 my-auto" />
             <div class="content-footer-text">
               <div>
                 {{ content.user_name }}
@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       contents: [
         {
@@ -45,7 +45,7 @@ export default {
           img_src: '/img/cat-2083492_640.jpg',
           user_name: 'huuto',
           user_img: '',
-          updateAt: '2020/04/01',
+          updateAt: '2020/04/01'
         },
         {
           title: 'タイトルです2',
@@ -53,11 +53,11 @@ export default {
           img_src: '',
           user_name: 'huuto',
           user_img: '',
-          updateAt: '2020/04/02',
-        },
-      ],
+          updateAt: '2020/04/02'
+        }
+      ]
     }
-  },
+  }
 }
 </script>
 

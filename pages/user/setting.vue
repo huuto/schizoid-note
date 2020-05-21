@@ -19,7 +19,7 @@
                 type="text"
                 required
                 class="mb-3"
-              ></b-form-input>
+              />
             </div>
           </b-modal>
           <b-modal
@@ -37,14 +37,14 @@
                 v-model="user.password"
                 type="password"
                 class="mb-3"
-              ></b-form-input>
+              />
               <label for="password_confimation">確認用パスワード</label>
               <b-form-input
                 id="password_confimation"
                 v-model="user.password_confimation"
                 type="password"
                 class="mb-3"
-              ></b-form-input>
+              />
             </div>
           </b-modal>
           <b-modal
@@ -73,14 +73,14 @@
                     :src="user.photoURL"
                     size="5rem"
                     variant="light"
-                  ></b-avatar>
-                  <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
+                  />
+                  <i id="avatar" class="fas fa-plus-circle fa-lg photoURL" />
                   <b-form-file
                     id="photoURL"
                     v-model="photoFile"
                     style="display: none;"
                     @input="editPhotoURL()"
-                  ></b-form-file>
+                  />
                 </label>
               </div>
               <div v-else>
@@ -88,7 +88,7 @@
                   :src="user.photoURL"
                   size="5rem"
                   variant="light"
-                ></b-avatar>
+                />
               </div>
             </div>
             <div v-show="!twitterLogin">
@@ -97,9 +97,12 @@
                 <div>
                   {{ user.email }}
                 </div>
-                <b-link class="ml-auto email" @click="showEmailModal = true"
-                  ><i class="fas fa-edit fa-lg"></i
-                ></b-link>
+                <b-link
+                  class="ml-auto email"
+                  @click="showEmailModal = true"
+                >
+                  <i class="fas fa-edit fa-lg" />
+                </b-link>
               </div>
               <label for="password">パスワード</label>
               <div class="mb-4 d-flex ml-2">
@@ -109,8 +112,9 @@
                 <b-link
                   class="ml-auto password"
                   @click="showPasswordModal = true"
-                  ><i class="fas fa-edit fa-lg"></i
-                ></b-link>
+                >
+                  <i class="fas fa-edit fa-lg" />
+                </b-link>
               </div>
             </div>
             <label for="name">ユーザー名</label>
@@ -120,17 +124,19 @@
               type="text"
               required
               class="mb-3"
-            ></b-form-input>
+            />
             <label for="profile">紹介文</label>
             <b-form-textarea
               id="profile"
               v-model="user.profile"
               rows="4"
               class="mb-3"
-            ></b-form-textarea>
+            />
           </b-form-group>
           <div class="text-center mb-3">
-            <b-button variant="primary" style="" @click="edit()">変更</b-button>
+            <b-button variant="primary" style="" @click="edit()">
+              変更
+            </b-button>
           </div>
           <div class="text-center">
             <b-button
@@ -138,16 +144,18 @@
               style="color: #707070;"
               to="posts"
               class="mb-5"
-              >戻る</b-button
             >
+              戻る
+            </b-button>
           </div>
           <div class="text-center">
             <b-button
               variant="link"
               style="color: #ff6565;"
               @click="showDeleteModal = true"
-              >アカウント削除</b-button
             >
+              アカウント削除
+            </b-button>
           </div>
         </b-form>
       </div>
@@ -163,9 +171,9 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'user',
   components: {
-    MsgPopup,
+    MsgPopup
   },
-  data() {
+  data () {
     return {
       user: {
         id: '',
@@ -174,7 +182,7 @@ export default {
         profile: '',
         password: '',
         password_confimation: '',
-        email: '',
+        email: ''
       },
       twitterLogin: false,
       photoFile: null,
@@ -182,34 +190,34 @@ export default {
       showEmailModal: false,
       showPasswordModal: false,
       showDeleteModal: false,
-      preEmail: '',
+      preEmail: ''
     }
   },
-  created() {
+  created () {
     if (process.client) {
       this.$store.dispatch('user/authRedirect')
     }
   },
-  mounted() {
+  mounted () {
     this.getCurrentUser()
   },
   methods: {
     /**
      * Twitterログインを区別するためプロバイダー取得
      */
-    getCurrentUser() {
+    getCurrentUser () {
       firebase.auth().onAuthStateChanged((user) => {
         this.user.id = user.uid
         this.user.photoURL = user.photoURL
         this.user.name = user.displayName
         this.user.email = user.email
         user.providerData.forEach((profile) => {
-          if (profile.providerId === 'twitter.com') this.twitterLogin = true
+          if (profile.providerId === 'twitter.com') { this.twitterLogin = true }
         })
         this.getProfile()
       })
     },
-    getProfile() {
+    getProfile () {
       firebase
         .firestore()
         .collection('users')
@@ -219,22 +227,22 @@ export default {
           this.user.profile = doc.data().profile
         })
     },
-    async edit() {
+    async edit () {
       await firebase
         .auth()
         .currentUser.updateProfile({
-          displayName: this.user.name,
+          displayName: this.user.name
         })
         .then(() => {
           this.msg_popup = {
             message: 'アカウント設定を変更しました。',
-            variant: 'success',
+            variant: 'success'
           }
         })
         .catch((error) => {
           this.msg_popup = {
             message: 'アカウント設定を変更できませんでした。',
-            variant: 'danger',
+            variant: 'danger'
           }
           console.error(error)
         })
@@ -256,20 +264,21 @@ export default {
       //     }
       //     console.error(error)
       //   })
-      if (this.msg_popup.variant !== 'danger')
+      if (this.msg_popup.variant !== 'danger') {
         this.updateStoreUser({
           user_name: this.user.name,
-          profile: this.user.profile,
+          profile: this.user.profile
         })
+      }
     },
-    editEmail() {
+    editEmail () {
       firebase
         .auth()
         .currentUser.updateEmail(this.user.email)
         .then(() => {
           this.msg_popup = {
             message: 'メールアドレスを変更しました。',
-            variant: 'success',
+            variant: 'success'
           }
         })
         .catch((error) => {
@@ -277,24 +286,24 @@ export default {
             this.msg_popup = {
               message: `直近のログインが無かったため、メールアドレスを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger',
+              variant: 'danger'
             }
           } else {
             this.msg_popup = {
               message: 'メールアドレスを変更できませんでした。',
-              variant: 'danger',
+              variant: 'danger'
             }
           }
           this.user.email = this.preEmail
           console.error(error)
         })
     },
-    editPassword() {
+    editPassword () {
       if (this.user.password !== this.user.password_confimation) {
         this.msg_popup = {
           message:
             '新規パスワードと確認用パスワードが一致しません。もう一度お試しください。',
-          variant: 'danger',
+          variant: 'danger'
         }
       } else {
         firebase
@@ -303,7 +312,7 @@ export default {
           .then(() => {
             this.msg_popup = {
               message: 'パスワードを変更しました。',
-              variant: 'success',
+              variant: 'success'
             }
           })
           .catch((error) => {
@@ -311,17 +320,17 @@ export default {
               this.msg_popup = {
                 message: `直近のログインが無かったため、パスワードを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-                variant: 'danger',
+                variant: 'danger'
               }
             } else if (error.code === 'auth/weak-password') {
               this.msg_popup = {
-                message: `パスワードは6文字以上にしてください。`,
-                variant: 'danger',
+                message: 'パスワードは6文字以上にしてください。',
+                variant: 'danger'
               }
             } else {
               this.msg_popup = {
                 message: 'パスワードを変更できませんでした。',
-                variant: 'danger',
+                variant: 'danger'
               }
             }
             console.error(error)
@@ -330,21 +339,21 @@ export default {
       this.user.password = ''
       this.user.password_confimation = ''
     },
-    editPhotoURL() {
+    editPhotoURL () {
       this.setPhotoURL()
     },
     // トップ画像のアップロード
-    async setPhotoURL() {
+    async setPhotoURL () {
       this.msg_popup = {
         message: '画像を保存中です。',
         variant: 'info',
-        isSpinner: true,
+        isSpinner: true
       }
       if (this.photoFile) {
         const fileName = Date.now() + '_' + this.photoFile.name
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 200,
+          maxWidthOrHeight: 200
         }
 
         const resizeImg = await imageCompression(this.photoFile, options)
@@ -355,7 +364,7 @@ export default {
           .catch((error) => {
             this.msg_popup = {
               message: '画像を変更できませんでした。',
-              variant: 'danger',
+              variant: 'danger'
             }
             console.error(error)
           })
@@ -365,25 +374,25 @@ export default {
           .catch((error) => {
             this.msg_popup = {
               message: '画像を変更できませんでした。',
-              variant: 'danger',
+              variant: 'danger'
             }
             console.error(error)
           })
         if (this.msg_popup.variant !== 'danger') {
           // 以前の画像を削除
-          if (this.user.photoURL) this.imageRemove(this.user.photoURL)
+          if (this.user.photoURL) { this.imageRemove(this.user.photoURL) }
           firebase.auth().currentUser.updateProfile({ photoURL: url })
           this.user.photoURL = url
           this.msg_popup = {
             message: '画像を変更しました。',
-            variant: 'success',
+            variant: 'success'
           }
           this.updateStoreUser({ user_img: this.user.photoURL })
         }
       }
     },
     // 画像削除
-    imageRemove(imageURL) {
+    imageRemove (imageURL) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -398,21 +407,21 @@ export default {
     /**
      * ユーザー周り更新時はStoreのユーザーにも反映
      */
-    updateStoreUser(update) {
+    updateStoreUser (update) {
       firebase.firestore().collection('users').doc(this.user.id).update(update)
     },
     // ポップアップメッセージのリセット
-    resetMsg() {
+    resetMsg () {
       this.msg_popup = { message: null, variant: '', isSpinner: false }
     },
-    deleteUser() {
+    deleteUser () {
       firebase
         .auth()
         .currentUser.delete()
         .then(() => {
           this.msg_popup = {
             message: 'ユーザーを削除しました。',
-            variant: 'success',
+            variant: 'success'
           }
         })
         .catch((error) => {
@@ -420,22 +429,22 @@ export default {
             this.msg_popup = {
               message: `直近のログインが無かったため、ユーザーを削除できませんでした。
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger',
+              variant: 'danger'
             }
           } else {
             this.msg_popup = {
               message: 'ユーザーを削除できませんでした。',
-              variant: 'danger',
+              variant: 'danger'
             }
           }
         })
-    },
-  },
-  head() {
-    return {
-      title: 'アカウント設定',
     }
   },
+  head () {
+    return {
+      title: 'アカウント設定'
+    }
+  }
 }
 </script>
 

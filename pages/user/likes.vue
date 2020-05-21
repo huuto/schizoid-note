@@ -10,7 +10,7 @@
             <b-card class="content-card mb-3 mx-auto">
               <b-card-body class="d-flex">
                 <div>
-                  <b-card-title :title="content.title"> </b-card-title>
+                  <b-card-title :title="content.title" />
                   <div>
                     <div class="d-flex content-footer">
                       <b-avatar
@@ -18,7 +18,7 @@
                         class="mr-3 my-auto"
                         :src="content.user_img"
                         variant="light"
-                      ></b-avatar>
+                      />
                       <div class="content-footer-text">
                         <div>{{ content.user_name }}</div>
                         <div>
@@ -28,7 +28,7 @@
                     </div>
                   </div>
                   <div class="mt-1" style="color: #e0245e;">
-                    <i class="far fa-heart"></i>
+                    <i class="far fa-heart" />
                     {{ content.likes || 0 }}
                   </div>
                 </div>
@@ -37,7 +37,7 @@
                   class="ml-auto right-img"
                   :src="content.top_img"
                   right
-                ></b-card-img>
+                />
               </b-card-body>
             </b-card>
           </b-link>
@@ -55,23 +55,23 @@ import firebase from '~/plugins/firebase'
 
 export default {
   layout: 'user',
-  data() {
+  data () {
     return {
       contents: [],
-      likes: [],
+      likes: []
     }
   },
-  created() {
+  created () {
     if (process.client) {
     }
   },
-  mounted() {
+  mounted () {
     this.$store.dispatch('user/authRedirect')
     this.getLikes()
   },
   methods: {
     // いいね記事10件取得
-    async getLikes() {
+    async getLikes () {
       const querySnapshot = await firebase
         .firestore()
         .collection('likes')
@@ -92,8 +92,8 @@ export default {
             this.contents.push(data)
           })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

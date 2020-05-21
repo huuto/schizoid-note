@@ -17,26 +17,32 @@
 
       <div class="mb-3">
         <b-row v-show="content.created_at" class="mb-1">
-          <b-col cols="auto">作成日</b-col
-          ><b-col>{{ $timestampToDate(content.created_at) }}</b-col>
+          <b-col cols="auto">
+            作成日
+          </b-col><b-col>{{ $timestampToDate(content.created_at) }}</b-col>
         </b-row>
         <b-row v-show="content.published_at" class="mb-1">
-          <b-col cols="auto">公開日</b-col
-          ><b-col>{{ $timestampToDate(content.published_at) }}</b-col>
+          <b-col cols="auto">
+            公開日
+          </b-col><b-col>{{ $timestampToDate(content.published_at) }}</b-col>
         </b-row>
         <b-row v-show="content.updated_at" class="mb-3">
-          <b-col cols="auto">更新日</b-col
-          ><b-col>{{ $timestampToDate(content.updated_at) }}</b-col>
+          <b-col cols="auto">
+            更新日
+          </b-col><b-col>{{ $timestampToDate(content.updated_at) }}</b-col>
         </b-row>
         <b-row class="mb-2">
-          <b-col cols="auto">状態&nbsp;&nbsp;</b-col
-          ><b-col style="max-width: 150px;"
-            ><b-form-select
+          <b-col cols="auto">
+            状態&nbsp;&nbsp;
+          </b-col><b-col
+            style="max-width: 150px;"
+          >
+            <b-form-select
               v-model="content.status"
               :options="status_options"
               @change="setStatus()"
-            ></b-form-select
-          ></b-col>
+            />
+          </b-col>
         </b-row>
       </div>
       <div class="text-center mb-5">
@@ -46,20 +52,25 @@
           class=""
           :disabled="!text_change"
           @click="preSave()"
-          >{{ save_btn }}</b-btn
         >
+          {{ save_btn }}
+        </b-btn>
       </div>
       <div class="mb-5">
-        <div class="mb-3"><h2>タイトル</h2></div>
+        <div class="mb-3">
+          <h2>タイトル</h2>
+        </div>
         <div>
           <b-form-input
             v-model="content.title"
             @change="text_change = true"
-          ></b-form-input>
+          />
         </div>
       </div>
       <div class="mb-5">
-        <div class="mb-3"><h2>トップ画像</h2></div>
+        <div class="mb-3">
+          <h2>トップ画像</h2>
+        </div>
         <b-form-file
           v-model="uploadFiles.top_img"
           placeholder="画像を選択してください"
@@ -67,7 +78,7 @@
           class="mb-3"
           accept="image/*"
           @input="setTopImg()"
-        ></b-form-file>
+        />
         <div
           v-show="content.top_img"
           class="text-center"
@@ -76,12 +87,14 @@
           <i
             class="fas fa-times-circle fa-2x delete-top-img"
             @click="deleteTopImg()"
-          ></i>
-          <b-img id="topImg" :src="content.top_img"></b-img>
+          />
+          <b-img id="topImg" :src="content.top_img" />
         </div>
       </div>
       <div class="mb-5">
-        <div class="mb-3"><h2>本文</h2></div>
+        <div class="mb-3">
+          <h2>本文</h2>
+        </div>
         <no-ssr>
           <div id="editorWrap">
             <vue-editor
@@ -97,7 +110,9 @@
             <!-- <Editor :body="content.body" :text-change="text_change" /> -->
           </div>
         </no-ssr>
-        <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
+        <div class="text-right mt-3 font-weight-bold">
+          {{ setCount }} 文字
+        </div>
       </div>
     </b-container>
     <b-container fluid style="background-color: #f1f1f3;">
@@ -108,22 +123,26 @@
           style="max-width: 640px; background-color: white;"
         >
           <div class="mt-4 mb-5">
-            <h2 class="pr-2" style="display: inline;">プレビュー</h2>
+            <h2 class="pr-2" style="display: inline;">
+              プレビュー
+            </h2>
             <i
               id="preview-icon"
               class="fas fa-exclamation-circle fa-lg"
               style="color: #747474;"
-            ></i>
+            />
             <b-tooltip target="preview-icon">
               本文の画像は保存すると表示されます。
             </b-tooltip>
           </div>
           <div class="mx-auto" style="max-width: 590px;">
             <div v-show="content.top_img" class="mb-5 text-center">
-              <b-img class="top-img" :src="content.top_img"></b-img>
+              <b-img class="top-img" :src="content.top_img" />
             </div>
             <div class="mb-3">
-              <h2 id="title">{{ content.title }}</h2>
+              <h2 id="title">
+                {{ content.title }}
+              </h2>
             </div>
             <div class="d-flex mb-5">
               <b-avatar
@@ -131,7 +150,7 @@
                 class="mr-3 my-auto"
                 :src="content.user_img"
                 variant="light"
-              ></b-avatar>
+              />
               <div class="">
                 <div>
                   {{ content.user_name }}
@@ -141,8 +160,8 @@
                 </div>
               </div>
             </div>
-            <div id="body" class="mb-5" v-html="$sanitize(content.body)"></div>
-            <div class="divider mb-5"></div>
+            <div id="body" class="mb-5" v-html="$sanitize(content.body)" />
+            <div class="divider mb-5" />
           </div>
         </b-col>
       </b-row>
@@ -158,9 +177,9 @@ import 'quill/dist/quill.bubble.css'
 export default {
   layout: 'user',
   components: {
-    MsgPopup,
+    MsgPopup
   },
-  data() {
+  data () {
     return {
       content: {
         created_at: null,
@@ -175,7 +194,7 @@ export default {
         user_img: '',
         user_name: '',
         profile: '',
-        likes: 0,
+        likes: 0
       },
       customToolbar: [
         ['bold', 'italic', 'underline'], // toggled buttons
@@ -190,13 +209,13 @@ export default {
         [{ color: [] }, { background: [] }], // dropdown with defaults from theme
         [{ align: [] }],
 
-        ['link', 'image'],
+        ['link', 'image']
       ],
       msg_popup: { message: null, isSpinner: false, variant: '' },
       status_options: [
         { value: 'draft', text: '下書き', btn: '下書き保存' },
         { value: 'public', text: '公開', btn: '保存して公開' },
-        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
+        { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
       ],
       editorOptions: {},
       save_btn: '',
@@ -207,33 +226,31 @@ export default {
       // body[{file: null, url: ""}]
       uploadFiles: { top_img: null, body: [] },
       // storageから削除予定の画像URL
-      deleteFiles: [],
+      deleteFiles: []
     }
   },
   computed: {
-    setCount() {
-      if (!this.content.body) return 0
+    setCount () {
+      if (!this.content.body) { return 0 }
       return this.content.body.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
         .length
-    },
+    }
   },
-  created() {
+  created () {
     if (process.client) {
-      // eslint-disable-next-line nuxt/no-globals-in-created
       window.addEventListener('beforeunload', this.checkWindow)
       // スマホの場合は文字選択でツールバーが出る
-      // eslint-disable-next-line nuxt/no-globals-in-created
       if (window.innerWidth <= 480) {
         this.editorOptions = {
-          theme: 'bubble',
+          theme: 'bubble'
         }
       }
     }
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.removeEventListener('beforeunload', this.checkWindow)
   },
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave (next) {
     if (this.text_change) {
       const ans = window.confirm(
         '変更が保存されていません。本当に移動しますか？'
@@ -243,7 +260,7 @@ export default {
       next()
     }
   },
-  async mounted() {
+  async mounted () {
     this.$store.dispatch('user/authRedirect')
     await this.getContent()
     this.setStatus()
@@ -254,7 +271,7 @@ export default {
     /**
      * タイトルを設定
      */
-    setTitle() {
+    setTitle () {
       if (this.$route.params.id === 'new') {
         return '新規記事'
       }
@@ -268,7 +285,7 @@ export default {
           : this.content.title.substr(0, 15))
       )
     },
-    async getContent() {
+    async getContent () {
       // 新規でない場合
       if (this.$route.params.id !== 'new') {
         await firebase
@@ -286,13 +303,13 @@ export default {
           })
       }
     },
-    setStatus() {
+    setStatus () {
       switch (this.content.status) {
         case 'draft':
           this.status_options = [
             { value: 'draft', text: '下書き', btn: '下書き保存' },
             { value: 'public', text: '公開', btn: '保存して公開' },
-            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
+            { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' }
           ]
           break
         case 'public':
@@ -301,12 +318,12 @@ export default {
           this.status_options = [
             { value: 'public', text: '公開', btn: '保存して公開' },
             { value: 'anonym', text: '匿名公開', btn: '保存して匿名公開' },
-            { value: 'private', text: '非公開', btn: '保存して非公開' },
+            { value: 'private', text: '非公開', btn: '保存して非公開' }
           ]
           break
       }
       this.save_btn = this.status_options.find(
-        (el) => el.value === this.content.status
+        el => el.value === this.content.status
       ).btn
       if (['public', 'anonym'].includes(this.content.status)) {
         this.content.public = true
@@ -316,22 +333,22 @@ export default {
       this.text_change = true
     },
     // ポップアップメッセージのリセット
-    resetMsg() {
+    resetMsg () {
       this.msg_popup = { message: null, variant: '', isSpinner: false }
     },
     // 画像のアップロード
-    async handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+    async handleImageAdded (file, Editor, cursorLocation, resetUploader) {
       if (!file.type.match(/^image\//g)) {
         this.msg_popup = {
           message: '画像以外はアップロードできません。',
           variant: 'danger',
-          isSpinner: false,
+          isSpinner: false
         }
         return null
       }
       const options = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 590,
+        maxWidthOrHeight: 590
       }
       const resizeImg = await imageCompression(file, options)
       const url = await imageCompression.getDataUrlFromFile(resizeImg)
@@ -340,7 +357,7 @@ export default {
       resetUploader()
     },
     // トップ画像のアップロード
-    async setTopImg() {
+    async setTopImg () {
       if (this.uploadFiles.top_img) {
         // ストレージに保存されていれば削除の準備
         if (this.content.top_img.startsWith('https')) {
@@ -348,7 +365,7 @@ export default {
         }
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 590,
+          maxWidthOrHeight: 590
         }
         const resizeImg = await imageCompression(
           this.uploadFiles.top_img,
@@ -364,7 +381,7 @@ export default {
     /**
      * トップ画像の削除
      */
-    deleteTopImg() {
+    deleteTopImg () {
       // ストレージに保存されていれば削除の準備
       if (this.content.top_img.startsWith('https')) {
         this.deleteFiles.push(this.content.top_img)
@@ -375,13 +392,13 @@ export default {
       this.content.top_img = ''
     },
     // ストレージにある場合画像削除の準備
-    handleImageRemoved(imageURL) {
+    handleImageRemoved (imageURL) {
       if (imageURL.startsWith('https')) {
         this.deleteFiles.push(imageURL)
       } else {
         // アップロード準備の画像URLを削除
         this.uploadFiles.body = this.uploadFiles.body.filter(
-          (file) => file.url !== imageURL
+          file => file.url !== imageURL
         )
       }
     },
@@ -389,7 +406,7 @@ export default {
      * 本当に画像削除
      * @param {String} imageURL
      */
-    imageRemove(imageURL) {
+    imageRemove (imageURL) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -402,7 +419,7 @@ export default {
         })
     },
     // 記事公開前のチェック
-    preSave() {
+    preSave () {
       // 下書き、非公開から公開する場合のチェック
       if (
         ['draft', 'private'].includes(this.preStatus) &&
@@ -414,11 +431,11 @@ export default {
       }
     },
     // 記事の保存
-    async save() {
+    async save () {
       this.msg_popup = {
         message: '保存中です。',
         variant: 'info',
-        isSpinner: true,
+        isSpinner: true
       }
       const timespamp = firebase.firestore.Timestamp.now()
       this.content.updated_at = timespamp
@@ -471,7 +488,7 @@ export default {
           .collection('posts')
           .doc(postId)
           .set(this.content)
-          .then((docRef) => {
+          .then(() => {
             this.msgPopupSuccess()
             this.text_change = false
             this.preStatus = this.content.status
@@ -500,28 +517,28 @@ export default {
           })
       }
     },
-    msgPopupSuccess() {
+    msgPopupSuccess () {
       this.msg_popup = {
         message: '保存しました。',
         variant: 'success',
-        isSpinner: false,
+        isSpinner: false
       }
       setTimeout(() => {
         this.msg_popup = {
           message: '',
           variant: '',
-          isSpinner: false,
+          isSpinner: false
         }
       }, 1000)
     },
-    msgPopupError() {
+    msgPopupError () {
       this.msg_popup = {
         message: 'エラーが発生しました。',
         variant: 'danger',
-        isSpinner: false,
+        isSpinner: false
       }
     },
-    checkWindow(event) {
+    checkWindow (event) {
       if (this.text_change) {
         event.preventDefault()
         event.returnValue = '変更が保存されていません。本当に移動しますか？'
@@ -532,20 +549,20 @@ export default {
      * @param {File} file
      * @returns ダウンロードURL
      */
-    async uploadFile(file) {
+    async uploadFile (file) {
       const fileName = Date.now() + '_' + file.name
       const ref = firebase.storage().ref()
       await ref.child('posts/' + fileName).put(file)
       console.log(`uploadfies ${fileName}`)
       const url = await ref.child('posts/' + fileName).getDownloadURL()
       return url
-    },
-  },
-  head() {
-    return {
-      title: this.setTitle(),
     }
   },
+  head () {
+    return {
+      title: this.setTitle()
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -17,7 +17,7 @@
               type="text"
               required
               class="mb-3"
-            ></b-form-input>
+            />
             <label for="email">メールアドレス</label>
             <b-form-input
               id="email"
@@ -25,8 +25,7 @@
               type="email"
               required
               class="mb-3"
-            >
-            </b-form-input>
+            />
             <label for="password">パスワード</label>
             <b-form-input
               id="password"
@@ -34,7 +33,7 @@
               type="password"
               required
               class="mb-3"
-            ></b-form-input>
+            />
             <label for="password_confimation">確認用パスワード</label>
             <b-form-input
               id="password_confimation"
@@ -42,17 +41,25 @@
               type="password"
               required
               class="mb-3"
-            ></b-form-input>
+            />
           </b-form-group>
           <div class="text-center mb-5">
-            <b-button variant="primary" style="" @click="signup()"
-              >登録</b-button
+            <b-button
+              variant="primary"
+              style=""
+              @click="signup()"
             >
+              登録
+            </b-button>
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color: #707070;" to="login"
-              >ログイン画面に戻る / Twitterでログイン</b-button
+            <b-button
+              variant="link"
+              style="color: #707070;"
+              to="login"
             >
+              ログイン画面に戻る / Twitterでログイン
+            </b-button>
           </div>
         </b-form>
       </div>
@@ -66,21 +73,21 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'prelogin',
   components: {
-    MsgPopup,
+    MsgPopup
   },
-  data() {
+  data () {
     return {
       user: {
         name: '',
         email: '',
         password: '',
-        password_confimation: '',
+        password_confimation: ''
       },
-      msg_popup: { message: null, variant: null, isSpinner: false },
+      msg_popup: { message: null, variant: null, isSpinner: false }
     }
   },
   methods: {
-    signup() {
+    signup () {
       if (
         this.user.name !== '' &&
         this.user.email !== '' &&
@@ -94,14 +101,14 @@ export default {
               firebase
                 .auth()
                 .currentUser.updateProfile({
-                  displayName: this.user.name,
+                  displayName: this.user.name
                 })
                 .then(() => {
                   const user = firebase.auth().currentUser
                   firebase.firestore().collection('users').doc(user.uid).set({
                     user_name: user.displayName,
                     user_img: user.photoURL,
-                    profile: '',
+                    profile: ''
                   })
                   this.$router.push('/')
                 })
@@ -110,22 +117,22 @@ export default {
               if (
                 [
                   'auth/credential-already-in-use',
-                  'auth/email-already-in-use',
+                  'auth/email-already-in-use'
                 ].includes(error.code)
               ) {
                 this.msg_popup = {
-                  message: `そのメールアドレスはすでに登録されています。`,
-                  variant: 'danger',
+                  message: 'そのメールアドレスはすでに登録されています。',
+                  variant: 'danger'
                 }
               } else if (error.code === 'auth/weak-password') {
                 this.msg_popup = {
-                  message: `パスワードは6文字以上にしてください。`,
-                  variant: 'danger',
+                  message: 'パスワードは6文字以上にしてください。',
+                  variant: 'danger'
                 }
               } else {
                 this.msg_popup = {
-                  message: `エラーが発生してユーザーが登録できませんでした。`,
-                  variant: 'danger',
+                  message: 'エラーが発生してユーザーが登録できませんでした。',
+                  variant: 'danger'
                 }
               }
               console.error(error)
@@ -133,22 +140,22 @@ export default {
         } else {
           this.msg_popup = {
             message: 'パスワードと確認用パスワードが一致しません',
-            variant: 'danger',
+            variant: 'danger'
           }
         }
       } else {
         this.msg_popup = {
           message: '必要な項目を入力してください',
-          variant: 'danger',
+          variant: 'danger'
         }
       }
-    },
-  },
-  head() {
-    return {
-      title: '新規登録',
     }
   },
+  head () {
+    return {
+      title: '新規登録'
+    }
+  }
 }
 </script>
 

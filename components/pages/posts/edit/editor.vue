@@ -24,14 +24,14 @@ export default {
   props: {
     body: {
       type: String,
-      default: '',
+      default: ''
     },
     textChange: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  data() {
+  data () {
     return {
       customToolbar: [
         ['bold', 'italic', 'underline'], // toggled buttons
@@ -47,27 +47,27 @@ export default {
         [{ font: [] }],
         [{ align: [] }],
 
-        ['clean'],
+        ['clean']
       ],
-      editorOptions: {},
+      editorOptions: {}
     }
   },
-  mounted() {
+  mounted () {
     // スマホの場合は文字選択でツールバーが出る
     if (window.innerWidth <= 480) {
       this.editorOptions = {
-        theme: 'bubble',
+        theme: 'bubble'
       }
     }
   },
   methods: {
     // 画像のアップロード
-    async handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+    async handleImageAdded (file, Editor, cursorLocation, resetUploader) {
       if (!file.type.match(/^image\//g)) {
         this.msg_popup = {
           message: '画像以外はアップロードできません。',
           variant: 'danger',
-          isSpinner: false,
+          isSpinner: false
         }
         return null
       }
@@ -78,7 +78,7 @@ export default {
       this.msg_popup = {
         message: '画像を保存中です。',
         variant: 'info',
-        isSpinner: true,
+        isSpinner: true
       }
       await setTimeout(() => {
         firebase
@@ -91,7 +91,7 @@ export default {
             this.msg_popup = {
               message: '画像をアップロードできませんでした。',
               variant: 'danger',
-              isSpinner: false,
+              isSpinner: false
             }
           })
           .then((getUrl) => {
@@ -105,7 +105,7 @@ export default {
       }, 4000)
     },
     // 本当に画像削除
-    imageRemove(imageURL) {
+    imageRemove (imageURL) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -116,8 +116,8 @@ export default {
         .catch(() => {
           console.log('error: image delete ' + imageURL)
         })
-    },
-  },
+    }
+  }
 }
 </script>
 

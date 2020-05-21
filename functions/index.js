@@ -25,7 +25,7 @@ exports.updateUser = functions.firestore
       db.collection('posts').doc(post.id).update({
         profile: user.profile,
         user_name: user.user_name,
-        user_img: user.user_img,
+        user_img: user.user_img
       })
     })
   })
@@ -35,7 +35,7 @@ exports.updateUser = functions.firestore
  */
 exports.setLike = functions.firestore
   .document('likes/{id}')
-  .onCreate((snap, context) => {
+  .onCreate((snap) => {
     db.collection('posts')
       .doc(snap.data().post_id)
       .update({ likes: admin.firestore.FieldValue.increment(1) })
@@ -46,7 +46,7 @@ exports.setLike = functions.firestore
  */
 exports.deleteLike = functions.firestore
   .document('likes/{id}')
-  .onDelete((snap, context) => {
+  .onDelete((snap) => {
     db.collection('posts')
       .doc(snap.data().post_id)
       .update({ likes: admin.firestore.FieldValue.increment(-1) })

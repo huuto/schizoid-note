@@ -18,8 +18,7 @@
               required
               class="mb-3"
               name="email"
-            >
-            </b-form-input>
+            />
             <label for="password">パスワード</label>
             <b-form-input
               id="password"
@@ -28,25 +27,34 @@
               name="password"
               required
               class="mb-3"
-            ></b-form-input>
+            />
           </b-form-group>
           <div class="text-center mb-3">
-            <b-button variant="primary" style="" type="submit" @click="login()"
-              >ログイン</b-button
+            <b-button
+              variant="primary"
+              style=""
+              type="submit"
+              @click="login()"
             >
+              ログイン
+            </b-button>
           </div>
           <div class="text-center mb-5">
             <b-button
               style="background-color: #1da1f2; border-color: #1da1f2;"
               @click="twitterLogin()"
-              ><i class="fab fa-twitter mr-2" color="white"></i
-              >Twitterログイン</b-button
             >
+              <i class="fab fa-twitter mr-2" color="white" />Twitterログイン
+            </b-button>
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color: #707070;" to="signup"
-              >アカウント作成</b-button
+            <b-button
+              variant="link"
+              style="color: #707070;"
+              to="signup"
             >
+              アカウント作成
+            </b-button>
           </div>
         </b-form>
       </div>
@@ -60,33 +68,33 @@ import MsgPopup from '~/components/common/msgPopup'
 export default {
   layout: 'prelogin',
   components: {
-    MsgPopup,
+    MsgPopup
   },
-  data() {
+  data () {
     return {
       user: {
         email: '',
         password: '',
-        valid: false,
+        valid: false
       },
-      msg_popup: { message: null, variant: null, isSpinner: false },
+      msg_popup: { message: null, variant: null, isSpinner: false }
     }
   },
-  mounted() {
+  mounted () {
     // twitterのリダイレクト認証で戻ってきた場合、認証情報をユーザーに反映しホームに遷移
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.msg_popup = {
           message: 'ホーム画面に移動します。<br />しばらくお待ちください。',
           variant: 'info',
-          isSpinner: 'true',
+          isSpinner: 'true'
         }
         this.$store.dispatch('authStateChanged')
         const user = firebase.auth().currentUser
         firebase.firestore().collection('users').doc(user.uid).set(
           {
             user_name: user.displayName,
-            user_img: user.photoURL,
+            user_img: user.photoURL
           },
           { merge: true }
         )
@@ -97,11 +105,11 @@ export default {
     })
   },
   methods: {
-    login() {
+    login () {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.user.email, this.user.password)
-        .then((result) => {
+        .then(() => {
           this.$store.dispatch('user/authStateChanged')
           this.$router.push('/')
         })
@@ -111,23 +119,23 @@ export default {
           ) {
             this.msg_popup = {
               message: 'メールアドレスかパスワードが違います。',
-              variant: 'danger',
+              variant: 'danger'
             }
           }
           console.error(error)
         })
     },
-    async twitterLogin() {
+    async twitterLogin () {
       await firebase
         .auth()
         .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
-    },
-  },
-  head() {
-    return {
-      title: 'ログイン',
     }
   },
+  head () {
+    return {
+      title: 'ログイン'
+    }
+  }
 }
 </script>
 

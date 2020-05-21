@@ -12,7 +12,7 @@
           >
             <b-card-body class="d-flex">
               <div>
-                <b-card-title :title="content.title"> </b-card-title>
+                <b-card-title :title="content.title" />
                 <div>
                   <div class="d-flex content-footer">
                     <b-avatar
@@ -20,7 +20,7 @@
                       class="mr-3 my-auto"
                       :src="content.user_img"
                       variant="light"
-                    ></b-avatar>
+                    />
                     <div class="content-footer-text">
                       <div>{{ content.user_name }}</div>
                       <div>
@@ -30,7 +30,7 @@
                   </div>
                 </div>
                 <div class="mt-1" style="color: #e0245e;">
-                  <i class="far fa-heart"></i>
+                  <i class="far fa-heart" />
                   {{ content.likes || 0 }}
                 </div>
               </div>
@@ -39,7 +39,7 @@
                 class="ml-auto right-img"
                 :src="content.top_img"
                 right
-              ></b-card-img>
+              />
             </b-card-body>
           </b-card>
         </b-link>
@@ -47,8 +47,10 @@
       <infinite-loading
         v-if="contents.length >= 10 && loading"
         @infinite="infiniteHandler()"
-      ></infinite-loading>
-      <div v-show="!loading" class="my-5 ml-3">これ以上記事はありません。</div>
+      />
+      <div v-show="!loading" class="my-5 ml-3">
+        これ以上記事はありません。
+      </div>
     </div>
     <div v-else>
       読み込み中
@@ -61,29 +63,29 @@ import InfiniteLoading from 'vue-infinite-loading'
 import firebase from '~/plugins/firebase'
 export default {
   components: {
-    InfiniteLoading,
+    InfiniteLoading
   },
-  data() {
+  data () {
     return {
       contents: [],
-      loading: true,
+      loading: true
     }
   },
-  created() {
+  created () {
     if (process.client) {
       this.setContents()
     }
   },
-  mounted() {},
+  mounted () {},
   methods: {
-    firstContent(index) {
+    firstContent (index) {
       if (index === 0) {
         return this.contents[0].top_img
       }
       return ''
     },
     // 新着10件取得
-    async setContents() {
+    async setContents () {
       console.log('get first contents')
       const querySnapshot = await firebase
         .firestore()
@@ -98,7 +100,7 @@ export default {
         this.contents.push(content)
       })
     },
-    async infiniteHandler() {
+    async infiniteHandler () {
       console.log('add contents')
       await firebase
         .firestore()
@@ -126,8 +128,8 @@ export default {
         .catch((error) => {
           console.error(error)
         })
-    },
-  },
+    }
+  }
 }
 </script>
 

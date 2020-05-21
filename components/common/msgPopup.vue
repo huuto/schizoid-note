@@ -12,9 +12,9 @@
         label="Spinning"
         small
         class="mr-3"
-      ></b-spinner>
-      <span v-html="msgPopup.message">aaa</span></b-alert
-    >
+      />
+      <span v-html="msgPopup.message" />
+    </b-alert>
   </div>
 </template>
 
@@ -23,9 +23,9 @@ export default {
   props: {
     msgPopup: {
       type: Object,
-      default: null,
-    },
-  },
+      default: null
+    }
+  }
 }
 </script>
 

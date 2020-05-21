@@ -14,9 +14,13 @@
             <b-card style="max-width: 640px;" class="mb-3 content-card">
               <b-card-body class="d-flex pb-2">
                 <div class="">
-                  <div class="mb-1">{{ setStatus(content.status) }}</div>
-                  <div class="mb-2">{{ content.updated_at }}</div>
-                  <b-card-title :title="content.title"> </b-card-title>
+                  <div class="mb-1">
+                    {{ setStatus(content.status) }}
+                  </div>
+                  <div class="mb-2">
+                    {{ content.updated_at }}
+                  </div>
+                  <b-card-title :title="content.title" />
                   <!-- <b-card-text>
                 {{ content.introduction }}
               </b-card-text> -->
@@ -26,7 +30,7 @@
                     "
                     class="mt-1 like"
                   >
-                    <i class="far fa-heart"></i>
+                    <i class="far fa-heart" />
                     {{ content.likes || 0 }}
                   </div>
                 </div>
@@ -37,7 +41,7 @@
                   right
                   height="100px"
                   width="100px"
-                ></b-card-img>
+                />
               </b-card-body>
               <div class="text-center">
                 <b-button
@@ -45,8 +49,9 @@
                   variant="link"
                   :to="'/posts/edit/' + content.id"
                   block
-                  >編集</b-button
                 >
+                  編集
+                </b-button>
               </div>
             </b-card>
           </b-link>
@@ -64,23 +69,23 @@ import firebase from '~/plugins/firebase'
 export default {
   // middleware: 'authRedirect',
   layout: 'user',
-  data() {
+  data () {
     return {
       contents: [],
       message: '',
-      loadMsg: '読み込み中',
+      loadMsg: '読み込み中'
     }
   },
-  created() {
+  created () {
     if (process.client) {
       this.getContents()
     }
   },
-  mounted() {
+  mounted () {
     this.$store.dispatch('user/authRedirect')
   },
   methods: {
-    async getContents() {
+    async getContents () {
       await firebase
         .firestore()
         .collection('posts')
@@ -96,29 +101,28 @@ export default {
             data.updated_at = this.$timestampToDate(data.updated_at)
             this.contents.push(data)
           })
-          if (this.contents.length === 0)
-            this.loadMsg = '投稿した記事はありません。'
+          if (this.contents.length === 0) { this.loadMsg = '投稿した記事はありません。' }
         })
         .catch(() => {
           this.message = '投稿記事が取得できませんでした。'
         })
     },
-    setStatus(status) {
+    setStatus (status) {
       if (status) {
         return [
           { value: 'draft', text: '下書き' },
           { value: 'public', text: '公開' },
           { value: 'anonym', text: '匿名公開' },
-          { value: 'private', text: '非公開' },
-        ].find((el) => el.value === status).text
+          { value: 'private', text: '非公開' }
+        ].find(el => el.value === status).text
       }
-    },
-  },
-  head() {
-    return {
-      title: '投稿一覧',
     }
   },
+  head () {
+    return {
+      title: '投稿一覧'
+    }
+  }
 }
 </script>
 

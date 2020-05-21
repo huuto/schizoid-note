@@ -16,21 +16,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import New from '~/components/pages/index/new.vue'
 // import Favorite from '~/components/pages/index/favorite.vue'
 export default {
   layout: 'contents',
   components: {
-    New,
+    New
     // Favorite
   },
-  head() {
+  head () {
     return {
       titleTemplate: null,
-      title: 'スキゾイド帳',
+      title: 'スキゾイド帳'
     }
-  },
+  }
 }
 </script>
 
