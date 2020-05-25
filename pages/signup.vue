@@ -1,7 +1,7 @@
 <template>
   <b-container class="my-5">
     <div style="max-width: 640px;" class="mx-auto">
-      <MsgPopup :msg-popup="msg_popup" />
+      <MsgPopup :msg-popup="msgPopup" />
     </div>
     <b-container class="bg-white p-5" style="max-width: 640px;">
       <div style="max-width: 400px;" class="m-auto">
@@ -44,20 +44,12 @@
             />
           </b-form-group>
           <div class="text-center mb-5">
-            <b-button
-              variant="primary"
-              style=""
-              @click="signup()"
-            >
+            <b-button variant="primary" style="" @click="signup()">
               登録
             </b-button>
           </div>
           <div class="text-center mb-5">
-            <b-button
-              variant="link"
-              style="color: #707070;"
-              to="login"
-            >
+            <b-button variant="link" style="color: #707070;" to="login">
               ログイン画面に戻る / Twitterでログイン
             </b-button>
           </div>
@@ -67,96 +59,106 @@
   </b-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import firebase from '@/plugins/firebase'
-import MsgPopup from '~/components/common/msgPopup'
-export default {
+import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
+
+export type DataType = {
+  user: {
+    name: string
+    email: string
+    password: string
+    passwordConfimation: string
+  }
+  msgPopup: MsgPopupType
+}
+
+export default Vue.extend({
   layout: 'prelogin',
   components: {
-    MsgPopup
+    MsgPopup,
   },
-  data () {
+  data() {
     return {
       user: {
         name: '',
         email: '',
         password: '',
-        password_confimation: ''
+        password_confimation: '',
       },
-      msg_popup: { message: null, variant: null, isSpinner: false }
+      msgPopup: { message: '', variant: '' },
     }
   },
   methods: {
-    signup () {
+    async signup() {
       if (
         this.user.name !== '' &&
         this.user.email !== '' &&
         this.user.password !== ''
       ) {
         if (this.user.password === this.user.password_confimation) {
-          firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.user.email, this.user.password)
-            .then(() => {
-              firebase
-                .auth()
-                .currentUser.updateProfile({
-                  displayName: this.user.name
-                })
-                .then(() => {
-                  const user = firebase.auth().currentUser
-                  firebase.firestore().collection('users').doc(user.uid).set({
-                    user_name: user.displayName,
-                    user_img: user.photoURL,
-                    profile: ''
-                  })
-                  this.$router.push('/')
-                })
+          try {
+            await firebase
+              .auth()
+              .createUserWithEmailAndPassword(
+                this.user.email,
+                this.user.password
+              )
+            await firebase.auth().currentUser?.updateProfile({
+              displayName: this.user.name,
             })
-            .catch((error) => {
-              if (
-                [
-                  'auth/credential-already-in-use',
-                  'auth/email-already-in-use'
-                ].includes(error.code)
-              ) {
-                this.msg_popup = {
-                  message: 'そのメールアドレスはすでに登録されています。',
-                  variant: 'danger'
-                }
-              } else if (error.code === 'auth/weak-password') {
-                this.msg_popup = {
-                  message: 'パスワードは6文字以上にしてください。',
-                  variant: 'danger'
-                }
-              } else {
-                this.msg_popup = {
-                  message: 'エラーが発生してユーザーが登録できませんでした。',
-                  variant: 'danger'
-                }
+            const user: firebase.User | null = await firebase.auth().currentUser
+            await firebase.firestore().collection('users').doc(user?.uid).set({
+              user_name: user?.displayName,
+              user_img: user?.photoURL,
+              profile: '',
+            })
+            this.$router.push('/')
+          } catch (error) {
+            if (
+              [
+                'auth/credential-already-in-use',
+                'auth/email-already-in-use',
+              ].includes(error.code)
+            ) {
+              this.msgPopup = {
+                message: 'そのメールアドレスはすでに登録されています。',
+                variant: 'danger',
               }
-              console.error(error)
-            })
+            } else if (error.code === 'auth/weak-password') {
+              this.msgPopup = {
+                message: 'パスワードは6文字以上にしてください。',
+                variant: 'danger',
+              }
+            } else {
+              this.msgPopup = {
+                message: 'エラーが発生してユーザーが登録できませんでした。',
+                variant: 'danger',
+              }
+            }
+            console.error(error)
+          }
         } else {
-          this.msg_popup = {
+          this.msgPopup = {
             message: 'パスワードと確認用パスワードが一致しません',
-            variant: 'danger'
+            variant: 'danger',
           }
         }
       } else {
-        this.msg_popup = {
+        this.msgPopup = {
           message: '必要な項目を入力してください',
-          variant: 'danger'
+          variant: 'danger',
         }
       }
+    },
+  },
+  head() {
+    return {
+      title: '新規登録',
     }
   },
-  head () {
-    return {
-      title: '新規登録'
-    }
-  }
-}
+})
 </script>
 
 <style lang="scss" scoped>

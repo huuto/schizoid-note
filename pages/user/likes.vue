@@ -55,23 +55,23 @@ import firebase from '~/plugins/firebase'
 
 export default {
   layout: 'user',
-  data () {
+  data() {
     return {
       contents: [],
-      likes: []
+      likes: [],
     }
   },
-  created () {
+  created() {
     if (process.client) {
     }
   },
-  mounted () {
+  mounted() {
     this.$store.dispatch('user/authRedirect')
     this.getLikes()
   },
   methods: {
     // いいね記事10件取得
-    async getLikes () {
+    async getLikes() {
       const querySnapshot = await firebase
         .firestore()
         .collection('likes')
@@ -92,8 +92,8 @@ export default {
             this.contents.push(data)
           })
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

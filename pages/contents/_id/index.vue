@@ -75,7 +75,7 @@ import firebase from '~/plugins/firebase'
 import Meta from '~/assets/mixins/meta'
 export default {
   mixins: [Meta],
-  async asyncData ({ route, redirect }) {
+  async asyncData({ route, redirect }) {
     let content = null
     await firebase
       .firestore()
@@ -83,7 +83,9 @@ export default {
       .doc(route.params.id)
       .get()
       .then((doc) => {
-        if (!doc.data().public) { redirect('/') }
+        if (!doc.data().public) {
+          redirect('/')
+        }
         content = doc.data()
       })
       .catch((error) => {
@@ -99,37 +101,37 @@ export default {
             : content.title.substr(0, 30),
         type: 'article',
         url: `https://schizoid-note.com/contents/${route.params.id}`,
-        image: content.top_img
-      }
+        image: content.top_img,
+      },
     }
   },
-  data () {
+  data() {
     return {
       content: {
-        likes: 0
+        likes: 0,
       },
       authorPosts: [],
-      isLiked: false
+      isLiked: false,
     }
   },
   computed: {
     userId: {
-      get () {
+      get() {
         return this.$store.state.user.id
-      }
-    }
+      },
+    },
   },
   watch: {
-    userId (val) {
+    userId(val) {
       this.chkLiked(val)
-    }
+    },
   },
-  created () {},
-  mounted () {
+  created() {},
+  mounted() {
     this.chkLiked(this.userId)
   },
   methods: {
-    chkLiked (userId) {
+    chkLiked(userId) {
       firebase
         .firestore()
         .collection('likes')
@@ -137,14 +139,18 @@ export default {
         .where('user_id', '==', userId)
         .get()
         .then((docs) => {
-          if (docs.size === 1) { this.isLiked = true }
+          if (docs.size === 1) {
+            this.isLiked = true
+          }
         })
     },
     /**
      * いいねボタン押下
      */
-    async likes () {
-      if (!this.$store.state.user.isLogin) { return }
+    async likes() {
+      if (!this.$store.state.user.isLogin) {
+        return
+      }
       // いいねを解除
       if (this.isLiked) {
         const docs = await firebase
@@ -162,31 +168,31 @@ export default {
         firebase.firestore().collection('likes').add({
           post_id: this.$route.params.id,
           user_id: this.$store.state.user.id,
-          created_at: firebase.firestore.Timestamp.now()
+          created_at: firebase.firestore.Timestamp.now(),
         })
         this.content.likes++
       }
       this.isLiked = !this.isLiked
-    }
+    },
   },
-  head () {
+  head() {
     return {
       title: this.meta.title,
       meta: [
         {
           hid: 'og:url',
           property: 'og:url',
-          content: this.meta.url
+          content: this.meta.url,
         },
         { hid: 'og:title', property: 'og:title', content: this.meta.title },
         {
           hid: 'og:image',
           property: 'og:image',
-          content: this.meta.image
-        }
-      ]
+          content: this.meta.image,
+        },
+      ],
     }
-  }
+  },
 }
 </script>
 

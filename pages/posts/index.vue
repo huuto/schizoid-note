@@ -18,7 +18,7 @@
                     {{ setStatus(content.status) }}
                   </div>
                   <div class="mb-2">
-                    {{ content.updated_at }}
+                    {{ $timestampToDate(content.updatedAt) }}
                   </div>
                   <b-card-title :title="content.title" />
                   <!-- <b-card-text>
@@ -35,9 +35,9 @@
                   </div>
                 </div>
                 <b-card-img
-                  v-show="content.top_img"
+                  v-show="content.topImg"
                   class="ml-auto"
-                  :src="content.top_img"
+                  :src="content.topImg"
                   right
                   height="100px"
                   width="100px"
@@ -64,28 +64,50 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import firebase from '~/plugins/firebase'
-export default {
+
+export type ContentType = {
+  id: string
+  title: string
+  topImg: string
+  status: 'draft' | 'public' | 'anonym' | 'private'
+  likes: number
+  updatedAt: firebase.firestore.Timestamp
+}
+
+export type StatusType = {
+  value: string
+  text: string
+}
+
+export type DataType = {
+  contents: ContentType[]
+  message: string
+  loadMsg: string
+}
+
+export default Vue.extend({
   // middleware: 'authRedirect',
   layout: 'user',
-  data () {
+  data(): DataType {
     return {
       contents: [],
       message: '',
-      loadMsg: '読み込み中'
+      loadMsg: '読み込み中',
     }
   },
-  created () {
+  created() {
     if (process.client) {
       this.getContents()
     }
   },
-  mounted () {
+  mounted() {
     this.$store.dispatch('user/authRedirect')
   },
   methods: {
-    async getContents () {
+    async getContents() {
       await firebase
         .firestore()
         .collection('posts')
@@ -96,34 +118,41 @@ export default {
         .then((docs) => {
           this.contents = []
           docs.forEach((doc) => {
-            const data = doc.data()
-            data.id = doc.id
-            data.updated_at = this.$timestampToDate(data.updated_at)
-            this.contents.push(data)
+            const content: ContentType = {
+              id: doc.id,
+              title: doc.data().title,
+              topImg: doc.data().top_img,
+              status: doc.data().status,
+              likes: doc.data().likes,
+              updatedAt: doc.data().updated_at,
+            }
+            this.contents.push(content)
           })
-          if (this.contents.length === 0) { this.loadMsg = '投稿した記事はありません。' }
+          if (this.contents.length === 0) {
+            this.loadMsg = '投稿した記事はありません。'
+          }
         })
         .catch(() => {
           this.message = '投稿記事が取得できませんでした。'
         })
     },
-    setStatus (status) {
+    setStatus(status: string): string | undefined {
       if (status) {
         return [
           { value: 'draft', text: '下書き' },
           { value: 'public', text: '公開' },
           { value: 'anonym', text: '匿名公開' },
-          { value: 'private', text: '非公開' }
-        ].find(el => el.value === status).text
+          { value: 'private', text: '非公開' },
+        ].find((el) => el.value === status)?.text
       }
+    },
+  },
+  head() {
+    return {
+      title: '投稿一覧',
     }
   },
-  head () {
-    return {
-      title: '投稿一覧'
-    }
-  }
-}
+})
 </script>
 
 <style lang="scss" scoped>

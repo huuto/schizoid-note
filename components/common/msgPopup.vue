@@ -18,15 +18,23 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, { PropType } from 'vue'
+
+export type MsgPopupType = {
+  message: string
+  variant: '' | 'success' | 'info' | 'danger'
+  isSpinner?: boolean
+}
+
+export default Vue.extend({
   props: {
     msgPopup: {
-      type: Object,
-      default: null
-    }
-  }
-}
+      type: Object as PropType<MsgPopupType>,
+      default: null,
+    },
+  },
+})
 </script>
 
 <style lang="scss" scoped>

@@ -25,7 +25,7 @@ exports.updateUser = functions.firestore
       db.collection('posts').doc(post.id).update({
         profile: user.profile,
         user_name: user.user_name,
-        user_img: user.user_img
+        user_img: user.user_img,
       })
     })
   })

@@ -18,13 +18,13 @@
                     <b-avatar
                       size="2rem"
                       class="mr-3 my-auto"
-                      :src="content.user_img"
+                      :src="content.userImg"
                       variant="light"
                     />
                     <div class="content-footer-text">
-                      <div>{{ content.user_name }}</div>
+                      <div>{{ content.userName }}</div>
                       <div>
-                        {{ $timestampToDate(content.published_at) }}
+                        {{ $timestampToDate(content.publishedAt) }}
                       </div>
                     </div>
                   </div>
@@ -35,9 +35,9 @@
                 </div>
               </div>
               <b-card-img
-                v-show="index !== 0 && content.top_img"
+                v-show="index !== 0 && content.topImg"
                 class="ml-auto right-img"
-                :src="content.top_img"
+                :src="content.topImg"
                 right
               />
             </b-card-body>
@@ -58,34 +58,51 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import InfiniteLoading from 'vue-infinite-loading'
 import firebase from '~/plugins/firebase'
-export default {
+
+export type ContentType = {
+  id: string
+  title: string
+  topImg: string
+  userName: string
+  userImg: string
+  likes: number
+  publishedAt: firebase.firestore.Timestamp
+}
+
+export type DataType = {
+  contents: ContentType[]
+  loading: boolean
+}
+
+export default Vue.extend({
   components: {
-    InfiniteLoading
+    InfiniteLoading,
   },
-  data () {
+  data(): DataType {
     return {
       contents: [],
-      loading: true
+      loading: true,
     }
   },
-  created () {
+  created() {
     if (process.client) {
       this.setContents()
     }
   },
-  mounted () {},
+  mounted() {},
   methods: {
-    firstContent (index) {
+    firstContent(index: number): string {
       if (index === 0) {
-        return this.contents[0].top_img
+        return this.contents[0].topImg
       }
       return ''
     },
     // 新着10件取得
-    async setContents () {
+    async setContents() {
       console.log('get first contents')
       const querySnapshot = await firebase
         .firestore()
@@ -95,42 +112,55 @@ export default {
         .limit(10)
         .get()
       querySnapshot.forEach((doc) => {
-        const content = doc.data()
-        content.id = doc.id
+        const content: ContentType = {
+          id: doc.id,
+          title: doc.data().title,
+          topImg: doc.data().top_img,
+          userName: doc.data().user_name,
+          userImg: doc.data().user_img,
+          likes: doc.data().likes,
+          publishedAt: doc.data().published_at,
+        }
         this.contents.push(content)
       })
     },
-    async infiniteHandler () {
+    async infiniteHandler() {
       console.log('add contents')
-      await firebase
-        .firestore()
-        .collection('posts')
-        .where('public', '==', true)
-        .where(
-          'published_at',
-          '<=',
-          this.contents[this.contents.length - 1].published_at
-        )
-        .orderBy('published_at', 'desc')
-        .limit(10)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const content = doc.data()
-            content.id = doc.id
-            this.contents.push(content)
-          })
-          if (querySnapshot.size < 10) {
-            // 無限ローディング終了
-            this.loading = false
+      try {
+        const querySnapshot = await firebase
+          .firestore()
+          .collection('posts')
+          .where('public', '==', true)
+          .where(
+            'published_at',
+            '<=',
+            this.contents[this.contents.length - 1].publishedAt
+          )
+          .orderBy('published_at', 'desc')
+          .limit(10)
+          .get()
+        querySnapshot.forEach((doc) => {
+          const content: ContentType = {
+            id: doc.id,
+            title: doc.data().title,
+            topImg: doc.data().top_img,
+            userName: doc.data().user_name,
+            userImg: doc.data().user_img,
+            likes: doc.data().likes,
+            publishedAt: doc.data().published_at,
           }
+          this.contents.push(content)
         })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
-  }
-}
+        if (querySnapshot.size < 10) {
+          // 無限ローディング終了
+          this.loading = false
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+  },
+})
 </script>
 
 <style lang="scss" scoped>

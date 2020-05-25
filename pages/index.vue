@@ -6,7 +6,7 @@
           <New />
         </b-col>
         <!-- <b-col cols="12" md="8">
-          <New />
+          New />
         </b-col> -->
         <!-- <b-col cols="12" md="4">
           <Favorite />
@@ -17,21 +17,28 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import New from '~/components/pages/index/new.vue'
 // import Favorite from '~/components/pages/index/favorite.vue'
-export default {
+
+export type Head = {
+  titleTemplate: string
+  title: string
+}
+
+export default Vue.extend({
   layout: 'contents',
   components: {
-    New
+    New,
     // Favorite
   },
-  head () {
+  head(): Head {
     return {
-      titleTemplate: null,
-      title: 'スキゾイド帳'
+      titleTemplate: '%s',
+      title: 'スキゾイド帳',
     }
-  }
-}
+  },
+})
 </script>
 
 <style></style>

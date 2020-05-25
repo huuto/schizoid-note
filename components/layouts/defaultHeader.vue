@@ -25,11 +25,7 @@
               style="align-items: center;"
             >
               <template v-slot:button-content>
-                <b-avatar
-                  class=""
-                  :src="user.photoURL"
-                  variant="light"
-                />
+                <b-avatar class="" :src="user.photoURL" variant="light" />
                 <!-- <b-avatar
                   class=""
                   src="~/static/img/schizoid-chan.png"
@@ -59,22 +55,12 @@
           </div>
           <div v-else class="d-flex prelogin">
             <div>
-              <b-btn
-                variant="outline-secondary"
-                size="sm"
-                class=""
-                to="/login"
-              >
+              <b-btn variant="outline-secondary" size="sm" class="" to="/login">
                 ログイン
               </b-btn>
             </div>
             <div>
-              <b-btn
-                variant="outline-primary"
-                class=""
-                to="/signup"
-                size="sm"
-              >
+              <b-btn variant="outline-primary" class="" to="/signup" size="sm">
                 新規登録
               </b-btn>
             </div>
@@ -87,20 +73,20 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {}
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   methods: {
-    logout () {
+    logout() {
       this.$store.commit('user/logout')
       this.$router.push('/login')
-    }
-  }
+    },
+  },
 }
 </script>
 
