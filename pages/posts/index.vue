@@ -68,7 +68,7 @@
 import Vue from 'vue'
 import firebase from '~/plugins/firebase'
 
-export type ContentType = {
+type ContentType = {
   id: string
   title: string
   topImg: string
@@ -77,12 +77,12 @@ export type ContentType = {
   updatedAt: firebase.firestore.Timestamp
 }
 
-export type StatusType = {
+type StatusType = {
   value: string
   text: string
 }
 
-export type DataType = {
+type DataType = {
   contents: ContentType[]
   message: string
   loadMsg: string

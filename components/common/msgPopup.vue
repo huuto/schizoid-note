@@ -24,6 +24,7 @@ import Vue, { PropType } from 'vue'
 export type MsgPopupType = {
   message: string
   variant: '' | 'success' | 'info' | 'danger'
+  /** @default false */
   isSpinner?: boolean
 }
 

@@ -1,19 +1,19 @@
 <template>
   <div style="min-height: 100vh;">
-    <Header />
+    <DefaultHeader />
     <nuxt />
-    <Footer />
+    <DefaultFooter />
   </div>
 </template>
 
 <script>
-import Header from '~/components/layouts/defaultHeader.vue'
-import Footer from '~/components/layouts/defaultFooter.vue'
+import DefaultHeader from '~/components/layouts/defaultHeader.vue'
+import DefaultFooter from '~/components/layouts/defaultFooter.vue'
 
 export default {
   components: {
-    Header,
-    Footer,
+    DefaultHeader,
+    DefaultFooter,
   },
   data() {
     return {}

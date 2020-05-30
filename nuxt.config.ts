@@ -52,9 +52,6 @@ const config: Configuration = {
         src: 'https://kit.fontawesome.com/fda42037e8.js',
         crossorigin: 'anonymous',
       },
-      {
-        src: 'https://cdn.quilljs.com/1.3.5/quill.bubble.css',
-      },
     ],
   },
   env: {
@@ -74,7 +71,7 @@ const config: Configuration = {
     { src: '~plugins/quill.js', mode: 'client' },
     '~plugins/sanitize-html.js',
     '~plugins/firebase.js',
-    { src: '~plugins/browser-image-compression.js', mode: 'client' },
+    // { src: '~plugins/browser-image-compression.js', mode: 'client' },
     '~plugins/common/timestampToDate.js',
   ],
   buildModules: [

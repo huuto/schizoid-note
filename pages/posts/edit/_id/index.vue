@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 <template>
   <div>
     <b-container class="pt-3" style="max-width: 640px;">
@@ -35,7 +34,7 @@
             <b-form-select
               v-model="content.status"
               :options="statusOptions"
-              @change="setStatus()"
+              @change="changeStatus()"
             />
           </b-col>
         </b-row>
@@ -99,7 +98,6 @@
               @image-removed="handleImageRemoved"
               @text-change="textChange = true"
             />
-            <!-- <Editor :body="content.body" :text-change="textChange" /> -->
           </div>
         </no-ssr>
         <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
@@ -159,13 +157,29 @@
   </div>
 </template>
 <script lang="ts">
+/* eslint-disable camelcase */
 import Vue from 'vue'
-import imageCompression from 'browser-image-compression'
+import imageCompression from '~/plugins/browser-image-compression'
 import firebase from '~/plugins/firebase'
 import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
-import 'quill/dist/quill.bubble.css'
 
-export type DataType = {
+type PostType = {
+  created_at: firebase.firestore.Timestamp | null
+  updated_at: firebase.firestore.Timestamp | null
+  published_at: firebase.firestore.Timestamp | null
+  title: string
+  top_img: string
+  body: string
+  status: 'draft' | 'public' | 'anonym' | 'private'
+  public: boolean
+  user_id: string
+  user_img: string
+  user_name: string
+  profile: string
+  likes: number
+}
+
+type DataType = {
   content: {
     createdAt: firebase.firestore.Timestamp | null
     updatedAt: firebase.firestore.Timestamp | null
@@ -190,10 +204,10 @@ export type DataType = {
   preStatus: 'draft' | 'public' | 'anonym' | 'private'
   showModal: boolean
   uploadFiles: {
-    topImg: string
-    body: []
+    topImg: File | null
+    body: { file: File; url: string }[]
   }
-  deleteFiles: []
+  deleteFiles: string[]
 }
 
 export default Vue.extend({
@@ -246,7 +260,7 @@ export default Vue.extend({
       preStatus: 'draft',
       showModal: false,
       // body[{file: null, url: ""}]
-      uploadFiles: { topImg: '', body: [] },
+      uploadFiles: { topImg: null, body: [] },
       // storageから削除予定の画像URL
       deleteFiles: [],
     }
@@ -274,12 +288,15 @@ export default Vue.extend({
   beforeDestroy() {
     window.removeEventListener('beforeunload', this.checkWindow)
   },
-  beforeRouteLeave(next: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  beforeRouteLeave(to, from, next) {
     if (this.textChange) {
       const ans = window.confirm(
         '変更が保存されていません。本当に移動しますか？'
       )
-      next(ans)
+      if (ans) {
+        next()
+      }
     } else {
       next()
     }
@@ -288,8 +305,9 @@ export default Vue.extend({
     this.$store.dispatch('user/authRedirect')
     await this.getContent()
     this.setStatus()
-    // setStatusでtureになってしまう対策
-    this.textChange = false
+    setTimeout(() => {
+      this.textChange = false
+    }, 500)
   },
   methods: {
     /**
@@ -321,9 +339,18 @@ export default Vue.extend({
           this.content = {
             createdAt: doc.data()?.created_at,
             updatedAt: doc.data()?.updated_at,
+            publishedAt: doc.data()?.published_at,
+            title: doc.data()?.title,
+            topImg: doc.data()?.top_img,
+            body: doc.data()?.body,
+            status: doc.data()?.status,
+            public: doc.data()?.public,
+            userId: doc.data()?.user_id,
+            userImg: doc.data()?.user_img,
+            userName: doc.data()?.user_name,
+            profile: doc.data()?.profile,
+            likes: doc.data()?.likes,
           }
-
-          doc.data()
           this.preStatus = this.content.status
         } else {
           this.$router.push('/')
@@ -357,19 +384,33 @@ export default Vue.extend({
       } else {
         this.content.public = false
       }
+    },
+    changeStatus() {
+      this.saveBtn = this.statusOptions.find(
+        (el) => el.value === this.content.status
+      ).btn
+      if (['public', 'anonym'].includes(this.content.status)) {
+        this.content.public = true
+      } else {
+        this.content.public = false
+      }
       this.textChange = true
     },
     // ポップアップメッセージのリセット
     resetMsg() {
-      this.msgPopup = { message: null, variant: '', isSpinner: false }
+      this.msgPopup = { message: '', variant: '', isSpinner: false }
     },
     // 画像のアップロード
-    async handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+    async handleImageAdded(
+      file: File,
+      Editor: any,
+      cursorLocation: any,
+      resetUploader: any
+    ) {
       if (!file.type.match(/^image\//g)) {
         this.msgPopup = {
           message: '画像以外はアップロードできません。',
           variant: 'danger',
-          isSpinner: false,
         }
         return null
       }
@@ -379,7 +420,7 @@ export default Vue.extend({
       }
       const resizeImg = await imageCompression(file, options)
       const url = await imageCompression.getDataUrlFromFile(resizeImg)
-      this.uploadFiles.body.push({ file: resizeImg, url })
+      this.uploadFiles.body.push({ file: resizeImg as File, url })
       Editor.insertEmbed(cursorLocation, 'image', url)
       resetUploader()
     },
@@ -401,7 +442,7 @@ export default Vue.extend({
         this.content.topImg = await imageCompression.getDataUrlFromFile(
           resizeImg
         )
-        this.uploadFiles.topImg = resizeImg
+        this.uploadFiles.topImg = resizeImg as File
         this.textChange = true
       }
     },
@@ -419,7 +460,7 @@ export default Vue.extend({
       this.content.topImg = ''
     },
     // ストレージにある場合画像削除の準備
-    handleImageRemoved(imageURL) {
+    handleImageRemoved(imageURL: string) {
       if (imageURL.startsWith('https')) {
         this.deleteFiles.push(imageURL)
       } else {
@@ -433,7 +474,7 @@ export default Vue.extend({
      * 本当に画像削除
      * @param {String} imageURL
      */
-    imageRemove(imageURL) {
+    imageRemove(imageURL: string) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -496,7 +537,7 @@ export default Vue.extend({
       }
       // 本文画像
       for (const img of this.uploadFiles.body) {
-        const url = await this.uploadFile(img.file)
+        const url = await this.uploadFile(img.file as File)
         this.content.body = await this.content.body.replace(img.url, url)
       }
       // 削除画像の削除
@@ -505,6 +546,21 @@ export default Vue.extend({
       })
       this.uploadFiles = { topImg: null, body: [] }
       this.deleteFiles = []
+      const post: PostType = {
+        created_at: this.content.createdAt,
+        updated_at: this.content.updatedAt,
+        published_at: this.content.publishedAt,
+        title: this.content.title,
+        top_img: this.content.topImg,
+        body: this.content.body,
+        status: this.content.status,
+        public: this.content.public,
+        user_id: this.content.userId,
+        user_img: this.content.userImg,
+        user_name: this.content.userName,
+        profile: this.content.profile,
+        likes: this.content.likes,
+      }
       if (this.$route.params.id === 'new') {
         // 日付を使ったユニークID
         const postId =
@@ -514,7 +570,7 @@ export default Vue.extend({
           .firestore()
           .collection('posts')
           .doc(postId)
-          .set(this.content)
+          .set(post)
           .then(() => {
             this.msgPopupSuccess()
             this.textChange = false
@@ -533,7 +589,7 @@ export default Vue.extend({
           .firestore()
           .collection('posts')
           .doc(this.$route.params.id)
-          .set(this.content)
+          .set(post)
           .then(() => {
             this.msgPopupSuccess()
             this.textChange = false
@@ -544,19 +600,19 @@ export default Vue.extend({
           .catch(() => {
             this.msgPopupError()
           })
+        // ステータスタグのリセット
+        this.setStatus()
       }
     },
     msgPopupSuccess() {
       this.msgPopup = {
         message: '保存しました。',
         variant: 'success',
-        isSpinner: false,
       }
       setTimeout(() => {
         this.msgPopup = {
           message: '',
           variant: '',
-          isSpinner: false,
         }
       }, 1000)
     },
@@ -564,10 +620,9 @@ export default Vue.extend({
       this.msgPopup = {
         message: 'エラーが発生しました。',
         variant: 'danger',
-        isSpinner: false,
       }
     },
-    checkWindow(event) {
+    checkWindow(event: any) {
       if (this.textChange) {
         event.preventDefault()
         event.returnValue = '変更が保存されていません。本当に移動しますか？'
@@ -578,7 +633,7 @@ export default Vue.extend({
      * @param {File} file
      * @returns ダウンロードURL
      */
-    async uploadFile(file) {
+    async uploadFile(file: File) {
       const fileName = Date.now() + '_' + file.name
       const ref = firebase.storage().ref()
       await ref.child('posts/' + fileName).put(file)
@@ -587,9 +642,15 @@ export default Vue.extend({
       return url
     },
   },
-  head() {
+  head(): { title: string; link: any[] } {
     return {
       title: this.setTitle(),
+      link: [
+        {
+          rel: 'stylesheet',
+          href: 'https://cdn.quilljs.com/1.3.5/quill.bubble.css',
+        },
+      ],
     }
   },
 })
