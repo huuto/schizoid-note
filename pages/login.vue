@@ -39,7 +39,7 @@
               style="background-color: #1da1f2; border-color: #1da1f2;"
               @click="twitterLogin()"
             >
-              <i class="fab fa-twitter mr-2" color="white" />Twitterログイン
+              <i class="fab fa-twitter mr-2" color="white" />Twitterでログイン
             </b-button>
           </div>
           <div class="text-center mb-5">

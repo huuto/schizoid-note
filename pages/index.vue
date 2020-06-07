@@ -21,7 +21,7 @@ import Vue from 'vue'
 import New from '~/components/pages/index/new.vue'
 // import Favorite from '~/components/pages/index/favorite.vue'
 
-export type Head = {
+type Head = {
   titleTemplate: string
   title: string
 }

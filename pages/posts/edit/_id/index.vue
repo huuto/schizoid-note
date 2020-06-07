@@ -538,7 +538,7 @@ export default Vue.extend({
       // 本文画像
       for (const img of this.uploadFiles.body) {
         const url = await this.uploadFile(img.file as File)
-        this.content.body = await this.content.body.replace(img.url, url)
+        this.content.body = await this.content.body?.replace(img.url, url)
       }
       // 削除画像の削除
       this.deleteFiles.forEach((url) => {

@@ -5,8 +5,16 @@
     </div>
     <b-container class="bg-white p-5" style="max-width: 640px;">
       <div style="max-width: 400px;" class="m-auto">
-        <div class="text-center" style="margin: 7vh 0 10vh 0;">
+        <div class="text-center" style="margin: 7vh 0 5vh 0;">
           <h2>新規登録</h2>
+        </div>
+        <div class="text-center mb-5">
+          <b-button
+            style="background-color: #1da1f2; border-color: #1da1f2;"
+            @click="twitterLogin()"
+          >
+            <i class="fab fa-twitter mr-2" color="white" />Twitterで登録
+          </b-button>
         </div>
         <b-form @submit.prevent="signup()">
           <b-form-group>
@@ -34,23 +42,40 @@
               required
               class="mb-3"
             />
-            <label for="password_confimation">確認用パスワード</label>
+            <label for="passwordConfimation">確認用パスワード</label>
             <b-form-input
-              id="password_confimation"
-              v-model="user.password_confimation"
+              id="passwordConfimation"
+              v-model="user.passwordConfimation"
               type="password"
               required
-              class="mb-3"
+              class="mb-4"
             />
+            <p>
+              登録の前に
+              <b-link
+                to="/support/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                >利用規約</b-link
+              >をご確認ください。
+            </p>
+            <b-form-checkbox v-model="isAgree"
+              >利用規約の内容に合意しました。</b-form-checkbox
+            >
           </b-form-group>
           <div class="text-center mb-5">
-            <b-button variant="primary" style="" @click="signup()">
+            <b-button
+              variant="primary"
+              style=""
+              :disabled="!isAgree"
+              @click="signup()"
+            >
               登録
             </b-button>
           </div>
           <div class="text-center mb-5">
             <b-button variant="link" style="color: #707070;" to="login">
-              ログイン画面に戻る / Twitterでログイン
+              ログイン画面に戻る
             </b-button>
           </div>
         </b-form>
@@ -72,6 +97,7 @@ export type DataType = {
     passwordConfimation: string
   }
   msgPopup: MsgPopupType
+  isAgree: boolean
 }
 
 export default Vue.extend({
@@ -79,16 +105,39 @@ export default Vue.extend({
   components: {
     MsgPopup,
   },
-  data() {
+  data(): DataType {
     return {
       user: {
         name: '',
         email: '',
         password: '',
-        password_confimation: '',
+        passwordConfimation: '',
       },
-      msgPopup: { message: '', variant: '' },
+      msgPopup: { message: '', variant: '', isSpinner: false },
+      isAgree: false,
     }
+  },
+  mounted() {
+    // twitterのリダイレクト認証で戻ってきた場合、認証情報をユーザーに反映しホームに遷移
+    firebase.auth().onAuthStateChanged((user: firebase.User | null) => {
+      if (user !== null) {
+        this.msgPopup = {
+          message: 'ホーム画面に移動します。<br />しばらくお待ちください。',
+          variant: 'info',
+          isSpinner: true,
+        }
+        this.$store.dispatch('authStateChanged')
+        const user = firebase.auth().currentUser
+        firebase.firestore().collection('users').doc(user?.uid).set(
+          {
+            user_name: user?.displayName,
+            user_img: user?.photoURL,
+          },
+          { merge: true }
+        )
+        this.$router.push('/')
+      }
+    })
   },
   methods: {
     async signup() {
@@ -97,7 +146,7 @@ export default Vue.extend({
         this.user.email !== '' &&
         this.user.password !== ''
       ) {
-        if (this.user.password === this.user.password_confimation) {
+        if (this.user.password === this.user.passwordConfimation) {
           try {
             await firebase
               .auth()
@@ -151,6 +200,11 @@ export default Vue.extend({
           variant: 'danger',
         }
       }
+    },
+    async twitterLogin() {
+      await firebase
+        .auth()
+        .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
     },
   },
   head() {

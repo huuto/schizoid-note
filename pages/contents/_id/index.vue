@@ -1,8 +1,8 @@
 <template>
   <div>
     <b-container style="max-width: 620px;" class="pt-5">
-      <div v-show="content.top_img" class="mb-5 text-center">
-        <b-img class="top-img" :src="content.top_img" />
+      <div v-show="content.topImg" class="mb-5 text-center">
+        <b-img class="top-img" :src="content.topImg" />
       </div>
       <div class="mb-3">
         <h2>{{ content.title }}</h2>
@@ -70,68 +70,109 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+/* eslint-disable camelcase */
+import Vue from 'vue'
 import firebase from '~/plugins/firebase'
 import Meta from '~/assets/mixins/meta'
-export default {
+
+type ContentType = {
+  topImg: string
+  title: string
+  body: string
+  userImg: string
+  userName: string
+  profile: string
+  likes: string
+}
+
+type AsyncDataType = {
+  content: ContentType
+  meta: {
+    title: string
+    type: string
+    url: string
+    image: string
+  }
+}
+
+type HeadType = {
+  title: string
+  meta: {
+    hid: string
+    property: string
+    content: string
+  }[]
+}
+
+type DataType = {
+  content?: ContentType
+  authorPosts: []
+  isLiked: boolean
+}
+
+export default Vue.extend({
   mixins: [Meta],
-  async asyncData({ route, redirect }) {
-    let content = null
-    await firebase
-      .firestore()
-      .collection('posts')
-      .doc(route.params.id)
-      .get()
-      .then((doc) => {
-        if (!doc.data().public) {
-          redirect('/')
-        }
-        content = doc.data()
-      })
-      .catch((error) => {
-        console.error(error)
+  async asyncData({ route, redirect }): Promise<AsyncDataType | void> {
+    try {
+      const doc = await firebase
+        .firestore()
+        .collection('posts')
+        .doc(route.params.id)
+        .get()
+      if (!doc.data()?.public) {
         redirect('/')
-      })
-    return {
-      content,
-      meta: {
-        title:
-          content.title.length <= 30
-            ? content.title
-            : content.title.substr(0, 30),
-        type: 'article',
-        url: `https://schizoid-note.com/contents/${route.params.id}`,
-        image: content.top_img,
-      },
+      }
+      const content: ContentType = {
+        topImg: doc.data()?.top_img,
+        title: doc.data()?.title,
+        body: doc.data()?.body,
+        userImg: doc.data()?.user_img,
+        userName: doc.data()?.user_name,
+        profile: doc.data()?.profile,
+        likes: doc.data()?.likes,
+      }
+      return {
+        content,
+        meta: {
+          title:
+            content.title.length <= 30
+              ? content.title
+              : content.title.substr(0, 30),
+          type: 'article',
+          url: `https://schizoid-note.com/contents/${route.params.id}`,
+          image: content.topImg,
+        },
+      }
+    } catch (error) {
+      console.error(error)
+      redirect('/')
     }
   },
-  data() {
+  data(): DataType {
     return {
-      content: {
-        likes: 0,
-      },
       authorPosts: [],
       isLiked: false,
     }
   },
   computed: {
     userId: {
-      get() {
+      get(this: any): string {
         return this.$store.state.user.id
       },
     },
   },
   watch: {
-    userId(val) {
+    userId(this: any, val: string) {
       this.chkLiked(val)
     },
   },
   created() {},
-  mounted() {
+  mounted(this: any) {
     this.chkLiked(this.userId)
   },
   methods: {
-    chkLiked(userId) {
+    chkLiked(this: any, userId: string) {
       firebase
         .firestore()
         .collection('likes')
@@ -147,7 +188,7 @@ export default {
     /**
      * いいねボタン押下
      */
-    async likes() {
+    async likes(this: any) {
       if (!this.$store.state.user.isLogin) {
         return
       }
@@ -162,7 +203,7 @@ export default {
         docs.forEach((doc) => {
           firebase.firestore().collection('likes').doc(doc.id).delete()
         })
-        this.content.likes--
+        this.content.likes = this.content.likes - 1
         // いいねを追加
       } else {
         firebase.firestore().collection('likes').add({
@@ -170,12 +211,12 @@ export default {
           user_id: this.$store.state.user.id,
           created_at: firebase.firestore.Timestamp.now(),
         })
-        this.content.likes++
+        this.content.likes = this.content.likes + 1
       }
       this.isLiked = !this.isLiked
     },
   },
-  head() {
+  head(this: any): HeadType {
     return {
       title: this.meta.title,
       meta: [
@@ -193,7 +234,7 @@ export default {
       ],
     }
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

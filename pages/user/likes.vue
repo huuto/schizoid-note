@@ -50,12 +50,29 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+/* eslint-disable camelcase */
+import Vue from 'vue'
 import firebase from '~/plugins/firebase'
 
-export default {
+type ContentType = {
+  id: string
+  title: string
+  topImg: string
+  likes: number
+  uplishedAt: firebase.firestore.Timestamp
+  userName: string
+  userImg: string
+}
+
+type DataType = {
+  contents: ContentType[]
+  likes: string[]
+}
+
+export default Vue.extend({
   layout: 'user',
-  data() {
+  data(): DataType {
     return {
       contents: [],
       likes: [],
@@ -87,14 +104,21 @@ export default {
           .doc(doc.data().post_id)
           .get()
           .then((postDoc) => {
-            const data = postDoc.data()
-            data.id = postDoc.id
-            this.contents.push(data)
+            const content: ContentType = {
+              id: postDoc.id,
+              title: postDoc.data()?.title,
+              topImg: postDoc.data()?.top_img,
+              likes: postDoc.data()?.likes,
+              uplishedAt: postDoc.data()?.updated_at,
+              userName: postDoc.data()?.user_name,
+              userImg: postDoc.data()?.user_img,
+            }
+            this.contents.push(content)
           })
       })
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
