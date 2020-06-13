@@ -5,12 +5,11 @@
     ""
   ],
   "git.ignoreLimitWarning": true,
-  "eslint.autoFixOnSave": true,
   "eslint.options": { "configFile": "./.eslintrc.js" },
   "eslint.validate": [
     "javascript",
-    { "language": "javascript", "autoFix": true },
-    { "language": "vue", "autoFix": true }
+    "typescript", 
+    "vue", 
   ],
 "editor.formatOnSave": false,
 "python.pythonPath": "C:\\Users\\Takuto\\Anaconda3\\python.exe",

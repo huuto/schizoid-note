@@ -18,7 +18,7 @@
             {{ content.introduction }}
           </b-card-text>
           <div class="d-flex content-footer">
-            <b-avatar size="1.5rem" class="mr-2 my-auto"></b-avatar>
+            <b-avatar size="1.5rem" class="mr-2 my-auto" />
             <div class="content-footer-text">
               <div>
                 {{ content.user_name }}

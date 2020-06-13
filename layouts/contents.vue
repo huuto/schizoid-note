@@ -1,28 +1,29 @@
 <template>
   <div>
-    <Header />
+    <DefaultHeader />
     <ContentsHeader class="mb-5" />
     <nuxt style="min-height: 90vh;" />
-    <Footer />
+    <DefaultFooter />
   </div>
 </template>
 
 <script>
-import Header from '~/components/layouts/header.vue'
-import Footer from '~/components/layouts/footer.vue'
+import DefaultHeader from '~/components/layouts/defaultHeader.vue'
+import DefaultFooter from '~/components/layouts/defaultFooter.vue'
 import ContentsHeader from '~/components/layouts/contentsHeader.vue'
 
 export default {
   components: {
-    Header,
-    Footer,
+    DefaultHeader,
+    DefaultFooter,
     ContentsHeader,
   },
   data() {
     return {}
   },
   mounted() {
-    this.$store.dispatch('authStateChanged')
+    this.$store.dispatch('user/authStateChanged')
+    console.log(process.env.VUE_APP_apiKey)
   },
 }
 </script>

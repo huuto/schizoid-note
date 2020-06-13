@@ -3,8 +3,12 @@
     <b-container>
       <div class="py-4">
         <div class="text-center mb-3">
-          <b-link class="mr-3">プライバシーポリシー</b-link>
-          <b-link>利用規約</b-link>
+          <b-link to="/support/privacy-policy" class="mr-3">
+            プライバシーポリシー
+          </b-link>
+          <b-link to="/support/terms" class="mr-3">利用規約</b-link>
+          <a href="Twitter @huuto-app" class="mr-3">Twitter</a>
+          <a href="https://forms.gle/jff2HUzcRxqq5HX66">お問い合わせ</a>
         </div>
         <div class="text-center">
           ©2020 スキゾイド帳

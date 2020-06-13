@@ -1,25 +1,25 @@
 <template>
-  <div>
-    <Header />
-    <nuxt style="min-height: 90vh;" />
-    <Footer />
+  <div style="min-height: 100vh;">
+    <DefaultHeader />
+    <nuxt />
+    <DefaultFooter />
   </div>
 </template>
 
 <script>
-import Header from '~/components/layouts/header.vue'
-import Footer from '~/components/layouts/footer.vue'
+import DefaultHeader from '~/components/layouts/defaultHeader.vue'
+import DefaultFooter from '~/components/layouts/defaultFooter.vue'
 
 export default {
   components: {
-    Header,
-    Footer,
+    DefaultHeader,
+    DefaultFooter,
   },
   data() {
     return {}
   },
   mounted() {
-    this.$store.dispatch('authStateChanged')
+    this.$store.dispatch('user/authStateChanged')
   },
 }
 </script>
@@ -41,7 +41,7 @@ html {
 *:before,
 *:after {
   box-sizing: border-box;
-  margin: 0;
+  margin: 0px;
 }
 
 .button--green {

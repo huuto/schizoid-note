@@ -14,21 +14,34 @@
             <b-card style="max-width: 640px;" class="mb-3 content-card">
               <b-card-body class="d-flex pb-2">
                 <div class="">
-                  <div class="mb-1">{{ setStatus(content.status) }}</div>
-                  <div class="mb-2">{{ content.updated_at }}</div>
-                  <b-card-title :title="content.title"> </b-card-title>
+                  <div class="mb-1">
+                    {{ setStatus(content.status) }}
+                  </div>
+                  <div class="mb-2">
+                    {{ $timestampToDate(content.updatedAt) }}
+                  </div>
+                  <b-card-title :title="content.title" />
                   <!-- <b-card-text>
                 {{ content.introduction }}
               </b-card-text> -->
+                  <div
+                    v-show="
+                      ['public', 'anonym', 'private'].includes(content.status)
+                    "
+                    class="mt-1 like"
+                  >
+                    <i class="far fa-heart" />
+                    {{ content.likes || 0 }}
+                  </div>
                 </div>
                 <b-card-img
-                  v-show="content.top_img"
+                  v-show="content.topImg"
                   class="ml-auto"
-                  :src="content.top_img"
+                  :src="content.topImg"
                   right
                   height="100px"
                   width="100px"
-                ></b-card-img>
+                />
               </b-card-body>
               <div class="text-center">
                 <b-button
@@ -36,8 +49,9 @@
                   variant="link"
                   :to="'/posts/edit/' + content.id"
                   block
-                  >編集</b-button
                 >
+                  編集
+                </b-button>
               </div>
             </b-card>
           </b-link>
@@ -50,12 +64,34 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import firebase from '~/plugins/firebase'
-export default {
+
+type ContentType = {
+  id: string
+  title: string
+  topImg: string
+  status: 'draft' | 'public' | 'anonym' | 'private'
+  likes: number
+  updatedAt: firebase.firestore.Timestamp
+}
+
+type StatusType = {
+  value: string
+  text: string
+}
+
+type DataType = {
+  contents: ContentType[]
+  message: string
+  loadMsg: string
+}
+
+export default Vue.extend({
   // middleware: 'authRedirect',
   layout: 'user',
-  data() {
+  data(): DataType {
     return {
       contents: [],
       message: '',
@@ -68,7 +104,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('authRedirect')
+    this.$store.dispatch('user/authRedirect')
   },
   methods: {
     async getContents() {
@@ -82,29 +118,41 @@ export default {
         .then((docs) => {
           this.contents = []
           docs.forEach((doc) => {
-            const data = doc.data()
-            data.id = doc.id
-            data.updated_at = this.$timestampToDate(data.updated_at)
-            this.contents.push(data)
+            const content: ContentType = {
+              id: doc.id,
+              title: doc.data().title,
+              topImg: doc.data().top_img,
+              status: doc.data().status,
+              likes: doc.data().likes,
+              updatedAt: doc.data().updated_at,
+            }
+            this.contents.push(content)
           })
-          if (this.contents.length === 0)
+          if (this.contents.length === 0) {
             this.loadMsg = '投稿した記事はありません。'
+          }
         })
         .catch(() => {
           this.message = '投稿記事が取得できませんでした。'
         })
     },
-    setStatus(status) {
+    setStatus(status: string): string | undefined {
       if (status) {
         return [
           { value: 'draft', text: '下書き' },
           { value: 'public', text: '公開' },
           { value: 'anonym', text: '匿名公開' },
-        ].find((el) => el.value === status).text
+          { value: 'private', text: '非公開' },
+        ].find((el) => el.value === status)?.text
       }
     },
   },
-}
+  head() {
+    return {
+      title: '投稿一覧',
+    }
+  },
+})
 </script>
 
 <style lang="scss" scoped>
@@ -137,6 +185,10 @@ a {
   &:hover {
     background-color: rgb(245, 245, 245);
   }
+}
+
+.like {
+  color: $like-color;
 }
 
 // .content-card {

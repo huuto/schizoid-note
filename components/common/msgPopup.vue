@@ -4,7 +4,7 @@
       id="msg-popup"
       dismissible
       :variant="msgPopup.variant"
-      :show="msgPopup.message"
+      :show="msgPopup.message !== null && msgPopup.message !== ''"
     >
       <b-spinner
         v-if="msgPopup.isSpinner"
@@ -12,21 +12,30 @@
         label="Spinning"
         small
         class="mr-3"
-      ></b-spinner>
-      <span v-html="msgPopup.message"></span
-    ></b-alert>
+      />
+      <span v-html="msgPopup.message" />
+    </b-alert>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, { PropType } from 'vue'
+
+export type MsgPopupType = {
+  message: string
+  variant: '' | 'success' | 'info' | 'danger'
+  /** @default false */
+  isSpinner?: boolean
+}
+
+export default Vue.extend({
   props: {
     msgPopup: {
-      type: Object,
+      type: Object as PropType<MsgPopupType>,
       default: null,
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

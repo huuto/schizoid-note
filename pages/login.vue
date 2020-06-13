@@ -1,7 +1,7 @@
 <template>
   <b-container class="my-5">
     <div style="max-width: 640px;" class="mx-auto">
-      <MsgPopup :msg-popup="msg_popup" />
+      <MsgPopup :msg-popup="msgPopup" />
     </div>
     <b-container class="bg-white p-5" style="max-width: 640px;">
       <div style="max-width: 400px;" class="m-auto">
@@ -18,8 +18,7 @@
               required
               class="mb-3"
               name="email"
-            >
-            </b-form-input>
+            />
             <label for="password">パスワード</label>
             <b-form-input
               id="password"
@@ -28,25 +27,25 @@
               name="password"
               required
               class="mb-3"
-            ></b-form-input>
+            />
           </b-form-group>
           <div class="text-center mb-3">
-            <b-button variant="primary" style="" type="submit" @click="login()"
-              >ログイン</b-button
-            >
+            <b-button variant="primary" style="" type="submit" @click="login()">
+              ログイン
+            </b-button>
           </div>
           <div class="text-center mb-5">
             <b-button
               style="background-color: #1da1f2; border-color: #1da1f2;"
               @click="twitterLogin()"
-              ><i class="fab fa-twitter mr-2" color="white"></i
-              >Twitterログイン</b-button
             >
+              <i class="fab fa-twitter mr-2" color="white" />Twitterでログイン
+            </b-button>
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color: #707070;" to="signup"
-              >アカウント作成</b-button
-            >
+            <b-button variant="link" style="color: #707070;" to="signup">
+              アカウント作成
+            </b-button>
           </div>
         </b-form>
       </div>
@@ -54,55 +53,73 @@
   </b-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import firebase from '@/plugins/firebase'
-import MsgPopup from '~/components/common/msgPopup'
-export default {
+import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
+
+export type DataType = {
+  user: {
+    email: string
+    password: string
+    valid: boolean
+  }
+  msgPopup: MsgPopupType
+}
+
+export default Vue.extend({
   layout: 'prelogin',
   components: {
     MsgPopup,
   },
-  data() {
+  data(): DataType {
     return {
       user: {
         email: '',
         password: '',
         valid: false,
       },
-      msg_popup: { message: null, variant: null, isSpinner: false },
+      msgPopup: { message: '', variant: '', isSpinner: false },
     }
   },
   mounted() {
     // twitterのリダイレクト認証で戻ってきた場合、認証情報をユーザーに反映しホームに遷移
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
+    firebase.auth().onAuthStateChanged((user: firebase.User | null) => {
+      if (user !== null) {
+        this.msgPopup = {
+          message: 'ホーム画面に移動します。<br />しばらくお待ちください。',
+          variant: 'info',
+          isSpinner: true,
+        }
         this.$store.dispatch('authStateChanged')
+        const user = firebase.auth().currentUser
+        firebase.firestore().collection('users').doc(user?.uid).set(
+          {
+            user_name: user?.displayName,
+            user_img: user?.photoURL,
+          },
+          { merge: true }
+        )
         this.$router.push('/')
       } else {
         this.user.valid = false
       }
     })
-    // firebase
-    //   .auth()
-    //   .getRedirectResult()
-    //   .then((result) => {
-    //     this.$store.state.user = result.user
-    //   })
   },
   methods: {
     login() {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.user.email, this.user.password)
-        .then((result) => {
-          this.$store.dispatch('authStateChanged')
+        .then(() => {
+          this.$store.dispatch('user/authStateChanged')
           this.$router.push('/')
         })
         .catch((error) => {
           if (
             ['auth/wrong-password', 'auth/user-not-found'].includes(error.code)
           ) {
-            this.msg_popup = {
+            this.msgPopup = {
               message: 'メールアドレスかパスワードが違います。',
               variant: 'danger',
             }
@@ -116,7 +133,12 @@ export default {
         .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
     },
   },
-}
+  head() {
+    return {
+      title: 'ログイン',
+    }
+  },
+})
 </script>
 
 <style lang="scss" scoped>

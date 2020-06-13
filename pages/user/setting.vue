@@ -1,7 +1,7 @@
 <template>
   <b-container class="my-3">
     <b-container class="bg-white p-3" style="max-width: 640px;">
-      <MsgPopup :msg-popup="msg_popup" />
+      <MsgPopup :msg-popup="msgPopup" />
       <div style="max-width: 400px;" class="m-auto">
         <div>
           <b-modal
@@ -19,7 +19,7 @@
                 type="text"
                 required
                 class="mb-3"
-              ></b-form-input>
+              />
             </div>
           </b-modal>
           <b-modal
@@ -37,14 +37,14 @@
                 v-model="user.password"
                 type="password"
                 class="mb-3"
-              ></b-form-input>
-              <label for="password_confimation">確認用パスワード</label>
+              />
+              <label for="passwordConfimation">確認用パスワード</label>
               <b-form-input
-                id="password_confimation"
-                v-model="user.password_confimation"
+                id="passwordConfimation"
+                v-model="user.passwordConfimation"
                 type="password"
                 class="mb-3"
-              ></b-form-input>
+              />
             </div>
           </b-modal>
           <b-modal
@@ -67,38 +67,44 @@
         <b-form>
           <b-form-group>
             <div class="text-center my-3" style="position: relative;">
-              <label for="photoURL" style="cursor: pointer;">
-                <b-avatar
-                  :src="user.photoURL"
-                  size="5rem"
-                  variant="light"
-                ></b-avatar>
-                <i id="avatar" class="fas fa-plus-circle fa-lg photoURL"></i>
-                <b-form-file
-                  id="photoURL"
-                  v-model="photoFile"
-                  style="display: none;"
-                  @input="editPhotoURL()"
-                ></b-form-file>
-              </label>
-            </div>
-            <label for="email">メールアドレス</label>
-            <div class="mb-4 d-flex ml-2">
-              <div>
-                {{ user.email }}
+              <div v-if="!twitterLogin">
+                <label for="photoURL" style="cursor: pointer;">
+                  <b-avatar :src="user.photoURL" size="5rem" variant="light" />
+                  <i id="avatar" class="fas fa-plus-circle fa-lg photoURL" />
+                  <b-form-file
+                    id="photoURL"
+                    v-model="photoFile"
+                    style="display: none;"
+                    @input="editPhotoURL()"
+                  />
+                </label>
               </div>
-              <b-link class="ml-auto email" @click="showEmailModal = true"
-                ><i class="fas fa-edit fa-lg"></i
-              ></b-link>
-            </div>
-            <label for="password">パスワード</label>
-            <div class="mb-4 d-flex ml-2">
-              <div>
-                **********
+              <div v-else>
+                <b-avatar :src="user.photoURL" size="5rem" variant="light" />
               </div>
-              <b-link class="ml-auto password" @click="showPasswordModal = true"
-                ><i class="fas fa-edit fa-lg"></i
-              ></b-link>
+            </div>
+            <div v-show="!twitterLogin">
+              <label for="email">メールアドレス</label>
+              <div class="mb-4 d-flex ml-2">
+                <div>
+                  {{ user.email }}
+                </div>
+                <b-link class="ml-auto email" @click="showEmailModal = true">
+                  <i class="fas fa-edit fa-lg" />
+                </b-link>
+              </div>
+              <label for="password">パスワード</label>
+              <div class="mb-4 d-flex ml-2">
+                <div>
+                  **********
+                </div>
+                <b-link
+                  class="ml-auto password"
+                  @click="showPasswordModal = true"
+                >
+                  <i class="fas fa-edit fa-lg" />
+                </b-link>
+              </div>
             </div>
             <label for="name">ユーザー名</label>
             <b-form-input
@@ -107,17 +113,19 @@
               type="text"
               required
               class="mb-3"
-            ></b-form-input>
+            />
             <label for="profile">紹介文</label>
             <b-form-textarea
               id="profile"
               v-model="user.profile"
               rows="4"
               class="mb-3"
-            ></b-form-textarea>
+            />
           </b-form-group>
           <div class="text-center mb-3">
-            <b-button variant="primary" style="" @click="edit()">変更</b-button>
+            <b-button variant="primary" style="" @click="edit()">
+              変更
+            </b-button>
           </div>
           <div class="text-center">
             <b-button
@@ -125,16 +133,18 @@
               style="color: #707070;"
               to="posts"
               class="mb-5"
-              >戻る</b-button
             >
+              戻る
+            </b-button>
           </div>
           <div class="text-center">
             <b-button
               variant="link"
               style="color: #ff6565;"
               @click="showDeleteModal = true"
-              >アカウント削除</b-button
             >
+              アカウント削除
+            </b-button>
           </div>
         </b-form>
       </div>
@@ -142,28 +152,57 @@
   </b-container>
 </template>
 
-<script>
+<script lang="ts">
+/* eslint-disable camelcase */
+import Vue from 'vue'
 import imageCompression from 'browser-image-compression'
 import firebase from '~/plugins/firebase'
-import MsgPopup from '~/components/common/msgPopup'
+import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
 
-export default {
+type StoreUserType = {
+  user_img?: string
+  user_name?: string
+  profile?: string
+}
+
+type DataType = {
+  user: {
+    id: string
+    photoURL: string
+    name: string
+    profile: string
+    password: string
+    passwordConfimation: string
+    email: string
+  }
+  twitterLogin: boolean
+  photoFile: File | null
+  msgPopup: MsgPopupType
+  showEmailModal: boolean
+  showPasswordModal: boolean
+  showDeleteModal: boolean
+  preEmail: string
+}
+
+export default Vue.extend({
   layout: 'user',
   components: {
     MsgPopup,
   },
-  data() {
+  data(): DataType {
     return {
       user: {
+        id: '',
         photoURL: '',
         name: '',
         profile: '',
         password: '',
-        password_confimation: '',
+        passwordConfimation: '',
         email: '',
       },
+      twitterLogin: false,
       photoFile: null,
-      msg_popup: { variant: null, message: null, isSpinner: false },
+      msgPopup: { message: '', isSpinner: false, variant: '' },
       showEmailModal: false,
       showPasswordModal: false,
       showDeleteModal: false,
@@ -172,18 +211,37 @@ export default {
   },
   created() {
     if (process.client) {
-      this.$store.dispatch('authRedirect')
+      this.$store.dispatch('user/authRedirect')
     }
   },
   mounted() {
-    this.user = this.$store.state.user
-    // TODO 強引すぎるので要修正
-    setTimeout(() => {
-      this.getProfile()
-      this.preEmail = this.user.email
-    }, 500)
+    this.getCurrentUser()
   },
   methods: {
+    /**
+     * Twitterログインを区別するためプロバイダー取得
+     */
+    getCurrentUser() {
+      firebase.auth().onAuthStateChanged((user: firebase.User | null) => {
+        if (user) {
+          this.user = {
+            id: user.uid,
+            photoURL: user.photoURL as string,
+            name: user.displayName as string,
+            profile: '',
+            password: '',
+            passwordConfimation: '',
+            email: user.email as string,
+          }
+          user.providerData.forEach((profile) => {
+            if (profile?.providerId === 'twitter.com') {
+              this.twitterLogin = true
+            }
+          })
+        }
+        this.getProfile()
+      })
+    },
     getProfile() {
       firebase
         .firestore()
@@ -191,116 +249,98 @@ export default {
         .doc(this.user.id)
         .get()
         .then((doc) => {
-          this.user.profile = doc.data().profile
+          this.user.profile = doc.data()?.profile
         })
     },
-    edit() {
-      firebase
-        .auth()
-        .currentUser.updateProfile({
+    async edit() {
+      try {
+        await firebase.auth()?.currentUser?.updateProfile({
           displayName: this.user.name,
         })
-        .then(() => {
-          this.msg_popup = {
-            message: 'ユーザー名を変更しました。',
-            variant: 'success',
-          }
+        this.msgPopup = {
+          message: 'アカウント設定を変更しました。',
+          variant: 'success',
+        }
+        this.updateStoreUser({
+          user_name: this.user.name,
+          profile: this.user.profile,
         })
-        .catch((error) => {
-          this.msg_popup = {
-            message: 'ユーザー名を変更できませんでした。',
-            variant: 'danger',
-          }
-          console.error(error)
-        })
-      firebase
-        .firestore()
-        .collection('users')
-        .doc(this.$store.state.user.id)
-        .set({ profile: this.user.profile }, { merge: true })
-        .then()
-        .catch((error) => {
-          this.msg_popup = {
-            message: 'ユーザー名と紹介文を変更できませんでした。',
-            variant: 'danger',
-          }
-          console.error(error)
-        })
+      } catch (error) {
+        this.msgPopup = {
+          message: 'アカウント設定を変更できませんでした。',
+          variant: 'danger',
+        }
+        console.error(error)
+      }
     },
-    editEmail() {
-      firebase
-        .auth()
-        .currentUser.updateEmail(this.user.email)
-        .then(() => {
-          this.msg_popup = {
-            message: 'メールアドレスを変更しました。',
-            variant: 'success',
-          }
-        })
-        .catch((error) => {
-          if (error.code === 'auth/requires-recent-login') {
-            this.msg_popup = {
-              message: `直近のログインが無かったため、メールアドレスを変更できませんでした。<br>
+    async editEmail() {
+      try {
+        await firebase.auth()?.currentUser?.updateEmail(this.user.email)
+        this.msgPopup = {
+          message: 'メールアドレスを変更しました。',
+          variant: 'success',
+        }
+      } catch (error) {
+        if (error.code === 'auth/requires-recent-login') {
+          this.msgPopup = {
+            message: `直近のログインが無かったため、メールアドレスを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger',
-            }
-          } else {
-            this.msg_popup = {
-              message: 'メールアドレスを変更できませんでした。',
-              variant: 'danger',
-            }
+            variant: 'danger',
           }
-          this.user.email = this.preEmail
-          console.error(error)
-        })
+        } else {
+          this.msgPopup = {
+            message: 'メールアドレスを変更できませんでした。',
+            variant: 'danger',
+          }
+        }
+        this.user.email = this.preEmail
+        console.error(error)
+      }
     },
-    editPassword() {
-      if (this.user.password !== this.user.password_confimation) {
-        this.msg_popup = {
+    async editPassword() {
+      if (this.user.password !== this.user.passwordConfimation) {
+        this.msgPopup = {
           message:
             '新規パスワードと確認用パスワードが一致しません。もう一度お試しください。',
           variant: 'danger',
         }
       } else {
-        firebase
-          .auth()
-          .currentUser.updatePassword(this.user.password)
-          .then(() => {
-            this.msg_popup = {
-              message: 'パスワードを変更しました。',
-              variant: 'success',
-            }
-          })
-          .catch((error) => {
-            if (error.code === 'auth/requires-recent-login') {
-              this.msg_popup = {
-                message: `直近のログインが無かったため、パスワードを変更できませんでした。<br>
+        try {
+          await firebase.auth()?.currentUser?.updatePassword(this.user.password)
+          this.msgPopup = {
+            message: 'パスワードを変更しました。',
+            variant: 'success',
+          }
+        } catch (error) {
+          if (error.code === 'auth/requires-recent-login') {
+            this.msgPopup = {
+              message: `直近のログインが無かったため、パスワードを変更できませんでした。<br>
                 ログアウト後、再度ログインしてください。`,
-                variant: 'danger',
-              }
-            } else if (error.code === 'auth/weak-password') {
-              this.msg_popup = {
-                message: `パスワードは6文字以上にしてください。`,
-                variant: 'danger',
-              }
-            } else {
-              this.msg_popup = {
-                message: 'パスワードを変更できませんでした。',
-                variant: 'danger',
-              }
+              variant: 'danger',
             }
-            console.error(error)
-          })
+          } else if (error.code === 'auth/weak-password') {
+            this.msgPopup = {
+              message: 'パスワードは6文字以上にしてください。',
+              variant: 'danger',
+            }
+          } else {
+            this.msgPopup = {
+              message: 'パスワードを変更できませんでした。',
+              variant: 'danger',
+            }
+          }
+          console.error(error)
+        }
       }
       this.user.password = ''
-      this.user.password_confimation = ''
+      this.user.passwordConfimation = ''
     },
     editPhotoURL() {
       this.setPhotoURL()
     },
     // トップ画像のアップロード
     async setPhotoURL() {
-      this.msg_popup = {
+      this.msgPopup = {
         message: '画像を保存中です。',
         variant: 'info',
         isSpinner: true,
@@ -318,7 +358,7 @@ export default {
           .child('users/' + fileName)
           .put(resizeImg)
           .catch((error) => {
-            this.msg_popup = {
+            this.msgPopup = {
               message: '画像を変更できませんでした。',
               variant: 'danger',
             }
@@ -328,25 +368,29 @@ export default {
           .child('users/' + fileName)
           .getDownloadURL()
           .catch((error) => {
-            this.msg_popup = {
+            this.msgPopup = {
               message: '画像を変更できませんでした。',
               variant: 'danger',
             }
             console.error(error)
           })
-
-        // 以前の画像を削除
-        if (this.user.photoURL) this.imageRemove(this.user.photoURL)
-        firebase.auth().currentUser.updateProfile({ photoURL: url })
-        this.user.photoURL = url
-        this.msg_popup = {
-          message: '画像を変更しました。',
-          variant: 'success',
+        if (this.msgPopup.variant !== 'danger') {
+          // 以前の画像を削除
+          if (this.user.photoURL) {
+            this.imageRemove(this.user.photoURL)
+          }
+          await firebase.auth()?.currentUser?.updateProfile({ photoURL: url })
+          this.user.photoURL = url
+          this.msgPopup = {
+            message: '画像を変更しました。',
+            variant: 'success',
+          }
+          this.updateStoreUser({ user_img: this.user.photoURL })
         }
       }
     },
     // 画像削除
-    imageRemove(imageURL) {
+    imageRemove(imageURL: string) {
       firebase
         .storage()
         .refFromURL(imageURL)
@@ -358,37 +402,45 @@ export default {
           console.error('error: image delete ' + imageURL)
         })
     },
+    /**
+     * ユーザー周り更新時はStoreのユーザーにも反映
+     */
+    updateStoreUser(update: StoreUserType) {
+      firebase.firestore().collection('users').doc(this.user.id).update(update)
+    },
     // ポップアップメッセージのリセット
     resetMsg() {
-      this.msg_popup = { message: null, variant: '', isSpinner: false }
+      this.msgPopup = { message: '', variant: '', isSpinner: false }
     },
-    deleteUser() {
-      firebase
-        .auth()
-        .currentUser.delete()
-        .then(() => {
-          this.msg_popup = {
-            message: 'ユーザーを削除しました。',
-            variant: 'success',
-          }
-        })
-        .catch((error) => {
-          if (error.code === 'auth/requires-recent-login') {
-            this.msg_popup = {
-              message: `直近のログインが無かったため、ユーザーを削除できませんでした。
+    async deleteUser() {
+      try {
+        await firebase.auth()?.currentUser?.delete()
+        this.msgPopup = {
+          message: 'ユーザーを削除しました。',
+          variant: 'success',
+        }
+      } catch (error) {
+        if (error.code === 'auth/requires-recent-login') {
+          this.msgPopup = {
+            message: `直近のログインが無かったため、ユーザーを削除できませんでした。
                 ログアウト後、再度ログインしてください。`,
-              variant: 'danger',
-            }
-          } else {
-            this.msg_popup = {
-              message: 'ユーザーを削除できませんでした。',
-              variant: 'danger',
-            }
+            variant: 'danger',
           }
-        })
+        } else {
+          this.msgPopup = {
+            message: 'ユーザーを削除できませんでした。',
+            variant: 'danger',
+          }
+        }
+      }
     },
   },
-}
+  head() {
+    return {
+      title: 'アカウント設定',
+    }
+  },
+})
 </script>
 
 <style lang="scss" scoped>
@@ -397,11 +449,11 @@ button {
   height: 40px;
 }
 a.email,
-.password,
+a.password,
 .photoURL {
-  color: #747474;
+  color: $icon-color;
   &:hover {
-    color: #474747;
+    color: $icon-color-hover;
   }
 }
 #avatar {

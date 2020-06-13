@@ -4,8 +4,8 @@
       <b-container>
         <b-navbar-brand to="/">
           <!-- <i class="fas fa-sticky-note" style="color: #3C6191;"></i -->
-          <b-img src="~/static/logo.png" height="36px"></b-img
-        ></b-navbar-brand>
+          <b-img src="~/static/logo.png" height="36px" />
+        </b-navbar-brand>
       </b-container>
     </b-navbar>
   </header>
