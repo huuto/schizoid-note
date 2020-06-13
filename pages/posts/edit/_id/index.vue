@@ -55,7 +55,14 @@
           <h2>タイトル</h2>
         </div>
         <div>
-          <b-form-input v-model="content.title" @change="textChange = true" />
+          <b-form-input
+            v-model="content.title"
+            :formatter="titleFormatter"
+            @change="textChange = true"
+          />
+          <div class="text-right mt-3 font-weight-bold">
+            {{ content.title.length }} / 35 文字
+          </div>
         </div>
       </div>
       <div class="mb-5">
@@ -100,7 +107,17 @@
             />
           </div>
         </no-ssr>
-        <div class="text-right mt-3 font-weight-bold">{{ setCount }} 文字</div>
+        <div class="text-right mt-3 font-weight-bold">
+          <i
+            id="count-icon"
+            class="fas fa-exclamation-circle fa-lg mr-2"
+            style="color: #747474;"
+          />
+          <b-tooltip target="count-icon">
+            公開できる範囲は300 ～ 1万文字です。
+          </b-tooltip>
+          {{ setCount }} 文字
+        </div>
       </div>
     </b-container>
     <b-container fluid style="background-color: #f1f1f3;">
@@ -311,6 +328,13 @@ export default Vue.extend({
   },
   methods: {
     /**
+     * タイトルのフォーマッタ
+     */
+    titleFormatter(val: string): string {
+      if (val.length <= 35) return val
+      return val.slice(0, 35)
+    },
+    /**
      * タイトルを設定
      */
     setTitle(): string {
@@ -488,6 +512,33 @@ export default Vue.extend({
     },
     // 記事公開前のチェック
     preSave() {
+      // 公開する場合のチェック
+      if (['public', 'anonym'].includes(this.content.status)) {
+        if (this.content.title.length === 0) {
+          this.msgPopup = {
+            message: '公開するにはタイトルを入力してください。',
+            variant: 'danger',
+          }
+          return
+        }
+        if (this.content.title.length > 35) {
+          this.msgPopup = {
+            message: 'タイトルは35文字以内で入力ください。',
+            variant: 'danger',
+          }
+          return
+        }
+        if (
+          this.content.body.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '').length <
+          300
+        ) {
+          this.msgPopup = {
+            message: '公開するには本文を300字以上入力してください。',
+            variant: 'danger',
+          }
+          return
+        }
+      }
       // 下書き、非公開から公開する場合のチェック
       if (
         ['draft', 'private'].includes(this.preStatus) &&

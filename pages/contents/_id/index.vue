@@ -16,9 +16,9 @@
         />
         <div class="">
           <div>
-            {{ content.user_name }}
+            {{ content.userName }}
           </div>
-          <!-- <div>{{ $timestampToDate(content.published_at) }}</div> -->
+          <div>{{ $timestampToDate(content.publishedAt) }}</div>
         </div>
       </div>
       <div id="body" class="mb-5" v-html="$sanitize(content.body)" />
@@ -51,8 +51,8 @@
           />
         </div>
         <div>
-          <div>{{ content.user_name }}</div>
-          <div>{{ content.profile }}</div>
+          <div>{{ content.userName }}</div>
+          <div class="mt-3">{{ content.profile }}</div>
         </div>
       </div>
       <!-- <b-list-group class="mb-5">
@@ -80,6 +80,7 @@ type ContentType = {
   topImg: string
   title: string
   body: string
+  publishedAt: firebase.firestore.Timestamp
   userImg: string
   userName: string
   profile: string
@@ -93,6 +94,7 @@ type AsyncDataType = {
     type: string
     url: string
     image: string
+    description: string
   }
 }
 
@@ -127,6 +129,7 @@ export default Vue.extend({
         topImg: doc.data()?.top_img,
         title: doc.data()?.title,
         body: doc.data()?.body,
+        publishedAt: doc.data()?.published_at,
         userImg: doc.data()?.user_img,
         userName: doc.data()?.user_name,
         profile: doc.data()?.profile,
@@ -142,6 +145,9 @@ export default Vue.extend({
           type: 'article',
           url: `https://schizoid-note.com/contents/${route.params.id}`,
           image: content.topImg,
+          description: content.body
+            .replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
+            .slice(0, 50),
         },
       }
     } catch (error) {
@@ -230,6 +236,11 @@ export default Vue.extend({
           hid: 'og:image',
           property: 'og:image',
           content: this.meta.image,
+        },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.meta.description,
         },
       ],
     }

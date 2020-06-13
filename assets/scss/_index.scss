@@ -11,6 +11,11 @@ $h5-font-size: 1.4rem;
     }
   }
 
+  // 文字を改行させる
+  div, p {
+    word-wrap:break-word;
+  }
+
 // Then include the following
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/src/index.scss';

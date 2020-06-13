@@ -22,8 +22,12 @@ const config: Configuration = {
         content: process.env.npm_package_description || '',
       },
       // { hid: 'description', name: 'description', content: this.meta.description },
-      // { hid: 'og:description', property: 'og:description', content: this.meta.description },
-
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content:
+          'スキゾイド帳はスキゾイドの雑記帳です。日常では人に言えない思考や気持ちを書き出してみましょう。',
+      },
       {
         hid: 'og:site_name',
         property: 'og:site_name',
