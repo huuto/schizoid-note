@@ -11,7 +11,7 @@
         <b-avatar
           size="2rem"
           class="mr-3 my-auto"
-          :src="content.user_img"
+          :src="content.userImg"
           variant="light"
         />
         <div class="">
@@ -38,15 +38,14 @@
         triggers="click"
         target="like"
         variant="info"
+        >ログインするといいねできます</b-tooltip
       >
-        ログインするといいねできます
-      </b-tooltip>
       <div class="author d-flex mb-5">
         <div>
           <b-avatar
             size="3rem"
             class="mr-3 my-auto"
-            :src="content.user_img"
+            :src="content.userImg"
             variant="light"
           />
         </div>
