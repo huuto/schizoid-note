@@ -35,7 +35,7 @@
       </div>
       <b-tooltip
         :disabled="$store.state.user.isLogin"
-        triggers="click"
+        triggers="hover"
         target="like"
         variant="info"
         >ログインするといいねできます</b-tooltip

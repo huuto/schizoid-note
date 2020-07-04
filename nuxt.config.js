@@ -77,6 +77,7 @@ const config = {
     '~plugins/firebase.js',
     // { src: '~plugins/browser-image-compression.js', mode: 'client' },
     '~plugins/common/timestampToDate.js',
+    { src: '~/plugins/localStorage.js', ssr: false },
   ],
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
