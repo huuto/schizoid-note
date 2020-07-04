@@ -1,14 +1,14 @@
-import { Configuration } from '@nuxt/types'
-import {
-  Configuration as WebpackConfiguration,
-  // Options as WebpackOptions,
-  // Plugin as WebpackPlugin
-} from 'webpack'
+// import { Configuration } from '@nuxt/types'
+// import {
+//   Configuration as WebpackConfiguration,
+//   // Options as WebpackOptions,
+//   // Plugin as WebpackPlugin
+// } from 'webpack'
 
 // import pkg from './package'
 require('dotenv').config()
 
-const config: Configuration = {
+const config = {
   mode: 'universal',
   head: {
     // title: process.env.npm_package_name || '',
@@ -107,7 +107,7 @@ const config: Configuration = {
   axios: {},
   build: {
     babel: {
-      presets({ isServer }: any) {
+      presets({ isServer }) {
         return [
           [
             require.resolve('@nuxt/babel-preset-app'),
@@ -120,7 +120,7 @@ const config: Configuration = {
         ]
       },
     },
-    extend(config: WebpackConfiguration, { isServer }: any) {
+    extend(config, { isServer }) {
       if (isServer) {
         config.externals = {
           '@firebase/app': 'commonjs @firebase/app',
