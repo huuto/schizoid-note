@@ -2,7 +2,7 @@
   <div>
     <b-container class="mb-5" style="max-width: 640px;">
       <div class="my-5">
-        <div>
+        <div v-show="contents.length !== 0">
           投稿記事 {{ contents.length }} 件中
           {{
             $route.query.page
@@ -15,7 +15,7 @@
         </div>
       </div>
       <div
-        v-if="contents.length != 0"
+        v-if="contents.length !== 0"
         class="mx-auto"
         style="max-width: 540px;"
       >

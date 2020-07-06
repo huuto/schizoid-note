@@ -53,7 +53,7 @@
         </div>
       </div>
       <div v-else>
-        読み込み中
+        {{ loadMsg }}
       </div>
     </b-container>
   </div>
@@ -77,6 +77,7 @@ type ContentType = {
 type DataType = {
   contents: ContentType[]
   likes: string[]
+  loadMsg: string
 }
 
 export default Vue.extend({
@@ -85,6 +86,7 @@ export default Vue.extend({
     return {
       contents: [],
       likes: [],
+      loadMsg: '読み込み中',
     }
   },
   created() {
@@ -98,35 +100,42 @@ export default Vue.extend({
   methods: {
     // いいね記事全件取得
     async getLikes() {
-      const querySnapshot = await firebase
-        .firestore()
-        .collection('likes')
-        .where('user_id', '==', this.$store.state.user.id)
-        .orderBy('created_at', 'desc')
-        .get()
-
-      querySnapshot.forEach(async (doc) => {
-        await firebase
+      try {
+        const querySnapshot = await firebase
           .firestore()
-          .collection('posts')
-          .doc(doc.data().post_id)
+          .collection('likes')
+          .where('user_id', '==', this.$store.state.user.id)
+          .orderBy('created_at', 'desc')
           .get()
-          .then((postDoc) => {
-            // 公開されていれば
-            if (postDoc.data()?.public) {
-              const content: ContentType = {
-                id: postDoc.id,
-                title: postDoc.data()?.title,
-                topImg: postDoc.data()?.top_img,
-                likes: postDoc.data()?.likes,
-                publishedAt: postDoc.data()?.published_at,
-                userName: postDoc.data()?.user_name,
-                userImg: postDoc.data()?.user_img,
+
+        querySnapshot.forEach(async (doc) => {
+          await firebase
+            .firestore()
+            .collection('posts')
+            .doc(doc.data().post_id)
+            .get()
+            .then((postDoc) => {
+              // 公開されていれば
+              if (postDoc.data()?.public) {
+                const content: ContentType = {
+                  id: postDoc.id,
+                  title: postDoc.data()?.title,
+                  topImg: postDoc.data()?.top_img,
+                  likes: postDoc.data()?.likes,
+                  publishedAt: postDoc.data()?.published_at,
+                  userName: postDoc.data()?.user_name,
+                  userImg: postDoc.data()?.user_img,
+                }
+                this.contents.push(content)
               }
-              this.contents.push(content)
-            }
-          })
-      })
+            })
+        })
+        if (this.contents.length === 0) {
+          this.loadMsg = 'いいねした記事はありません。'
+        }
+      } catch (e) {
+        this.loadMsg = '記事が取得できませんでした。'
+      }
     },
     /**
      * ページャーでクエリ変更

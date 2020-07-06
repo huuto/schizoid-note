@@ -202,6 +202,7 @@
 <script lang="ts">
 /* eslint-disable camelcase */
 import Vue from 'vue'
+import { Timestamp } from '@google-cloud/firestore'
 import imageCompression from '~/plugins/browser-image-compression'
 import firebase from '~/plugins/firebase'
 import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
@@ -723,18 +724,56 @@ export default Vue.extend({
     /**
      * 記事の削除
      */
-    deleteContent() {
-      console.log('delete')
-      this.msgPopup = {
-        message: '記事を削除中です。',
-        variant: 'danger',
-        isSpinner: true,
+    async deleteContent() {
+      try {
+        console.log('delete')
+        this.msgPopup = {
+          message: '記事を削除中です。',
+          variant: 'danger',
+          isSpinner: true,
+        }
+        // トップ画像の削除
+        if (this.content.topImg) {
+          this.imageRemove(this.content.topImg)
+        }
+        // 本文内画像の削除
+        const imgs = this.content.body
+          ?.match(/<img src="https[^"]*"/g)
+          ?.map((text) => text.substring(10, text.length - 1)) as string[]
+        if (imgs) {
+          for (const img of imgs) {
+            this.imageRemove(img)
+          }
+        }
+        // いいねの削除
+        const likes = await firebase
+          .firestore()
+          .collection('likes')
+          .where('post_id', '==', this.$route.params.id)
+        likes.get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            doc.ref.delete()
+          })
+        })
+        // 記事の削除
+        await firebase
+          .firestore()
+          .collection('posts')
+          .doc(this.$route.params.id)
+          .delete()
+      } catch (error) {
+        this.msgPopupError()
+        console.log(error)
+        return
       }
-      // 画像の削除
-      // いいねの削除
-
-      // 記事の削除
-      firebase
+      this.msgPopup = {
+        message: '記事を削除しました。',
+        variant: 'success',
+      }
+      // 1秒後にリダイレクト
+      setTimeout(() => {
+        this.$router.push('/posts')
+      }, 1000)
     },
   },
   head(): { title: string; link: any[] } {
