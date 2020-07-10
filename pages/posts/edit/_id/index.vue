@@ -202,7 +202,6 @@
 <script lang="ts">
 /* eslint-disable camelcase */
 import Vue from 'vue'
-import { Timestamp } from '@google-cloud/firestore'
 import imageCompression from '~/plugins/browser-image-compression'
 import firebase from '~/plugins/firebase'
 import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
@@ -746,14 +745,13 @@ export default Vue.extend({
           }
         }
         // いいねの削除
-        const likes = await firebase
+        const querySnapshot = await firebase
           .firestore()
           .collection('likes')
           .where('post_id', '==', this.$route.params.id)
-        likes.get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            doc.ref.delete()
-          })
+          .get()
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete()
         })
         // 記事の削除
         await firebase
