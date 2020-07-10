@@ -25,7 +25,8 @@
           <h2>記事を削除します。よろしいですか？</h2>
         </b-modal>
       </div>
-      <div class="d-flex flex-row-reverse">
+      <!-- 新規作成時は非表示 -->
+      <div v-if="$route.params.id !== 'new'" class="d-flex flex-row-reverse">
         <b-nav-item-dropdown
           no-caret
           right
