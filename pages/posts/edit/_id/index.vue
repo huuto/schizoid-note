@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="pt-3" style="max-width: 640px;">
+    <b-container class="pt-2" style="max-width: 640px;">
       <MsgPopup :msg-popup="msgPopup" />
       <div>
         <b-modal
@@ -13,8 +13,35 @@
         >
           <h2>公開します。よろしいですか？</h2>
         </b-modal>
+        <b-modal
+          id="delete-modal"
+          v-model="deleteContentModal"
+          hide-header
+          ok-title="削除"
+          ok-variant="danger"
+          cancel-title="キャンセル"
+          @ok="deleteContent()"
+        >
+          <h2>記事を削除します。よろしいですか？</h2>
+        </b-modal>
       </div>
-
+      <!-- 新規作成時は非表示 -->
+      <div v-if="$route.params.id !== 'new'" class="d-flex flex-row-reverse">
+        <b-nav-item-dropdown
+          no-caret
+          right
+          class="d-flex"
+          style="align-items: center;"
+        >
+          <template v-slot:button-content>
+            <i class="fas fa-cog fa-lg"></i>
+            <i class="fas fa-sort-down fa-lg"></i>
+          </template>
+          <b-dd-item @click="deleteContentModal = true">
+            記事を削除
+          </b-dd-item>
+        </b-nav-item-dropdown>
+      </div>
       <div class="mb-3">
         <b-row v-show="content.createdAt" class="mb-1">
           <b-col cols="auto"> 作成日 </b-col
@@ -114,7 +141,7 @@
             style="color: #747474;"
           />
           <b-tooltip target="count-icon">
-            公開できる範囲は300 ～ 1万文字です。
+            公開できる字数は300 ～ 1万です。
           </b-tooltip>
           {{ setCount }} 文字
         </div>
@@ -220,6 +247,7 @@ type DataType = {
   textChange: boolean
   preStatus: 'draft' | 'public' | 'anonym' | 'private'
   showModal: boolean
+  deleteContentModal: boolean
   uploadFiles: {
     topImg: File | null
     body: { file: File; url: string }[]
@@ -276,6 +304,7 @@ export default Vue.extend({
       // 変更前のステータス
       preStatus: 'draft',
       showModal: false,
+      deleteContentModal: false,
       // body[{file: null, url: ""}]
       uploadFiles: { topImg: null, body: [] },
       // storageから削除予定の画像URL
@@ -692,6 +721,59 @@ export default Vue.extend({
       const url = await ref.child('posts/' + fileName).getDownloadURL()
       return url
     },
+    /**
+     * 記事の削除
+     */
+    async deleteContent() {
+      try {
+        console.log('delete')
+        this.msgPopup = {
+          message: '記事を削除中です。',
+          variant: 'danger',
+          isSpinner: true,
+        }
+        // トップ画像の削除
+        if (this.content.topImg) {
+          this.imageRemove(this.content.topImg)
+        }
+        // 本文内画像の削除
+        const imgs = this.content.body
+          ?.match(/<img src="https[^"]*"/g)
+          ?.map((text) => text.substring(10, text.length - 1)) as string[]
+        if (imgs) {
+          for (const img of imgs) {
+            this.imageRemove(img)
+          }
+        }
+        // いいねの削除
+        const querySnapshot = await firebase
+          .firestore()
+          .collection('likes')
+          .where('post_id', '==', this.$route.params.id)
+          .get()
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete()
+        })
+        // 記事の削除
+        await firebase
+          .firestore()
+          .collection('posts')
+          .doc(this.$route.params.id)
+          .delete()
+      } catch (error) {
+        this.msgPopupError()
+        console.log(error)
+        return
+      }
+      this.msgPopup = {
+        message: '記事を削除しました。',
+        variant: 'success',
+      }
+      // 1秒後にリダイレクト
+      setTimeout(() => {
+        this.$router.push('/posts')
+      }, 1000)
+    },
   },
   head(): { title: string; link: any[] } {
     return {
@@ -723,9 +805,17 @@ img#topImg {
 .delete-top-img {
   position: absolute;
   right: 10px;
-  color: #747474;
+  color: $icon-color;
   &:hover {
-    color: #474747;
+    color: $icon-color-hover;
+  }
+}
+
+.fa-cog,
+.fa-sort-down {
+  color: $icon-color;
+  &:hover {
+    color: $icon-color-hover;
   }
 }
 

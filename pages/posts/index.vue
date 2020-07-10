@@ -2,14 +2,24 @@
   <div>
     <b-container class="mb-5" style="max-width: 640px;">
       <div class="my-5">
-        <div>投稿記事 {{ contents.length }}件</div>
+        <div v-show="contents.length !== 0">
+          投稿記事 {{ contents.length }} 件中
+          {{
+            $route.query.page
+              ? ` ${($route.query.page - 1) * 10 + 1} - ${Math.min(
+                  $route.query.page * 10,
+                  contents.length
+                )}`
+              : ` 1 - ${contents.length}`
+          }}
+        </div>
       </div>
       <div
-        v-if="contents.length != 0"
+        v-if="contents.length !== 0"
         class="mx-auto"
         style="max-width: 540px;"
       >
-        <div v-for="(content, index) in contents" :key="index">
+        <div v-for="(content, index) in dispContents()" :key="index">
           <b-link :to="`/posts/edit/${content.id}`">
             <b-card style="max-width: 640px;" class="mb-3 content-card">
               <b-card-body class="d-flex pb-2">
@@ -56,6 +66,15 @@
             </b-card>
           </b-link>
         </div>
+        <div>
+          <b-pagination-nav
+            :link-gen="linkGen"
+            :number-of-pages="
+              contents.length >= 10 ? contents.length / 10 + 1 : 1
+            "
+            align="center"
+          />
+        </div>
       </div>
       <div v-else>
         {{ loadMsg }}
@@ -100,20 +119,22 @@ export default Vue.extend({
   },
   created() {
     if (process.client) {
-      this.getContents()
     }
   },
-  mounted() {
-    this.$store.dispatch('user/authRedirect')
+  async mounted() {
+    const ook = await this.$store.dispatch('user/authRedirect')
+    console.log(ook)
+    this.getContents()
   },
   methods: {
     async getContents() {
+      // 全記事を取得
+      // もし100件とかで表示が重くなってきたら対策考える
       await firebase
         .firestore()
         .collection('posts')
         .where('user_id', '==', this.$store.state.user.id)
         .orderBy('created_at', 'desc')
-        .limit(10)
         .get()
         .then((docs) => {
           this.contents = []
@@ -145,6 +166,27 @@ export default Vue.extend({
           { value: 'private', text: '非公開' },
         ].find((el) => el.value === status)?.text
       }
+    },
+    /**
+     * ページャーでクエリ変更
+     */
+    linkGen(pageNum: number) {
+      return {
+        path: '/posts',
+        query: { page: pageNum },
+      }
+    },
+    /**
+     * 表示する記事
+     */
+    dispContents(): Array<ContentType> {
+      if (this.$route.query.page) {
+        return this.contents.slice(
+          (this.$route.query.page - 1) * 10,
+          this.$route.query.page * 10
+        )
+      }
+      return this.contents.slice(0, 10)
     },
   },
   head() {
