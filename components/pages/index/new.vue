@@ -44,10 +44,12 @@
           </b-card>
         </b-link>
       </div>
-      <infinite-loading
-        v-if="contents.length >= 10 && loading"
-        @infinite="infiniteHandler()"
-      />
+      <client-only>
+        <infinite-loading
+          v-if="contents.length >= 10 && loading"
+          @infinite="infiniteHandler"
+        />
+      </client-only>
       <div v-show="!loading" class="my-5 ml-3">
         これ以上記事はありません。
       </div>
@@ -124,7 +126,7 @@ export default Vue.extend({
         this.contents.push(content)
       })
     },
-    async infiniteHandler() {
+    async infiniteHandler($state: any) {
       console.log('add contents')
       try {
         const querySnapshot = await firebase
@@ -154,6 +156,9 @@ export default Vue.extend({
         if (querySnapshot.size < 10) {
           // 無限ローディング終了
           this.loading = false
+          $state.complete()
+        } else {
+          $state.loaded()
         }
       } catch (error) {
         console.error(error)
