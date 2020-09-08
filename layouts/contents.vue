@@ -2,7 +2,7 @@
   <div>
     <DefaultHeader />
     <ContentsHeader class="mb-5" />
-    <nuxt style="min-height: 90vh;" />
+    <nuxt style="min-height: 90vh" />
     <DefaultFooter />
   </div>
 </template>

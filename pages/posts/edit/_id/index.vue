@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="pt-2" style="max-width: 640px;">
+    <b-container class="pt-2" style="max-width: 640px">
       <MsgPopup :msg-popup="msgPopup" />
       <div>
         <b-modal
@@ -31,15 +31,13 @@
           no-caret
           right
           class="d-flex"
-          style="align-items: center;"
+          style="align-items: center"
         >
           <template v-slot:button-content>
             <i class="fas fa-cog fa-lg"></i>
             <i class="fas fa-sort-down fa-lg"></i>
           </template>
-          <b-dd-item @click="deleteContentModal = true">
-            記事を削除
-          </b-dd-item>
+          <b-dd-item @click="deleteContentModal = true"> 記事を削除 </b-dd-item>
         </b-nav-item-dropdown>
       </div>
       <div class="mb-3">
@@ -57,7 +55,7 @@
         </b-row>
         <b-row class="mb-2">
           <b-col cols="auto"> 状態&nbsp;&nbsp; </b-col
-          ><b-col style="max-width: 150px;">
+          ><b-col style="max-width: 150px">
             <b-form-select
               v-model="content.status"
               :options="statusOptions"
@@ -107,7 +105,7 @@
         <div
           v-show="content.topImg"
           class="text-center"
-          style="position: relative;"
+          style="position: relative"
         >
           <i
             class="fas fa-times-circle fa-2x delete-top-img"
@@ -138,7 +136,7 @@
           <i
             id="count-icon"
             class="fas fa-exclamation-circle fa-lg mr-2"
-            style="color: #747474;"
+            style="color: #747474"
           />
           <b-tooltip target="count-icon">
             公開できる字数は300 ～ 1万です。
@@ -147,27 +145,25 @@
         </div>
       </div>
     </b-container>
-    <b-container fluid style="background-color: #f1f1f3;">
+    <b-container fluid style="background-color: #f1f1f3">
       <b-row class="justify-content-center">
         <b-col
           id="preview"
           class="my-5"
-          style="max-width: 640px; background-color: white;"
+          style="max-width: 640px; background-color: white"
         >
           <div class="mt-4 mb-5">
-            <h2 class="pr-2" style="display: inline;">
-              プレビュー
-            </h2>
+            <h2 class="pr-2" style="display: inline">プレビュー</h2>
             <i
               id="preview-icon"
               class="fas fa-exclamation-circle fa-lg"
-              style="color: #747474;"
+              style="color: #747474"
             />
             <b-tooltip target="preview-icon">
               本文の画像は保存すると表示されます。
             </b-tooltip>
           </div>
-          <div class="mx-auto" style="max-width: 590px;">
+          <div class="mx-auto" style="max-width: 590px">
             <div v-show="content.topImg" class="mb-5 text-center">
               <b-img class="top-img" :src="content.topImg" />
             </div>
@@ -595,6 +591,7 @@ export default Vue.extend({
         this.content.publishedAt = timespamp
       }
       // 新規の場合
+
       if (this.$route.params.id === 'new') {
         this.content.createdAt = timespamp
         this.content.userId = this.$store.state.user.id
@@ -641,6 +638,7 @@ export default Vue.extend({
         profile: this.content.profile,
         likes: this.content.likes,
       }
+
       if (this.$route.params.id === 'new') {
         // 日付を使ったユニークID
         const postId =
@@ -668,6 +666,7 @@ export default Vue.extend({
         firebase
           .firestore()
           .collection('posts')
+
           .doc(this.$route.params.id)
           .set(post)
           .then(() => {
@@ -732,32 +731,33 @@ export default Vue.extend({
           variant: 'danger',
           isSpinner: true,
         }
-        // トップ画像の削除
-        if (this.content.topImg) {
-          this.imageRemove(this.content.topImg)
-        }
-        // 本文内画像の削除
-        const imgs = this.content.body
-          ?.match(/<img src="https[^"]*"/g)
-          ?.map((text) => text.substring(10, text.length - 1)) as string[]
-        if (imgs) {
-          for (const img of imgs) {
-            this.imageRemove(img)
-          }
-        }
-        // いいねの削除
-        const querySnapshot = await firebase
-          .firestore()
-          .collection('likes')
-          .where('post_id', '==', this.$route.params.id)
-          .get()
-        querySnapshot.forEach((doc) => {
-          doc.ref.delete()
-        })
+        // // トップ画像の削除
+        // if (this.content.topImg) {
+        //   this.imageRemove(this.content.topImg)
+        // }
+        // // 本文内画像の削除
+        // const imgs = this.content.body
+        //   ?.match(/<img src="https[^"]*"/g)
+        //   ?.map((text) => text.substring(10, text.length - 1)) as string[]
+        // if (imgs) {
+        //   for (const img of imgs) {
+        //     this.imageRemove(img)
+        //   }
+        // }
+        // // いいねの削除
+        // const querySnapshot = await firebase
+        //   .firestore()
+        //   .collection('likes')
+        //   .where('post_id', '==', this.$route.params.id)
+        //   .get()
+        // querySnapshot.forEach((doc) => {
+        //   doc.ref.delete()
+        // })
         // 記事の削除
         await firebase
           .firestore()
           .collection('posts')
+
           .doc(this.$route.params.id)
           .delete()
       } catch (error) {

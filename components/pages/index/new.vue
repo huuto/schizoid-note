@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto" style="max-width: 590px;">
+  <div class="mx-auto" style="max-width: 590px">
     <div class="head mb-3">
       <h2>新着</h2>
     </div>
@@ -29,7 +29,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-1" style="color: #e0245e;">
+                <div class="mt-1" style="color: #e0245e">
                   <i class="far fa-heart" />
                   {{ content.likes || 0 }}
                 </div>
@@ -50,13 +50,9 @@
           @infinite="infiniteHandler"
         />
       </client-only>
-      <div v-show="!loading" class="my-5 ml-3">
-        これ以上記事はありません。
-      </div>
+      <div v-show="!loading" class="my-5 ml-3">これ以上記事はありません。</div>
     </div>
-    <div v-else>
-      読み込み中
-    </div>
+    <div v-else>読み込み中</div>
   </div>
 </template>
 
@@ -135,7 +131,7 @@ export default Vue.extend({
           .where('public', '==', true)
           .where(
             'published_at',
-            '<=',
+            '<',
             this.contents[this.contents.length - 1].publishedAt
           )
           .orderBy('published_at', 'desc')

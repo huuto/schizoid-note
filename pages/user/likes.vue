@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="mb-5" style="max-width: 640px;">
+    <b-container class="mb-5" style="max-width: 640px">
       <div class="my-5">
         <div>いいねした記事 {{ contents.length }}件中 {{ dispRange() }}</div>
       </div>
@@ -27,7 +27,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="mt-1" style="color: #e0245e;">
+                  <div class="mt-1" style="color: #e0245e">
                     <i class="far fa-heart" />
                     {{ content.likes || 0 }}
                   </div>

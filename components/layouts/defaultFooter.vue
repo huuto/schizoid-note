@@ -10,9 +10,7 @@
           <a href="Twitter @huuto-app" class="mr-3">Twitter</a>
           <a href="https://forms.gle/jff2HUzcRxqq5HX66">お問い合わせ</a>
         </div>
-        <div class="text-center">
-          ©2020 スキゾイド帳
-        </div>
+        <div class="text-center">©2020 スキゾイド帳</div>
       </div>
     </b-container>
   </footer>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="mb-5" style="max-width: 640px;">
+    <b-container class="mb-5" style="max-width: 640px">
       <div class="my-5">
         <div v-show="contents.length !== 0">
           投稿記事 {{ contents.length }} 件中
@@ -17,11 +17,11 @@
       <div
         v-if="contents.length !== 0"
         class="mx-auto"
-        style="max-width: 540px;"
+        style="max-width: 540px"
       >
         <div v-for="(content, index) in dispContents()" :key="index">
           <b-link :to="`/posts/edit/${content.id}`">
-            <b-card style="max-width: 640px;" class="mb-3 content-card">
+            <b-card style="max-width: 640px" class="mb-3 content-card">
               <b-card-body class="d-flex pb-2">
                 <div class="">
                   <div class="mb-1">
@@ -107,6 +107,14 @@ type DataType = {
   loadMsg: string
 }
 
+type MethodType = {
+  getContents(): any
+}
+
+type ComputedType = {}
+
+type PropType = {}
+
 export default Vue.extend({
   // middleware: 'authRedirect',
   layout: 'user',
@@ -189,6 +197,7 @@ export default Vue.extend({
       return this.contents.slice(0, 10)
     },
   },
+
   head() {
     return {
       title: '投稿一覧',

@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 100vh;">
+  <div style="min-height: 100vh">
     <DefaultHeader />
     <nuxt />
     <DefaultFooter />

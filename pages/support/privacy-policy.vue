@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="mt-5 mb-5" style="max-width: 640px;">
+    <b-container class="mt-5 mb-5" style="max-width: 640px">
       <h1 class="mt-5 mb-5">プライバシーポリシー</h1>
       <p>
         スキゾイド帳運営（以下，「当運営」といいます。）は，本ウェブサイト上で提供するサービス（以下,「本サービス」といいます。）における，ユーザーの個人情報の取扱いについて，以下のとおりプライバシーポリシー（以下，「本ポリシー」といいます。）を定めます。

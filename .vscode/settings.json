@@ -1,20 +1,17 @@
 {
   "files.eol": "\n",
   "workbench.settings.editor": "json",
-  "eslint.workingDirectories": [
-    ""
-  ],
   "git.ignoreLimitWarning": true,
-  "eslint.options": { "configFile": "./.eslintrc.js" },
+  "eslint.nodePath": "./node_modules",
   "eslint.validate": [
     "javascript",
     "typescript", 
     "vue", 
   ],
 "editor.formatOnSave": false,
-"python.pythonPath": "C:\\Users\\Takuto\\Anaconda3\\python.exe",
-"python.envFile": "${workspaceFolder}/.vscode/.env",
 "editor.codeActionsOnSave": {
   "source.fixAll.eslint": true
 },
+"python.pythonPath": "C:\\Users\\Takuto\\Anaconda3\\python.exe",
+"python.envFile": "${workspaceFolder}/.vscode/.env",
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container style="max-width: 620px;" class="pt-5">
+    <b-container style="max-width: 620px" class="pt-5">
       <div v-show="content.topImg" class="mb-5 text-center">
         <b-img class="top-img" :src="content.topImg" />
       </div>

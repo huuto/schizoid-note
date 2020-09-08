@@ -1,16 +1,13 @@
 <template>
   <div>
-    <b-container style="max-width: 640px;" class="mx-auto">
+    <b-container style="max-width: 640px" class="mx-auto">
       <b-nav tabs fill class="top-nav">
         <b-nav-item class="nav-item" to="/posts/edit/new">
           投稿する
         </b-nav-item>
-        <b-nav-item class="nav-item" to="/posts">
-          投稿記事
-        </b-nav-item>
-        <b-nav-item class="nav-item" to="/user/likes">
-          いいね
-        </b-nav-item>
+        <b-nav-item class="nav-item" to="/posts"> 投稿記事 </b-nav-item>
+        <b-nav-item class="nav-item" to="/user/likes"> いいね </b-nav-item>
+
         <b-nav-item class="nav-item" to="/user/setting">
           アカウント
         </b-nav-item>

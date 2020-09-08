@@ -1,8 +1,8 @@
 <template>
   <b-container class="my-3">
-    <b-container class="bg-white p-3" style="max-width: 640px;">
+    <b-container class="bg-white p-3" style="max-width: 640px">
       <MsgPopup :msg-popup="msgPopup" />
-      <div style="max-width: 400px;" class="m-auto">
+      <div style="max-width: 400px" class="m-auto">
         <div>
           <b-modal
             id="public-modal"
@@ -56,25 +56,23 @@
             cancel-title="キャンセル"
             @ok="deleteUser()"
           >
-            <div>
-              ユーザーを削除します。よろしいですか？
-            </div>
+            <div>ユーザーを削除します。よろしいですか？</div>
           </b-modal>
         </div>
-        <div class="text-center" style="margin: 3vh 0 5vh 0;">
+        <div class="text-center" style="margin: 3vh 0 5vh 0">
           <h2>アカウント設定</h2>
         </div>
         <b-form>
           <b-form-group>
-            <div class="text-center my-3" style="position: relative;">
+            <div class="text-center my-3" style="position: relative">
               <div v-if="!twitterLogin">
-                <label for="photoURL" style="cursor: pointer;">
+                <label for="photoURL" style="cursor: pointer">
                   <b-avatar :src="user.photoURL" size="5rem" variant="light" />
                   <i id="avatar" class="fas fa-plus-circle fa-lg photoURL" />
                   <b-form-file
                     id="photoURL"
                     v-model="photoFile"
-                    style="display: none;"
+                    style="display: none"
                     @input="editPhotoURL()"
                   />
                 </label>
@@ -95,9 +93,7 @@
               </div>
               <label for="password">パスワード</label>
               <div class="mb-4 d-flex ml-2">
-                <div>
-                  **********
-                </div>
+                <div>**********</div>
                 <b-link
                   class="ml-auto password"
                   @click="showPasswordModal = true"
@@ -130,7 +126,7 @@
           <div class="text-center">
             <b-button
               variant="link"
-              style="color: #707070;"
+              style="color: #707070"
               to="posts"
               class="mb-5"
             >
@@ -140,7 +136,7 @@
           <div class="text-center">
             <b-button
               variant="link"
-              style="color: #ff6565;"
+              style="color: #ff6565"
               @click="showDeleteModal = true"
             >
               アカウント削除

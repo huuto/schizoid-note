@@ -1,6 +1,6 @@
 <template>
   <header>
-    <b-navbar style="height: 64px;" class="shadow-sm p-2 mb-1 bg-white rounded">
+    <b-navbar style="height: 64px" class="shadow-sm p-2 mb-1 bg-white rounded">
       <b-container>
         <b-navbar-brand to="/">
           <!-- <i class="fas fa-sticky-note" style="color: #3C6191;"></i -->
@@ -22,7 +22,7 @@
               no-caret
               right
               class="d-flex"
-              style="align-items: center;"
+              style="align-items: center"
             >
               <template v-slot:button-content>
                 <b-avatar class="" :src="user.photoURL" variant="light" />
@@ -32,25 +32,15 @@
                 ></b-avatar> -->
               </template>
               <b-dd-header>{{ user.name }}</b-dd-header>
-              <b-dd-item to="/posts/edit/new">
-                投稿する
-              </b-dd-item>
-              <b-dd-item to="/posts">
-                投稿記事
-              </b-dd-item>
+              <b-dd-item to="/posts/edit/new"> 投稿する </b-dd-item>
+              <b-dd-item to="/posts"> 投稿記事 </b-dd-item>
               <b-dd-divider />
-              <b-dd-item to="/user/likes">
-                いいね
-              </b-dd-item>
+              <b-dd-item to="/user/likes"> いいね </b-dd-item>
               <!-- <b-dd-item>フォロー</b-dd-item> -->
               <!-- <b-dd-divider></b-dd-divider> -->
-              <b-dd-item to="/user/setting">
-                アカウント
-              </b-dd-item>
+              <b-dd-item to="/user/setting"> アカウント </b-dd-item>
               <b-dd-divider />
-              <b-dd-item @click="logout()">
-                ログアウト
-              </b-dd-item>
+              <b-dd-item @click="logout()"> ログアウト </b-dd-item>
             </b-nav-item-dropdown>
           </div>
           <div v-else class="d-flex prelogin">

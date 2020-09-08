@@ -1,16 +1,16 @@
 <template>
   <b-container class="my-5">
-    <div style="max-width: 640px;" class="mx-auto">
+    <div style="max-width: 640px" class="mx-auto">
       <MsgPopup :msg-popup="msgPopup" />
     </div>
-    <b-container class="bg-white p-5" style="max-width: 640px;">
-      <div style="max-width: 400px;" class="m-auto">
-        <div class="text-center" style="margin: 7vh 0 5vh 0;">
+    <b-container class="bg-white p-5" style="max-width: 640px">
+      <div style="max-width: 400px" class="m-auto">
+        <div class="text-center" style="margin: 7vh 0 5vh 0">
           <h2>新規登録</h2>
         </div>
         <div class="text-center mb-5">
           <b-button
-            style="background-color: #1da1f2; border-color: #1da1f2;"
+            style="background-color: #1da1f2; border-color: #1da1f2"
             @click="twitterLogin()"
           >
             <i class="fab fa-twitter mr-2" color="white" />Twitterで登録
@@ -74,7 +74,7 @@
             </b-button>
           </div>
           <div class="text-center mb-5">
-            <b-button variant="link" style="color: #707070;" to="login">
+            <b-button variant="link" style="color: #707070" to="login">
               ログイン画面に戻る
             </b-button>
           </div>
@@ -89,7 +89,7 @@ import Vue from 'vue'
 import firebase from '@/plugins/firebase'
 import MsgPopup, { MsgPopupType } from '~/components/common/msgPopup.vue'
 
-export type DataType = {
+type DataType = {
   user: {
     name: string
     email: string

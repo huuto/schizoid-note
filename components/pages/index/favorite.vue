@@ -10,7 +10,7 @@
         :title="content.title"
         :img-src="content.img_src"
         img-height="100"
-        style="max-width: 18rem;"
+        style="max-width: 18rem"
         class="mb-2"
       >
         <b-card-body class="p-2">
@@ -28,9 +28,7 @@
         </b-card-body>
       </b-card>
     </div>
-    <div v-else>
-      投稿が読み込めません。
-    </div>
+    <div v-else>投稿が読み込めません。</div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <b-container class="my-5" style="max-width: 640px; min-height: 80vh;">
+  <b-container class="my-5" style="max-width: 640px; min-height: 80vh">
     <h1 v-if="error.statusCode === 404">
       404 Not Found<br />
       このページは存在しません。
@@ -8,9 +8,7 @@
       {{ error.statusCode }}<br />
       エラーが発生しました。
     </h1>
-    <NuxtLink to="/">
-      ホームに戻る
-    </NuxtLink>
+    <NuxtLink to="/"> ホームに戻る </NuxtLink>
   </b-container>
 </template>
 

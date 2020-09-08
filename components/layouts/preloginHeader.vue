@@ -1,6 +1,6 @@
 <template>
   <header>
-    <b-navbar style="height: 64px;" class="shadow-sm p-2 mb-1 bg-white rounded">
+    <b-navbar style="height: 64px" class="shadow-sm p-2 mb-1 bg-white rounded">
       <b-container>
         <b-navbar-brand to="/">
           <!-- <i class="fas fa-sticky-note" style="color: #3C6191;"></i -->
