@@ -1,14 +1,14 @@
-{
-  "root": true,
-  "parserOptions": {
+module.exports = {
+  root: true,
+  parserOptions: {
     // Required for certain syntax usages
-    "ecmaVersion": 2017
+    ecmaVersion: 2017
   },
-  "plugins": [
+  plugins: [
     "promise"
   ],
-  "extends": "eslint:recommended",
-  "rules": {
+  extends: "eslint:recommended",
+  rules: {
     // Removed rule "disallow the use of console" from recommended eslint rules
     "no-console": "off",
 

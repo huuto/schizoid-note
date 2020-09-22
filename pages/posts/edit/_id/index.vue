@@ -731,33 +731,32 @@ export default Vue.extend({
           variant: 'danger',
           isSpinner: true,
         }
-        // // トップ画像の削除
-        // if (this.content.topImg) {
-        //   this.imageRemove(this.content.topImg)
-        // }
-        // // 本文内画像の削除
-        // const imgs = this.content.body
-        //   ?.match(/<img src="https[^"]*"/g)
-        //   ?.map((text) => text.substring(10, text.length - 1)) as string[]
-        // if (imgs) {
-        //   for (const img of imgs) {
-        //     this.imageRemove(img)
-        //   }
-        // }
-        // // いいねの削除
-        // const querySnapshot = await firebase
-        //   .firestore()
-        //   .collection('likes')
-        //   .where('post_id', '==', this.$route.params.id)
-        //   .get()
-        // querySnapshot.forEach((doc) => {
-        //   doc.ref.delete()
-        // })
+        // トップ画像の削除
+        if (this.content.topImg) {
+          this.imageRemove(this.content.topImg)
+        }
+        // 本文内画像の削除
+        const imgs = this.content.body
+          ?.match(/<img src="https[^"]*"/g)
+          ?.map((text) => text.substring(10, text.length - 1)) as string[]
+        if (imgs) {
+          for (const img of imgs) {
+            this.imageRemove(img)
+          }
+        }
+        // いいねの削除
+        const querySnapshot = await firebase
+          .firestore()
+          .collection('likes')
+          .where('post_id', '==', this.$route.params.id)
+          .get()
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete()
+        })
         // 記事の削除
         await firebase
           .firestore()
           .collection('posts')
-
           .doc(this.$route.params.id)
           .delete()
       } catch (error) {

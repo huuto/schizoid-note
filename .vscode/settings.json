@@ -8,8 +8,9 @@
     "typescript", 
     "vue", 
   ],
-"editor.formatOnSave": false,
-"editor.codeActionsOnSave": {
+  "eslint.workingDirectories": [{"mode":"auto"}],
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
   "source.fixAll.eslint": true
 },
 "python.pythonPath": "C:\\Users\\Takuto\\Anaconda3\\python.exe",

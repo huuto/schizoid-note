@@ -4,28 +4,30 @@ admin.initializeApp()
 const db = admin.firestore()
 
 const functionsRegion = functions.region('asia-northeast1')
+const logger = functions.logger
 
 /**
  * ユーザー削除時に記事も削除
  */
-exports.deleteUser = functionsRegion.firestore
-  .document('users/{id}')
-  .onDelete(async (_snap, context) => {
-    // 全記事取得
-    const posts = await db
-      .collection('posts')
-      .where('user_id', '==', context.params.id)
-      .get()
-    // 記事の削除
-    posts
-      .forEach((post) => {
-        post.ref.delete()
-        console.log('success: posts delete')
-      })
-      .catch((e) => {
-        console.log('error: posts delete\n' + e)
-      })
-  })
+// exports.deleteUser = functionsRegion.firestore
+//   .document('users/{id}')
+//   .onDelete(async (_snap, context) => {
+//     // 全記事取得
+//     const posts = await db
+//       .collection('posts')
+//       .where('user_id', '==', context.params.id)
+//       .get()
+//     // 記事の削除
+//     posts
+//       .forEach((post) => {
+//         post.ref.delete()
+//         logger.log(`post ${post.id} is deleted!`)
+//       })
+//       .catch((e) => {
+//         logger.error(`post ${post.id} is deleted!`)
+//       })  
+
+//   })
 
 /**
  * ユーザー名、ユーザー画像、プロフィール更新を全記事に反映
@@ -57,48 +59,46 @@ exports.updateUser = functionsRegion.firestore
 /**
  * 記事削除時
  */
-exports.deletePost = functionsRegion.firestore
-  .document('posts/{id}')
-  .onDelete(async (snap) => {
-    const post = snap.data()
-    // 画像の取得
-    const imgs = []
-    // トップ画像
-    if (post.top_img) imgs.push(post.top_img)
-    // 本文内画像
-    imgs.concat(
-      post.body
-        .match(/<img src="https[^"]*"/g)
-        .map((text) => text.substring(10, text.length - 1))
-    )
-    // 画像の削除
-    for (const img of imgs) {
-      admin
-        .storage()
-        .refFromURL(img)
-        .delete()
-        .catch((e) => {
-          console.log('error: image delete ' + img + '\n' + e)
-        })
-      console.log('success: image delete ' + img)
-    }
-    // いいねの削除
-    const querySnapshot = await db
-      .collection('likes')
-      .where('post_id', '==', post.id)
-      .get()
-    querySnapshot
-      .forEach((doc) => {
-        doc.ref.delete()
-      })
-      .catch((e) => {
-        console.log('error: like delete\n' + e)
-      })
-    // 記事の削除
-    snap.ref.delete().catch((e) => {
-      console.log('error: posts delete\n' + e)
-    })
-  })
+// exports.deletePost = functionsRegion.firestore
+//   .document('posts/{id}')
+//   .onDelete(async (snap, context) => {
+//     const post = snap.data()
+//     // 画像の取得
+//     const imgs = []
+//     // トップ画像
+//     if (post.top_img) imgs.push(post.top_img)
+
+//     // 本文内画像
+//     let bodyImgs = post.body.match(/<img src="https[^"]*"/g)
+//     if(bodyImgs) bodyImgs = bodyImgs.map((text) => text.substring(10, text.length - 1))
+//     await imgs.concat(bodyImgs)
+//     // 画像の削除
+//     for (const img of imgs) {
+//       admin
+//         .storage()
+//         .refFromURL(img)
+//         .delete()
+//         .catch((e) => {
+//           logger.error('image cant delete ' + img, e)
+//         })
+//         logger.log('image deleted! ' + img)
+//     }
+//     // いいねの削除
+//     const querySnapshot = await db
+//       .collection('likes')
+//       .where('post_id', '==', context.params.id)
+//       .get()
+//     querySnapshot
+//       .forEach((doc) => {
+//         doc.ref.delete().catch((e) => {
+//           logger.error('like cant delete', e)
+//         })
+//       })
+//     // 記事の削除
+//     snap.ref.delete().catch((e) => {
+//       logger.error('post cant delete', e)
+//     })
+//   })
 
 /**
  * いいね作成時
